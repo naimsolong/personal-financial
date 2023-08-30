@@ -1,2 +1,2 @@
-# bluecoins-web
-Open source web application for Bluecoins app (https://www.bluecoinsapp.com/)
+# personal-financial
+Open source web application to track financial and inspired from Bluecoins app (https://www.bluecoinsapp.com/)
