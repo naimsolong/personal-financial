@@ -38,7 +38,7 @@ services:
       - ./_volumes/mysql/database_data/:/var/lib/mysql
       # Add volume for custom configurations
       - ./_volumes/mysql/conf.d/:/etc/mysql/conf.d
-      - ./_volumes/mysql/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
+      - ./_volumes/scripts/:/docker-entrypoint-initdb.d
     ports:
       - target: 3306
         published: 3306
@@ -48,6 +48,9 @@ services:
     container_name: pf_php
     networks:
         - web-dev
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - .:/var/www/html/:cached
     environment:
