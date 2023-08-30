@@ -17,3 +17,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Ignore the _volumes folder, except certain Traefik configs
+/_volumes/*
+!/_volumes/traefik
