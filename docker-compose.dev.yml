@@ -68,13 +68,17 @@ services:
       - "traefik.http.services.personal-financial.loadbalancer.server.port=443"
       - "traefik.http.services.personal-financial.loadbalancer.server.scheme=https"
 
-  # node:
-  #   container_name: pf_node
-  #   networks:
-  #     - web-dev
-  #   volumes:
-  #     - .:/usr/src/app/:cached
-  #   working_dir: /usr/src/app/
+  node:
+    container_name: pf_node
+    networks:
+      - web-dev
+    volumes:
+      - .:/var/www/html/:cached
+    ports:
+      - target: 5173
+        published: 5173
+    command: npm run dev --host
+    working_dir: /var/www/html/
   
   # meilisearch:
   #   networks:

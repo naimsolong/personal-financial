@@ -19,8 +19,8 @@ services:
   mysql:
     image: mysql:8
   
-  # node:
-  #   image: node:lts
+  node:
+    image: node:lts
   
   redis:
     image: redis:6

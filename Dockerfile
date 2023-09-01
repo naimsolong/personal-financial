@@ -27,9 +27,4 @@ USER $PUID:$PGID
 # - To ignore files or folders, use .dockerignore
 COPY --chown=$PUID:$PGID . .
 
-RUN composer install --optimize-autoloader --no-dev --no-interaction --no-progress --ansi
-
-# artisan commands
-RUN php ./artisan optimize
-
 USER root:root
