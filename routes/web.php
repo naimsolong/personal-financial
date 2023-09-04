@@ -29,7 +29,11 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
+    Route::get('/dashboard-old', function () {
         return Inertia::render('Dashboard');
+    })->name('dashboard-old');
+
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard/Index');
     })->name('dashboard');
 });
