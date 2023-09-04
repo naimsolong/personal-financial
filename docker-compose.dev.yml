@@ -3,6 +3,7 @@ services:
 
   traefik:
     container_name: pf_traefik
+    image: traefik:v2.4
     networks:
       - web-dev
     ports:
@@ -26,6 +27,7 @@ services:
   
   mysql:
     container_name: pf_mysql
+    image: mysql:8
     networks:
       - web-dev
     environment:
@@ -46,11 +48,13 @@ services:
 
   php:
     container_name: pf_php
+    image: serversideup/php:8.2-fpm-nginx
+    working_dir: /var/www/html
     networks:
         - web-dev
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     volumes:
       - .:/var/www/html/:cached
     environment:
@@ -70,6 +74,7 @@ services:
 
   node:
     container_name: pf_node
+    image: node:lts
     networks:
       - web-dev
     volumes:
@@ -92,6 +97,7 @@ services:
 
   redis:
     container_name: pf_redis
+    image: redis:6
     networks:
       - web-dev
     volumes:
