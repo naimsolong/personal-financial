@@ -5,6 +5,6 @@ import Welcome from '@/Components/Welcome.vue';
 
 <template>
     <Dashboard title="Dashboard">
-        test
+        Dashboard
     </Dashboard>
 </template>
