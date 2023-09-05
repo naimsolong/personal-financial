@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TransactionsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,4 +37,28 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard/Index');
     })->name('dashboard');
+
+    Route::group(['prefix' => 'transactions'], function() {
+        Route::get('/', [TransactionsController::class, 'index'])->name('transactions');
+    });
+
+    Route::group(['prefix' => 'schedules'], function() {
+        Route::get('/', [SchedulesController::class, 'index'])->name('schedules');
+    });
+
+    Route::group(['prefix' => 'categories'], function() {
+        Route::get('/', [CategoriesController::class, 'index'])->name('categories');
+    });
+
+    Route::group(['prefix' => 'accounts'], function() {
+        Route::get('/', [AccountsController::class, 'index'])->name('accounts');
+    });
+
+    Route::group(['prefix' => 'filters'], function() {
+        Route::get('/', [FiltersController::class, 'index'])->name('filters');
+    });
+
+    Route::group(['prefix' => 'labels'], function() {
+        Route::get('/', [LabelsController::class, 'index'])->name('labels');
+    });
 });
