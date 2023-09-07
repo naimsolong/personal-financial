@@ -43,7 +43,7 @@ services:
       - ./_volumes/scripts/:/docker-entrypoint-initdb.d
     ports:
       - target: 3306
-        published: 3306
+        published: 3360
         mode: host
 
   php:
