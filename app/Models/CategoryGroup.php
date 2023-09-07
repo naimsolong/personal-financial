@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CategoryGroup extends Model
@@ -19,4 +20,12 @@ class CategoryGroup extends Model
         'name',
         'type',
     ];
+
+    /**
+     * The roles that belong to the categories.
+     */
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'category_pivot')->using(CategoryPivot::class);
+    }
 }
