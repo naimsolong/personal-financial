@@ -13,6 +13,6 @@ class CategoryGroupSeeder extends Seeder
      */
     public function run(): void
     {
-        CategoryGroup::factory()->create(5);
+        CategoryGroup::factory(rand(5,15))->create();
     }
 }
