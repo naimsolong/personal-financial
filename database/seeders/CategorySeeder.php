@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\CategoryGroup;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,6 +14,8 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        Category::factory(rand(10,20))->create();
+        CategoryGroup::factory(rand(5,15))
+            ->has(Category::factory()->count(rand(1,10)))
+            ->create();
     }
 }
