@@ -2,7 +2,7 @@
 
 use App\Models\Category;
 
-test('Model class has correct properties', function () {
+test('model class has correct properties', function () {
     expect(app(Category::class)->getFillable())->toBeArray()->toBe([
         'name',
         'icon',
@@ -10,7 +10,7 @@ test('Model class has correct properties', function () {
     ]);
 });
 
-test('Model able to perform CRUD', function () {
+test('model able to perform CRUD', function () {
     $category = Category::factory()->create();
     $this->assertModelExists($category);
 

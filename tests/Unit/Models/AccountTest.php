@@ -2,7 +2,7 @@
 
 use App\Models\Account;
 
-test('Model class has correct properties', function () {
+test('model class has correct properties', function () {
     expect(app(Account::class)->getFillable())->toBeArray()->toBe([
         'name',
         'icon',
@@ -10,7 +10,7 @@ test('Model class has correct properties', function () {
     ]);
 });
 
-test('Model able to perform CRUD', function () {
+test('model able to perform CRUD', function () {
     $account = Account::factory()->create();
     $this->assertModelExists($account);
 

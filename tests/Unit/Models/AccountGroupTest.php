@@ -2,14 +2,14 @@
 
 use App\Models\AccountGroup;
 
-test('Model class has correct properties', function () {
+test('model class has correct properties', function () {
     expect(app(AccountGroup::class)->getFillable())->toBeArray()->toBe([
         'name',
         'type',
     ]);
 });
 
-test('Model able to perform CRUD', function () {
+test('model able to perform CRUD', function () {
     $accountGroup = AccountGroup::factory()->create();
     $this->assertModelExists($accountGroup);
 
