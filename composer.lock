@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4319086325305f1822931d46e034e250",
+    "content-hash": "d8e2d528215ab7770a3f5e1a0b97a7c8",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2996,6 +2996,51 @@
                 "source": "https://github.com/antonioribeiro/google2fa/tree/v8.0.1"
             },
             "time": "2022-06-13T21:57:56+00:00"
+        },
+        {
+            "name": "prinsfrank/standards",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PrinsFrank/standards.git",
+                "reference": "f1d16246179744b2bca2f445c8038dcc93e17e78"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PrinsFrank/standards/zipball/f1d16246179744b2bca2f445c8038dcc93e17e78",
+                "reference": "f1d16246179744b2bca2f445c8038dcc93e17e78",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1 || ^8.2"
+            },
+            "require-dev": {
+                "composer/composer": "^2.3",
+                "dbrekelmans/bdi": "^1.0",
+                "ext-dom": "*",
+                "ext-intl": "*",
+                "ext-mbstring": "*",
+                "friendsofphp/php-cs-fixer": "^3.8",
+                "phpstan/phpstan": "^1.8",
+                "phpunit/phpunit": "^9.5",
+                "symfony/panther": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PrinsFrank\\Standards\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A collection of standards as PHP Enums: ISO3166, ISO4217, ISO639...",
+            "support": {
+                "issues": "https://github.com/PrinsFrank/standards/issues",
+                "source": "https://github.com/PrinsFrank/standards/tree/v2.1.0"
+            },
+            "time": "2023-07-10T17:44:04+00:00"
         },
         {
             "name": "psr/clock",
