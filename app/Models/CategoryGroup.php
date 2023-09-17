@@ -26,6 +26,9 @@ class CategoryGroup extends Model
      */
     public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Category::class, 'category_pivot')->using(CategoryPivot::class);
+        return $this->belongsToMany(Category::class, 'category_pivot')
+            ->using(CategoryPivot::class)
+            ->as('details')
+            ->withTimestamps();
     }
 }

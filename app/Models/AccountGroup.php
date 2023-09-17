@@ -26,6 +26,9 @@ class AccountGroup extends Model
      */
     public function accounts(): BelongsToMany
     {
-        return $this->belongsToMany(Account::class, 'account_pivot')->using(AccountPivot::class);
+        return $this->belongsToMany(Account::class, 'account_pivot')
+            ->using(AccountPivot::class)
+            ->as('details')
+            ->withTimestamps();
     }
 }
