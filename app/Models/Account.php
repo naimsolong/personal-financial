@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Account extends Model
@@ -20,4 +21,12 @@ class Account extends Model
         'icon',
         'type',
     ];
+
+    /**
+     * The account that belong to the group.
+     */
+    public function group(): BelongsToMany
+    {
+        return $this->belongsToMany(AccountGroup::class, 'account_pivot')->using(AccountPivot::class);
+    }
 }
