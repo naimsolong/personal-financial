@@ -24,7 +24,7 @@ class AccountGroup extends Model
     /**
      * The group that belong to the account.
      */
-    public function categories(): BelongsToMany
+    public function accounts(): BelongsToMany
     {
         return $this->belongsToMany(Account::class, 'account_pivot')->using(AccountPivot::class);
     }
