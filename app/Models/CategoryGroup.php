@@ -22,7 +22,7 @@ class CategoryGroup extends Model
     ];
 
     /**
-     * The roles that belong to the categories.
+     * The group that belong to the categories.
      */
     public function categories(): BelongsToMany
     {
