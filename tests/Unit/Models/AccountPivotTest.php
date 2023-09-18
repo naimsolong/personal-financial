@@ -18,12 +18,12 @@ test('Pivot table able to attach, detach and sync', function () {
     ]);
 
     expect(AccountPivot::where(function($query) use ($accountGroup, $random) {
-        $query->where('Account_group_id', $accountGroup->id)->where('Account_id', $random->id);
+        $query->where('account_group_id', $accountGroup->id)->where('account_id', $random->id);
     })->exists())->toBeTrue();
 
     $accountGroup->accounts()->detach($random->id);
     expect(AccountPivot::where(function($query) use ($accountGroup, $random) {
-        $query->where('Account_group_id', $accountGroup->id)->where('Account_id', $random->id);
+        $query->where('account_group_id', $accountGroup->id)->where('account_id', $random->id);
     })->exists())->toBeFalse();
 
     $accountGroup->accounts()->syncWithPivotValues($accounts->pluck('id'), [
@@ -34,7 +34,7 @@ test('Pivot table able to attach, detach and sync', function () {
         'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
     ]);
     expect(AccountPivot::where(function($query) use ($accountGroup, $accounts) {
-        $query->where('Account_group_id', $accountGroup->id)->whereIn('Account_id', $accounts->pluck('id'));
+        $query->where('account_group_id', $accountGroup->id)->whereIn('account_id', $accounts->pluck('id'));
     })->exists())->toBeTrue();
     
     $accountGroup->accounts()->sync([
@@ -47,6 +47,6 @@ test('Pivot table able to attach, detach and sync', function () {
         ]
     ]);
     expect(AccountPivot::where(function($query) use ($accountGroup, $random) {
-        $query->where('Account_group_id', $accountGroup->id)->whereIn('Account_id', [$random->id]);
+        $query->where('account_group_id', $accountGroup->id)->whereIn('account_id', [$random->id]);
     })->exists())->toBeTrue();
 });
