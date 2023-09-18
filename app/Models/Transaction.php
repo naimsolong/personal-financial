@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Transaction extends Model
 {
@@ -47,5 +48,13 @@ class Transaction extends Model
 
     // TODO: Add relationship for split transactions
 
-    // TODO: Add relationship with Label
+    /**
+     * The labels that belong to this transactions.
+     */
+    public function labels(): BelongsToMany
+    {
+        return $this->belongsToMany(Label::class, 'transaction_label_pivot')
+            ->using(TransactionLabelPivot::class)
+            ->withTimestamps();
+    }
 }
