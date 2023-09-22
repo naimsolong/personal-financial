@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Controllers\AccountsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CategoryGroupController;
+use App\Http\Controllers\FiltersController;
+use App\Http\Controllers\LabelsController;
+use App\Http\Controllers\SchedulesController;
 use App\Http\Controllers\TransactionsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
