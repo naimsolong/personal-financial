@@ -19,7 +19,7 @@ class CategoryGroupFactory extends Factory
     {
         return [
             'name' => $this->faker->word(),
-            'type' => TransactionsType::getRandomValues(),
+            'type' => collect([TransactionsType::EXPENSE->value, TransactionsType::INCOME->value])->random(),
         ];
     }
 }
