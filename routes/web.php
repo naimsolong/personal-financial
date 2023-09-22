@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\CategoryGroupController;
 use App\Http\Controllers\TransactionsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,10 @@ Route::middleware([
     Route::group(['prefix' => 'schedules'], function() {
         Route::get('/', [SchedulesController::class, 'index'])->name('schedules');
     });
+
+    Route::resource('category/group', CategoryGroupController::class)->except([
+        'show'
+    ]);
 
     Route::group(['prefix' => 'categories'], function() {
         Route::get('/', [CategoriesController::class, 'index'])->name('categories');
