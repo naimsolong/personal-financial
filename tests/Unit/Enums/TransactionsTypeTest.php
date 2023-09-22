@@ -17,3 +17,28 @@ it('use correct key', function () {
         'EXPENSE', 'INCOME', 'TRANSFER'
     ]);
 });
+
+it('return correct dropdown array', function () {
+    $values = TransactionsType::dropdown();
+    
+    expect($values)->toBeArray()->toBe([
+        [
+          "value" => "E",
+          "text" => "Expense",
+        ],
+        [
+          "value" => "I",
+          "text" => "Income",
+        ],
+        [
+          "value" => "T",
+          "text" => "Transfer",
+        ],
+    ]);
+});
+
+it('return correct descriptions', function () {
+    expect(TransactionsType::EXPENSE->description())->toBeString()->toBe("Expense");
+    expect(TransactionsType::INCOME->description())->toBeString()->toBe("Income");
+    expect(TransactionsType::TRANSFER->description())->toBeString()->toBe("Transfer");
+});

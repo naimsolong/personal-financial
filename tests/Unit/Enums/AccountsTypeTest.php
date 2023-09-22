@@ -17,3 +17,23 @@ it('use correct key', function () {
         'ASSETS', 'LIABILITIES'
     ]);
 });
+
+it('return correct dropdown array', function () {
+    $values = AccountsType::dropdown();
+    
+    expect($values)->toBeArray()->toBe([
+        [
+          "value" => "A",
+          "text" => "Assets",
+        ],
+        [
+          "value" => "L",
+          "text" => "Liabilities",
+        ],
+    ]);
+});
+
+it('return correct descriptions', function () {
+    expect(AccountsType::ASSETS->description())->toBeString()->toBe("Assets");
+    expect(AccountsType::LIABILITIES->description())->toBeString()->toBe("Liabilities");
+});

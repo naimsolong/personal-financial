@@ -17,3 +17,33 @@ it('use correct key', function () {
         'NONE', 'CLEARED', 'RECONCILED', 'VOID'
     ]);
 });
+
+it('return correct dropdown array', function () {
+    $values = TransactionsStatus::dropdown();
+    
+    expect($values)->toBeArray()->toBe([
+        [
+          "value" => "N",
+          "text" => "None",
+        ],
+        [
+          "value" => "C",
+          "text" => "Cleared",
+        ],
+        [
+          "value" => "R",
+          "text" => "Reconciled",
+        ],
+        [
+          "value" => "V",
+          "text" => "Void",
+        ],
+    ]);
+});
+
+it('return correct descriptions', function () {
+    expect(TransactionsStatus::NONE->description())->toBeString()->toBe("None");
+    expect(TransactionsStatus::CLEARED->description())->toBeString()->toBe("Cleared");
+    expect(TransactionsStatus::RECONCILED->description())->toBeString()->toBe("Reconciled");
+    expect(TransactionsStatus::VOID->description())->toBeString()->toBe("Void");
+});
