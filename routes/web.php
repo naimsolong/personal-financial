@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\TransactionsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
