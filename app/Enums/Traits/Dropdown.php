@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Concerns;
+namespace App\Enums\Traits;
 
 use ArchTech\Enums\{
     InvokableCases, Names, Values

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Concerns;
+namespace App\Enums\Traits;
 
 trait Description
 {

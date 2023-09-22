@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\TransactionsTypeFitler;
+use App\Models\Traits\TransactionsTypeFitler;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
