@@ -54,6 +54,13 @@ Route::middleware([
 
     Route::resource('category/group', CategoryGroupController::class)->except([
         'show'
+    ])->names([
+        'index' => 'category.group.index',
+        'create' => 'category.group.create',
+        'store' => 'category.group.store',
+        'edit' => 'category.group.edit',
+        'update' => 'category.group.update',
+        'destroy' => 'category.group.destroy',
     ]);
 
     Route::group(['prefix' => 'categories'], function() {

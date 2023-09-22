@@ -39,7 +39,7 @@ const switch_toggle = () => {
                     <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">{{ category_type }}</span>
                 </label>
             </div> 
-            <Link class="float-right" :href="route('category.group')">Category Group</Link>
+            <Link class="float-right" :href="route('category.group.index')">Category Group</Link>
         </div>
 
 
