@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, computed } from 'vue'
+import { Link } from '@inertiajs/vue3';
 
 import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'flowbite-vue'
 import Dashboard from '@/Layouts/Dashboard.vue';
@@ -38,7 +39,7 @@ const switch_toggle = () => {
                     <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">{{ category_type }}</span>
                 </label>
             </div> 
-            <div class="float-right">Category Group</div>
+            <Link class="float-right" :href="route('category.group')">Category Group</Link>
         </div>
 
 
@@ -46,13 +47,7 @@ const switch_toggle = () => {
         <Accordion>
             <accordion-panel v-for="category_group in data">
                 <accordion-header>
-                    <div class="w-full flex flex-row"> 
-                        {{ category_group.name }}
-                        <svg class="scale-[0.7] ml-2 w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                            <path d="M12.687 14.408a3.01 3.01 0 0 1-1.533.821l-3.566.713a3 3 0 0 1-3.53-3.53l.713-3.566a3.01 3.01 0 0 1 .821-1.533L10.905 2H2.167A2.169 2.169 0 0 0 0 4.167v11.666A2.169 2.169 0 0 0 2.167 18h11.666A2.169 2.169 0 0 0 16 15.833V11.1l-3.313 3.308Zm5.53-9.065.546-.546a2.518 2.518 0 0 0 0-3.56 2.576 2.576 0 0 0-3.559 0l-.547.547 3.56 3.56Z"/>
-                            <path d="M13.243 3.2 7.359 9.081a.5.5 0 0 0-.136.256L6.51 12.9a.5.5 0 0 0 .59.59l3.566-.713a.5.5 0 0 0 .255-.136L16.8 6.757 13.243 3.2Z"/>
-                        </svg>
-                    </div>
+                    {{ category_group.name }}
                 </accordion-header>
                 <accordion-content>
                     <div v-for="category in category_group.categories" class="ml-5 mb-3 w-full flex flex-row"> 
