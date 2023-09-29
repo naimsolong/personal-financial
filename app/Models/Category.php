@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Traits\TransactionsTypeFitler;
+use App\Models\Traits\TransactionsTypeFilter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
-    use TransactionsTypeFitler, HasFactory, SoftDeletes;
+    use TransactionsTypeFilter, HasFactory, SoftDeletes;
     
     /**
      * The attributes that are mass assignable.

@@ -4,7 +4,7 @@ namespace App\Models\Traits;
 
 use App\Enums\TransactionsType;
 
-trait TransactionsTypeFitler {
+trait TransactionsTypeFilter {
     public function scopeExpenseOnly()
     {
         return $this->where('type', TransactionsType::EXPENSE);

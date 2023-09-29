@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Traits\TransactionsTypeFitler;
+use App\Models\Traits\TransactionsTypeFilter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Transaction extends Model
 {
-    use TransactionsTypeFitler, HasFactory;
+    use TransactionsTypeFilter, HasFactory;
     
     /**
      * The attributes that are mass assignable.
