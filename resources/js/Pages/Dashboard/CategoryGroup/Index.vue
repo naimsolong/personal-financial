@@ -4,6 +4,7 @@ import { reactive, computed } from 'vue'
 import { Link } from '@inertiajs/vue3';
 import Dashboard from '@/Layouts/Dashboard.vue';
 import Header from '@/Components/Dashboards/Header.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
     categories: Array,
@@ -32,23 +33,47 @@ const switch_toggle = () => {
 
         <div class="flow-root mb-3">  
             <div class="float-left">
-                <label class="relative inline-flex items-center cursor-pointer">
+                <label class="relative inline-flex items-center align-middle cursor-pointer pr-3 border-r-4">
                     <input type="checkbox" value="" class="sr-only peer" @click="switch_toggle">
                     <div class="w-11 h-6 bg-red-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gray-300 dark:peer-focus:ring-gray-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                     <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">{{ category_type }}</span>
                 </label>
-                <Link class="ml-3" :href="route('category.group.create', {'type': state.expense_flag ? 'E' : 'I'})">Add New</Link>
+                
+                <Link class="ml-3" :href="route('category.group.create', {'type': state.expense_flag ? 'E' : 'I'})">
+                    <PrimaryButton>
+                        Add New
+                    </PrimaryButton>
+                </Link>
             </div>
         </div>
 
-        <div v-for="category_group in data" class="w-full flex flex-row">
-            {{ category_group.name }}
-            <Link class="ml-2" :href="route('category.group.edit', {'group': category_group.id})">
-                <svg class="scale-[0.7] cursor-pointer w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                    <path d="M12.687 14.408a3.01 3.01 0 0 1-1.533.821l-3.566.713a3 3 0 0 1-3.53-3.53l.713-3.566a3.01 3.01 0 0 1 .821-1.533L10.905 2H2.167A2.169 2.169 0 0 0 0 4.167v11.666A2.169 2.169 0 0 0 2.167 18h11.666A2.169 2.169 0 0 0 16 15.833V11.1l-3.313 3.308Zm5.53-9.065.546-.546a2.518 2.518 0 0 0 0-3.56 2.576 2.576 0 0 0-3.559 0l-.547.547 3.56 3.56Z"/>
-                    <path d="M13.243 3.2 7.359 9.081a.5.5 0 0 0-.136.256L6.51 12.9a.5.5 0 0 0 .59.59l3.566-.713a.5.5 0 0 0 .255-.136L16.8 6.757 13.243 3.2Z"/>
-                </svg>
-            </Link>
+        <div class="relative overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            Name
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="category_group in data" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {{ category_group.name }}
+                        </th>
+                        <td class="px-6 py-4 text-right">
+                            <Link :href="route('category.group.edit', {'group': category_group.id})">
+                                <PrimaryButton>
+                                    Edit
+                                </PrimaryButton>
+                            </Link>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         
     </Dashboard>
