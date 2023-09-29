@@ -10,6 +10,7 @@ import ActionMessage from '@/Components/ActionMessage.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 
 const props = defineProps({
@@ -40,7 +41,7 @@ const submitForm = () => {
 
 <template>
     <Dashboard title="Category Group">
-        <Header title="Add New - Category Group"/>
+        <Header :title="(props.edit_mode ? 'Edit' : 'New') + ' - Category Group'"/>
 
         <form @submit.prevent="submitForm">
             <div class="mb-3">
@@ -69,9 +70,18 @@ const submitForm = () => {
                 Saved.
             </ActionMessage>
 
-            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Save
-            </PrimaryButton>
+            <div class="flow-root">
+                <div class="float-left">
+                    <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                        Save
+                    </PrimaryButton>
+                </div>
+                <div class="float-right">
+                    <SecondaryButton v-if="props.edit_mode" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                        Delete
+                    </SecondaryButton>
+                </div>
+            </div>
         </form>
     </Dashboard>
 </template>

@@ -62,17 +62,23 @@ class CategoryGroupController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(CategoryGroup $group)
     {
-        //
+        return Inertia::render('Dashboard/CategoryGroup/Form', [
+            'edit_mode' => true,
+            'types' => collect(TransactionsType::dropdown())->whereIn('value', ['E', 'I'])->toArray(),
+            'data' => $group->only('id','name','type'),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CategoryGroupFormRequest $request, CategoryGroup $group)
     {
-        //
+        $group->update($request->only('name', 'type'));
+
+        return Redirect::route('category.group.index');
     }
 
     /**
