@@ -60,7 +60,7 @@ const switch_toggle = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="category_group in data" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <tr v-for="category_group in data" class="bg-white border-b last:border-b-0 dark:bg-gray-800 dark:border-gray-700">
                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             {{ category_group.name }}
                         </th>

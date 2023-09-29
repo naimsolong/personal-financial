@@ -97,15 +97,15 @@ const deleteCategoryGroup = () => {
             </ActionMessage>
 
             <div class="flow-root">
-                <div class="float-left">
+                <div v-if="props.edit_mode" class="float-left">
+                    <DangerButton @click="confirmCategoryGroupDeletion">
+                        Delete
+                    </DangerButton>
+                </div>
+                <div class="float-right">
                     <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                         Save
                     </PrimaryButton>
-                </div>
-                <div class="float-right">
-                    <DangerButton v-if="props.edit_mode" @click="confirmCategoryGroupDeletion">
-                        Delete
-                    </DangerButton>
                 </div>
             </div>
         </form>
