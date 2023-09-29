@@ -40,7 +40,7 @@ const switch_toggle = () => {
                     <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">{{ category_type }}</span>
                 </label>
                 
-                <Link class="ml-3" :href="route('category.group.create', {'type': state.expense_flag ? 'E' : 'I'})">
+                <Link class="ml-3" :href="route('categories.create', {'type': state.expense_flag ? 'E' : 'I'})">
                     <PrimaryButton>
                         Add New
                     </PrimaryButton>
@@ -66,7 +66,7 @@ const switch_toggle = () => {
                                     {{ category.name }}
                                 </th>
                                 <td class="px-6 py-4 text-right">
-                                    <Link :href="route('category.group.edit', {'group': category.id})">
+                                    <Link :href="route('categories.edit', {'category': category.id})">
                                         <PrimaryButton>
                                             Edit
                                         </PrimaryButton>

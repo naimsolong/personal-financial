@@ -63,9 +63,16 @@ Route::middleware([
         'destroy' => 'category.group.destroy',
     ]);
 
-    Route::group(['prefix' => 'categories'], function() {
-        Route::get('/', [CategoriesController::class, 'index'])->name('categories');
-    });
+    Route::resource('categories', CategoriesController::class)->except([
+        'show'
+    ])->names([
+        'index' => 'categories.index',
+        'create' => 'categories.create',
+        'store' => 'categories.store',
+        'edit' => 'categories.edit',
+        'update' => 'categories.update',
+        'destroy' => 'categories.destroy',
+    ]);
 
     Route::group(['prefix' => 'accounts'], function() {
         Route::get('/', [AccountsController::class, 'index'])->name('accounts');
