@@ -84,8 +84,10 @@ class CategoryGroupController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(CategoryGroup $group)
     {
-        //
+        $group->delete();
+
+        return Redirect::route('category.group.index');
     }
 }

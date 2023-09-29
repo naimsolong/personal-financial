@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
 import Dashboard from '@/Layouts/Dashboard.vue';
@@ -7,10 +8,12 @@ import Header from '@/Components/Dashboards/Header.vue';
 import { Radio } from 'flowbite-vue'
 
 import ActionMessage from '@/Components/ActionMessage.vue';
+import DialogModal from '@/Components/DialogModal.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 
 const props = defineProps({
@@ -22,7 +25,16 @@ const props = defineProps({
     data: Object
 });
 
+const confirmingCategoryGroupDeletion = ref(false);
 const form = useForm(props.data);
+
+const confirmCategoryGroupDeletion = () => {
+    confirmingCategoryGroupDeletion.value = true;
+};
+
+const closeModal = () => {
+    confirmingCategoryGroupDeletion.value = false;
+};
 
 const submitForm = () => {
     let config = {
@@ -36,6 +48,20 @@ const submitForm = () => {
         form.put(route('category.group.update', props.data.id), config);
     else
         form.post(route('category.group.store'), config);
+};
+
+const deleteCategoryGroup = () => {
+    let config = {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset()
+        },
+    }
+
+    if(props.edit_mode)
+        form.delete(route('category.group.destroy', props.data.id), config);
+    else
+        console.log('Nothing happen');
 };
 </script>
 
@@ -77,11 +103,37 @@ const submitForm = () => {
                     </PrimaryButton>
                 </div>
                 <div class="float-right">
-                    <SecondaryButton v-if="props.edit_mode" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    <DangerButton v-if="props.edit_mode" @click="confirmCategoryGroupDeletion">
                         Delete
-                    </SecondaryButton>
+                    </DangerButton>
                 </div>
             </div>
         </form>
     </Dashboard>
+
+    <!-- Delete Category Group Modal -->
+    <DialogModal :show="confirmingCategoryGroupDeletion" @close="closeModal">
+        <template #title>
+            Delete Category Group
+        </template>
+
+        <template #content>
+            Are you sure you want to delete this category group?
+        </template>
+
+        <template #footer>
+            <SecondaryButton @click="closeModal">
+                Cancel
+            </SecondaryButton>
+
+            <DangerButton
+                class="ml-3"
+                :class="{ 'opacity-25': form.processing }"
+                :disabled="form.processing"
+                @click="deleteCategoryGroup"
+            >
+                Yes
+            </DangerButton>
+        </template>
+    </DialogModal>
 </template>
