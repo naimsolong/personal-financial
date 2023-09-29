@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Enums\TransactionsType;
+use App\Http\Requests\CategoryGroupFormRequest;
 use App\Models\CategoryGroup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class CategoryGroupController extends Controller
@@ -20,24 +22,33 @@ class CategoryGroupController extends Controller
             'categories' => [
                 'expense' => $categories->where('type', TransactionsType::EXPENSE->value)->toArray(),
                 'income' => $categories->where('type', TransactionsType::INCOME->value)->toArray(),
-            ]
+            ],
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        return Inertia::render('Dashboard/CategoryGroup/Form', [
+            'types' => collect(TransactionsType::dropdown())->whereIn('value', ['E', 'I'])->toArray(),
+            'data' => [
+                'id' => '',
+                'name' => '',
+                'type' => $request->query('type', '')
+            ],
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CategoryGroupFormRequest $request)
     {
-        //
+        CategoryGroup::create($request->only('name', 'type'));
+
+        return Redirect::route('category.group.index');
     }
 
     /**
