@@ -1,6 +1,7 @@
 import './bootstrap';
 import '../css/app.css';
 import 'flowbite';
+import 'flowbite-datepicker';
 
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';

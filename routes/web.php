@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountGroupController;
 use App\Http\Controllers\AccountsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CategoryGroupController;
@@ -74,9 +75,27 @@ Route::middleware([
         'destroy' => 'categories.destroy',
     ]);
 
-    Route::group(['prefix' => 'accounts'], function() {
-        Route::get('/', [AccountsController::class, 'index'])->name('accounts');
-    });
+    Route::resource('account/group', AccountGroupController::class)->except([
+        'show'
+    ])->names([
+        'index' => 'account.group.index',
+        'create' => 'account.group.create',
+        'store' => 'account.group.store',
+        'edit' => 'account.group.edit',
+        'update' => 'account.group.update',
+        'destroy' => 'account.group.destroy',
+    ]);
+
+    Route::resource('accounts', AccountsController::class)->except([
+        'show'
+    ])->names([
+        'index' => 'accounts.index',
+        'create' => 'accounts.create',
+        'store' => 'accounts.store',
+        'edit' => 'accounts.edit',
+        'update' => 'accounts.update',
+        'destroy' => 'accounts.destroy',
+    ]);
 
     Route::group(['prefix' => 'filters'], function() {
         Route::get('/', [FiltersController::class, 'index'])->name('filters');

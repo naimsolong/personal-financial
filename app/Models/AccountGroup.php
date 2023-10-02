@@ -29,6 +29,7 @@ class AccountGroup extends Model
         return $this->belongsToMany(Account::class, 'account_pivot')
             ->using(AccountPivot::class)
             ->as('details')
+            ->withPivot('opening_date', 'starting_balance', 'latest_balance', 'currency', 'notes')
             ->withTimestamps();
     }
 }
