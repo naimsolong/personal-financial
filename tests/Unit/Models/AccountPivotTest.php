@@ -11,7 +11,7 @@ test('Pivot table able to attach, detach and sync', function () {
 
     $random = $accounts->random();
     $accountGroup->accounts()->attach($random->id, [
-        'opening_date' => now()->addDays(rand(30,90) + -1),
+        'opening_date' => now()->addDays(rand(30,90) + -1)->format('d/m/Y'),
         'starting_balance' => rand(1000, 5000),
         'latest_balance' => rand(5000, 7000),
         'currency' => CurrencyAlpha3::from('MYR')->value,
@@ -28,7 +28,7 @@ test('Pivot table able to attach, detach and sync', function () {
     })->exists())->toBeFalse();
 
     $accountGroup->accounts()->syncWithPivotValues($accounts->pluck('id'), [
-        'opening_date' => now()->addDays(rand(30,90) + -1),
+        'opening_date' => now()->addDays(rand(30,90) + -1)->format('d/m/Y'),
         'starting_balance' => rand(1000, 5000),
         'latest_balance' => rand(5000, 7000),
         'currency' => CurrencyAlpha3::from('MYR')->value,
@@ -40,7 +40,7 @@ test('Pivot table able to attach, detach and sync', function () {
     
     $accountGroup->accounts()->sync([
         $random->id => [
-            'opening_date' => now()->addDays(rand(30,90) + -1),
+            'opening_date' => now()->addDays(rand(30,90) + -1)->format('d/m/Y'),
             'starting_balance' => rand(1000, 5000),
             'latest_balance' => rand(5000, 7000),
             'currency' => CurrencyAlpha3::from('MYR')->value,
