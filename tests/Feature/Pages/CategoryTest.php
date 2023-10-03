@@ -6,7 +6,7 @@ use App\Models\CategoryGroup;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
-test('user can access category group pages', function () {
+test('user can access category pages', function () {
     $user = User::factory()->create();
 
     $categoryGroup = CategoryGroup::factory(3)
