@@ -36,7 +36,7 @@ class TransactionFactory extends Factory
             'category_id' => $category->id,
             'account_id' => $account->id,
             'amount' => $amount,
-            'currency' => CurrencyAlpha3::from('MYR'),
+            'currency' => CurrencyAlpha3::from('MYR')->value,
             // 'currency_amount',
             // 'currency_rate',
             // 'transfer_pair_id',
