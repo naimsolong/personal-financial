@@ -77,6 +77,7 @@ test('user can perform store, update and destroy', function () {
     $this->assertDatabaseHas('categories', collect($data)->except('category_group')->toArray());
     
     $category = Category::factory()->create();
+    $this->assertModelExists($category);
     $data = [
         'name' => 'test'.rand(4,10),
         'category_group' => $categoryGroup2->id,
