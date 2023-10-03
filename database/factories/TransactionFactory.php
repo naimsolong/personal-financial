@@ -7,6 +7,8 @@ use App\Enums\TransactionsStatus;
 use App\Enums\TransactionsType;
 use App\Models\Account;
 use App\Models\Category;
+use Database\Seeders\AccountSeeder;
+use Database\Seeders\CategorySeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
@@ -24,9 +26,20 @@ class TransactionFactory extends Factory
     {
         $type = collect([TransactionsType::EXPENSE->value, TransactionsType::INCOME->value])->random();
 
+        app(CategorySeeder::class)->run();
+        app(AccountSeeder::class)->run();
+
         [$amount, $category, $account] = match($type) {
-            TransactionsType::INCOME->value => [rand(300,9000), Category::where('type', $type)->inRandomOrder()->first(), Account::where('type', AccountsType::ASSETS)->inRandomOrder()->first()],
-            TransactionsType::EXPENSE->value => [rand(300,9000) * -1, Category::where('type', $type)->inRandomOrder()->first(), Account::where('type', AccountsType::ASSETS)->inRandomOrder()->first()],
+            TransactionsType::INCOME->value => [
+                rand(300,9000),
+                Category::where('type', $type)->inRandomOrder()->first(),
+                Account::where('type', AccountsType::ASSETS)->inRandomOrder()->first()
+            ],
+            TransactionsType::EXPENSE->value => [
+                rand(300,9000) * -1,
+                Category::where('type', $type)->inRandomOrder()->first(),
+                Account::where('type', AccountsType::ASSETS)->inRandomOrder()->first()
+            ],
             default => [null, null, null], // Transfer type transaction is manually handle in TransactionSeeder
         };
 
