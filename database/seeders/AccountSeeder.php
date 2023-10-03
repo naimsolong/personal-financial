@@ -29,7 +29,7 @@ class AccountSeeder extends Seeder
             'opening_date' => now()->format('d/m/Y'),
             'starting_balance' => $balance1,
             'latest_balance' => $balance1,
-            'currency' => 'MYR',
+            'currency' => CurrencyAlpha3::from('MYR')->value,
             'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
         ]);
 
@@ -52,14 +52,14 @@ class AccountSeeder extends Seeder
                 'opening_date' => now()->format('d/m/Y'),
                 'starting_balance' => $balance2,
                 'latest_balance' => $balance2,
-                'currency' => 'MYR',
+                'currency' => CurrencyAlpha3::from('MYR')->value,
                 'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
             ],
             $account3->id => [
                 'opening_date' => now()->format('d/m/Y'),
                 'starting_balance' => $balance3,
                 'latest_balance' => $balance3,
-                'currency' => 'MYR',
+                'currency' => CurrencyAlpha3::from('MYR')->value,
                 'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
             ],
         ]);
@@ -88,21 +88,21 @@ class AccountSeeder extends Seeder
                 'opening_date' => now()->format('d/m/Y'),
                 'starting_balance' => $balance5,
                 'latest_balance' => $balance5,
-                'currency' => 'MYR',
+                'currency' => CurrencyAlpha3::from('MYR')->value,
                 'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
             ],
             $account6->id => [
                 'opening_date' => now()->format('d/m/Y'),
                 'starting_balance' => $balance6,
                 'latest_balance' => $balance6,
-                'currency' => 'MYR',
+                'currency' => CurrencyAlpha3::from('MYR')->value,
                 'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
             ],
             $account7->id => [
                 'opening_date' => now()->format('d/m/Y'),
                 'starting_balance' => $balance7,
                 'latest_balance' => $balance7,
-                'currency' => 'MYR',
+                'currency' => CurrencyAlpha3::from('MYR')->value,
                 'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
             ],
         ]);
@@ -115,7 +115,7 @@ class AccountSeeder extends Seeder
         //                 'opening_date' => now()->format('d/m/Y')->addDays(rand(30,90) + -1),
         //                 'starting_balance' => rand(1000, 5000),
         //                 'latest_balance' => rand(5000, 7000),
-        //                 'currency' => 'MYR',
+        //                 'currency' => CurrencyAlpha3::from('MYR')->value,
         //                 'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
         //             ];
         //         }

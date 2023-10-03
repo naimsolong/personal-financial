@@ -3,6 +3,7 @@
 use App\Models\Account;
 use App\Models\AccountGroup;
 use App\Models\AccountPivot;
+use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
 test('Pivot table able to attach, detach and sync', function () {
     $accountGroup = AccountGroup::factory()->create();
@@ -13,7 +14,7 @@ test('Pivot table able to attach, detach and sync', function () {
         'opening_date' => now()->addDays(rand(30,90) + -1),
         'starting_balance' => rand(1000, 5000),
         'latest_balance' => rand(5000, 7000),
-        'currency' => 'MYR',
+        'currency' => CurrencyAlpha3::from('MYR')->value,
         'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
     ]);
 
@@ -30,7 +31,7 @@ test('Pivot table able to attach, detach and sync', function () {
         'opening_date' => now()->addDays(rand(30,90) + -1),
         'starting_balance' => rand(1000, 5000),
         'latest_balance' => rand(5000, 7000),
-        'currency' => 'MYR',
+        'currency' => CurrencyAlpha3::from('MYR')->value,
         'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
     ]);
     expect(AccountPivot::where(function($query) use ($accountGroup, $accounts) {
@@ -42,7 +43,7 @@ test('Pivot table able to attach, detach and sync', function () {
             'opening_date' => now()->addDays(rand(30,90) + -1),
             'starting_balance' => rand(1000, 5000),
             'latest_balance' => rand(5000, 7000),
-            'currency' => 'MYR',
+            'currency' => CurrencyAlpha3::from('MYR')->value,
             'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
         ]
     ]);

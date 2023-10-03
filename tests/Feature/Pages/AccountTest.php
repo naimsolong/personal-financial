@@ -6,6 +6,7 @@ use App\Models\AccountGroup;
 use App\Models\User;
 use Carbon\Carbon;
 use Inertia\Testing\AssertableInertia as Assert;
+use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
 test('user can access account pages', function () {
     $user = User::factory()->create();
@@ -16,7 +17,7 @@ test('user can access account pages', function () {
             [
                 'opening_date' => now()->format('d/m/Y'),
                 'starting_balance' => rand(10,100),
-                'currency' => 'MYR',
+                'currency' => CurrencyAlpha3::from('MYR')->value,
             ]
         )
         ->create([
@@ -47,7 +48,7 @@ test('user can access account pages', function () {
                 'type' => '',
                 'opening_date' => '',
                 'starting_balance' => '0',
-                'currency' => 'MYR',
+                'currency' => CurrencyAlpha3::from('MYR')->value,
                 'notes' => '',
             ])
         );
@@ -93,7 +94,7 @@ test('user can perform store, update and destroy', function () {
         'type' => AccountsType::ASSETS->value,
         'opening_date' => now()->format('d/m/Y'),
         'starting_balance' => rand(10,100),
-        'currency' => 'MYR',
+        'currency' => CurrencyAlpha3::from('MYR')->value,
     ];
     $response = $this->actingAs($user)
         ->post(route('accounts.store'), $data);
@@ -112,7 +113,7 @@ test('user can perform store, update and destroy', function () {
         'type' => AccountsType::LIABILITIES->value,
         'opening_date' => now()->format('d/m/Y'),
         'starting_balance' => rand(10,100),
-        'currency' => 'MYR',
+        'currency' => CurrencyAlpha3::from('MYR')->value,
     ];
     $response = $this->actingAs($user)
         ->put(route('accounts.update', ['account' => $account->id]), $data);

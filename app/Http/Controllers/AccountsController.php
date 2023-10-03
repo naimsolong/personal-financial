@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
 class AccountsController extends Controller
 {
@@ -50,7 +51,7 @@ class AccountsController extends Controller
                 'type' => $request->query('type', ''),
                 'opening_date' => '',
                 'starting_balance' => '0',
-                'currency' => 'MYR',
+                'currency' => CurrencyAlpha3::from('MYR')->value,
                 'notes' => '',
             ],
         ]);
