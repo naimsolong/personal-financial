@@ -46,7 +46,7 @@ Route::middleware([
     })->name('dashboard');
 
     Route::group(['prefix' => 'transactions'], function() {
-        Route::get('/', [TransactionsController::class, 'index'])->name('transactions');
+        Route::match(['get', 'post'], '/', [TransactionsController::class, 'index'])->name('transactions.index');
     });
 
     Route::group(['prefix' => 'schedules'], function() {
