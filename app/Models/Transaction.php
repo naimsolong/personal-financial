@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\TransactionsType;
 use App\Models\Traits\TransactionsTypeFilter;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,6 +34,24 @@ class Transaction extends Model
     ];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'due_at' => 'datetime:Y-m-d H:i:s',
+    ];
+    
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'due_day', 'due_date', 'due_time', 'type_name'
+    ];
+
+    /**
      * Get this transaction's category.
      */
     public function category(): BelongsTo
@@ -57,5 +77,45 @@ class Transaction extends Model
         return $this->belongsToMany(Label::class, 'transaction_label_pivot')
             ->using(TransactionLabelPivot::class)
             ->withTimestamps();
+    }
+    
+    /**
+     * Get due_at in term of dat.
+     */
+    protected function dueDay(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->due_at->format('D'),
+        );
+    }
+    
+    /**
+     * Get due_at in term of date.
+     */
+    protected function dueDate(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->due_at->format('d/m/Y'),
+        );
+    }
+    
+    /**
+     * Get due_at in term of time.
+     */
+    protected function dueTime(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->due_at->format('H:i A'),
+        );
+    }
+    
+    /**
+     * Get type's name.
+     */
+    protected function typeName(): Attribute
+    {
+        return new Attribute(
+            get: fn () => TransactionsType::from($this->type)->name,
+        );
     }
 }
