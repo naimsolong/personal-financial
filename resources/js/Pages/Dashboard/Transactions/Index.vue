@@ -33,6 +33,18 @@ onMounted(() => {
         }
     }, 100))
 })
+
+const totalSummary = (transaction) => {
+    let total = 0;
+    
+    let count = transaction.length
+
+    for(let i = 0; i < count; i++) {
+        total += transaction[i].amount
+    }
+
+    return transaction[0].currency + ' ' + total
+}
 </script>
 
 <template>
@@ -40,9 +52,15 @@ onMounted(() => {
         <Header title="Transactions"/>
 
         <ul>
-            <li v-for="(data_by_date, index) in transactions.data" class="border bg-white dark:bg-gray-800 shadow-md sm:rounded-lg p-3 mb-3">
-                <div class="border bg-white dark:bg-gray-800 sm:rounded-lg px-3 py-4">
-                    {{ index }}
+            <li v-for="(data_by_date, date) in transactions.data" class="border bg-white dark:bg-gray-800 shadow-md sm:rounded-lg p-3 mb-3">
+                <div class="border bg-white dark:bg-gray-800 sm:rounded-lg flow-root px-3 py-4">
+                    <div class="float-left">
+                        {{ date }}
+                    </div>
+
+                    <div class="float-right">
+                        {{ totalSummary(data_by_date) }}
+                    </div>
                 </div>
                 <div class="px-3 pb-4">
                     <div v-for="(transaction, index) in data_by_date" class="flow-root my-5">
@@ -51,7 +69,7 @@ onMounted(() => {
                             <br>
                             {{ transaction.account.name }}
                         </div>
-                        <div class="float-right text-right">
+                        <div class="float-right">
                             {{ transaction.currency }} {{ transaction.amount }}
                             <br>
                         </div>
