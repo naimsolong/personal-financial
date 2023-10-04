@@ -7,8 +7,7 @@ use App\Enums\TransactionsStatus;
 use App\Enums\TransactionsType;
 use App\Models\Account;
 use App\Models\Category;
-use Database\Seeders\AccountSeeder;
-use Database\Seeders\CategorySeeder;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
@@ -24,10 +23,13 @@ class TransactionFactory extends Factory
      */
     public function definition(): array
     {
-        $type = collect([TransactionsType::EXPENSE->value, TransactionsType::INCOME->value])->random();
+        if(Account::count() == 0)
+            throw new Exception('Account have no data for TransactionFactory');
+            
+        if(Category::count() == 0)
+            throw new Exception('Category have no data for TransactionFactory');
 
-        app(CategorySeeder::class)->run();
-        app(AccountSeeder::class)->run();
+        $type = collect([TransactionsType::EXPENSE->value, TransactionsType::INCOME->value])->random();
 
         [$amount, $category, $account] = match($type) {
             TransactionsType::INCOME->value => [
@@ -44,7 +46,7 @@ class TransactionFactory extends Factory
         };
 
         return [
-            'due_at' => now()->addDays(rand(5,30)),
+            'due_at' => now()->addDays(rand(-30,30)),
             'type' => $type,
             'category_id' => $category->id,
             'account_id' => $account->id,

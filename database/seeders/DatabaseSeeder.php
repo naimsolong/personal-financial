@@ -15,10 +15,10 @@ class DatabaseSeeder extends Seeder
     {
         if(app()->isLocal()) {
             $this->call([
+                UserSeeder::class,
                 CategorySeeder::class,
                 AccountSeeder::class,
                 TransactionSeeder::class,
-                UserSeeder::class,
             ]);
         }
     }
