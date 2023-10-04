@@ -57,7 +57,7 @@ class CategoriesController extends Controller
      */
     public function store(CategoryFormRequest $request)
     {
-        $categoryGroup = CategoryGroup::find($request->category_group);
+        $categoryGroup = CategoryGroup::select('id', 'name', 'type')->find($request->category_group);
 
         $category = Category::create($request->only('name', 'type'));
 

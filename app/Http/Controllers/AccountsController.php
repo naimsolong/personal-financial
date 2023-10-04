@@ -62,7 +62,7 @@ class AccountsController extends Controller
      */
     public function store(AccountFormRequest $request)
     {
-        $accountGroup = AccountGroup::find($request->account_group);
+        $accountGroup = AccountGroup::select('id', 'name', 'type')->find($request->account_group);
 
         $account = Account::create($request->only('name', 'type'));
 
@@ -111,7 +111,7 @@ class AccountsController extends Controller
      */
     public function update(AccountFormRequest $request, Account $account)
     {
-        $accountGroup = AccountGroup::find($request->account_group);
+        $accountGroup = AccountGroup::select('id', 'name', 'type')->find($request->account_group);
 
         $account->update($request->only('name', 'type'));
 
