@@ -2,9 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TransactionsStatus;
+use App\Enums\TransactionsType;
+use App\Http\Requests\TransactionFormRequest;
+use App\Models\AccountGroup;
+use App\Models\CategoryGroup;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
 class TransactionsController extends Controller
 {
@@ -38,5 +45,75 @@ class TransactionsController extends Controller
         return Inertia::render('Dashboard/Transactions/Index', [
             'data' => $return,
         ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(Request $request)
+    {
+        $accounts = AccountGroup::selectRaw('id, name AS label, type')
+            ->with([
+                'accounts' => function($query) {
+                    $query->selectRaw('accounts.id AS value, accounts.name AS text');
+                }
+            ])->orderBy('type')->get();
+        $categories = CategoryGroup::selectRaw('id, name AS label, type')
+            ->with([
+                'categories' => function($query) {
+                    $query->selectRaw('categories.id AS value, categories.name AS text');
+                }
+            ])->orderBy('type')->get();
+            
+        return Inertia::render('Dashboard/Transactions/Form', [
+            'accounts' => $accounts,
+            'categories' => [
+                'expense' => $categories->where('type', TransactionsType::EXPENSE->value)->toArray(),
+                'income' => $categories->where('type', TransactionsType::INCOME->value)->toArray(),
+            ],
+            'types' => TransactionsType::dropdown(),
+            'statuses' => TransactionsStatus::dropdown(),
+            'data' => [
+                'due_date' => now()->format('d/m/Y'),
+                'due_time' => now()->format('h:i A'),
+                'type' => $request->query('type', 'E'),
+                'category' => '',
+                'account_from' => '',
+                'account_to' => '',
+                'amount' => '0',
+                'currency' => CurrencyAlpha3::from('MYR')->value,
+                'currency_rate' => 1,
+                'status' => TransactionsStatus::NONE->value,
+                'notes' => '',
+            ],
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(TransactionFormRequest $request)
+    {
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Transaction $transaction)
+    {
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(TransactionFormRequest $request, Transaction $transaction)
+    {
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Transaction $transaction)
+    {
     }
 }

@@ -1,11 +1,12 @@
 <script setup>
+import axios from 'axios';
+import debounce from 'lodash/debounce';
 import { onMounted, reactive } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 
 import Dashboard from '@/Layouts/Dashboard.vue'
 import Header from '@/Components/Dashboards/Header.vue'
-import axios from 'axios';
-import debounce from 'lodash/debounce';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
     data: Object,
@@ -51,31 +52,37 @@ const totalSummary = (transaction) => {
     <Dashboard title="Transactions">
         <Header title="Transactions"/>
 
-        <ul>
-            <li v-for="(data_by_date, date) in transactions.data" class="border bg-white dark:bg-gray-800 shadow-md sm:rounded-lg p-3 mb-3">
-                <div class="border bg-white dark:bg-gray-800 sm:rounded-lg flow-root px-3 py-4">
-                    <div class="float-left">
-                        {{ date }}
-                    </div>
+        <div class="mb-3">  
+            <Link :href="route('transactions.create')">
+                <PrimaryButton>
+                    Add New
+                </PrimaryButton>
+            </Link>
+        </div>
 
+        <div v-for="(data_by_date, date) in transactions.data" class="border bg-white dark:bg-gray-800 shadow-md sm:rounded-lg p-3 mb-3">
+            <div class="border bg-white dark:bg-gray-800 sm:rounded-lg flow-root px-3 py-4">
+                <div class="float-left">
+                    {{ date }}
+                </div>
+
+                <div class="float-right">
+                    {{ totalSummary(data_by_date) }}
+                </div>
+            </div>
+            <div class="px-3 pb-4">
+                <div v-for="(transaction, index) in data_by_date" class="flow-root my-5">
+                    <div class="float-left">
+                        {{ (transaction.type != 'T') ? transaction.category.name : '[TRANSFER]' }}
+                        <br>
+                        {{ transaction.account.name }}
+                    </div>
                     <div class="float-right">
-                        {{ totalSummary(data_by_date) }}
+                        {{ transaction.currency }} {{ transaction.amount }}
+                        <br>
                     </div>
                 </div>
-                <div class="px-3 pb-4">
-                    <div v-for="(transaction, index) in data_by_date" class="flow-root my-5">
-                        <div class="float-left">
-                            {{ (transaction.type != 'T') ? transaction.category.name : '[TRANSFER]' }}
-                            <br>
-                            {{ transaction.account.name }}
-                        </div>
-                        <div class="float-right">
-                            {{ transaction.currency }} {{ transaction.amount }}
-                            <br>
-                        </div>
-                    </div>
-                </div>
-            </li>
-        </ul>
+            </div>
+        </div>
     </Dashboard>
 </template>

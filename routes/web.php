@@ -49,6 +49,17 @@ Route::middleware([
         Route::match(['get', 'post'], '/', [TransactionsController::class, 'index'])->name('transactions.index');
     });
 
+    Route::resource('transactions', TransactionsController::class)->except([
+        'show'
+    ])->names([
+        'index' => 'transactions.index',
+        'create' => 'transactions.create',
+        'store' => 'transactions.store',
+        'edit' => 'transactions.edit',
+        'update' => 'transactions.update',
+        'destroy' => 'transactions.destroy',
+    ]);
+
     Route::group(['prefix' => 'schedules'], function() {
         Route::get('/', [SchedulesController::class, 'index'])->name('schedules');
     });
