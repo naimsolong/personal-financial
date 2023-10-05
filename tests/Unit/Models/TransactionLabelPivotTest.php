@@ -6,7 +6,7 @@ use App\Models\Label;
 use App\Models\Transaction;
 use App\Models\TransactionLabelPivot;
 
-test('Pivot table able to attach, detach and sync', function () {
+test('pivot table able to attach, detach and sync', function () {
     Category::factory(rand(5,10))->create();
     Account::factory(rand(5,10))->create();
     

@@ -4,7 +4,7 @@ use App\Models\Category;
 use App\Models\CategoryGroup;
 use App\Models\CategoryPivot;
 
-test('Pivot table able to attach, detach and sync', function () {
+test('pivot table able to attach, detach and sync', function () {
     $categoryGroup = CategoryGroup::factory()->create();
     $categories = Category::factory(10)->create();
 

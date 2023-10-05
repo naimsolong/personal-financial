@@ -5,7 +5,7 @@ use App\Models\AccountGroup;
 use App\Models\AccountPivot;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
-test('Pivot table able to attach, detach and sync', function () {
+test('pivot table able to attach, detach and sync', function () {
     $accountGroup = AccountGroup::factory()->create();
     $accounts = Account::factory(10)->create();
 
