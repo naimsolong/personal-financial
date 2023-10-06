@@ -177,5 +177,8 @@ class TransactionsController extends Controller
      */
     public function destroy(Transaction $transaction)
     {
+        app(TransactionService::class)->destroy($transaction);
+        
+        return Redirect::route('transactions.index');
     }
 }

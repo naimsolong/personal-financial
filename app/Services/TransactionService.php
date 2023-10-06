@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 class TransactionService extends BaseService
 {
     use TransactionOperation;
-    
+
     public function modifyNegativeAmount(int $amount): int
     {
         return $amount > 0 ? $amount * -1 : $amount;
@@ -48,6 +48,19 @@ class TransactionService extends BaseService
             TransactionsType::EXPENSE->value => $this->updateExpense($model, $data),
             TransactionsType::INCOME->value => $this->updateIncome($model, $data),
             TransactionsType::TRANSFER->value => $this->updateTransfer($model, $data),
+            default => throw new ServiceException('Undefined Transaction Type'),
+        };
+    }
+    
+    public function destroy(mixed $model = null): bool
+    {
+        if(is_null($model))
+            throw new ServiceException('Model Not Found');
+
+        return match($model->type) {
+            TransactionsType::EXPENSE->value => $this->destroyExpense($model),
+            TransactionsType::INCOME->value => $this->destroyIncome($model),
+            TransactionsType::TRANSFER->value => $this->destroyTransfer($model),
             default => throw new ServiceException('Undefined Transaction Type'),
         };
     }

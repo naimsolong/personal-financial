@@ -165,4 +165,34 @@ trait TransactionOperation
 
         return !is_null($this->getModel());
     }
+    
+
+    protected function destroyExpense(mixed $model = null): bool
+    {
+        $model->delete();
+
+        $this->setModel(null);
+
+        return is_null($this->getModel());
+    }
+
+    protected function destroyIncome(mixed $model = null): bool
+    {
+        $model->delete();
+
+        $this->setModel(null);
+
+        return is_null($this->getModel());
+    }
+
+    protected function destroyTransfer(mixed $model = null): bool
+    {
+        $model->transfer_pair->delete();
+
+        $model->delete();
+
+        $this->setModel(null);
+
+        return is_null($this->getModel());
+    }
 }

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->enum('currency', array_column(CurrencyAlpha3::cases(), 'value'));
             $table->integer('currency_amount')->nullable();
             $table->integer('currency_rate')->nullable();
-            $table->foreignId('transfer_pair_id')->nullable()->constrained('transactions');
+            $table->foreignId('transfer_pair_id')->nullable();
             $table->enum('status', TransactionsStatus::getAllValues())->default(TransactionsStatus::NONE->value);
             $table->string('notes')->nullable();
             $table->timestamps();
