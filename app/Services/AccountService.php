@@ -32,7 +32,7 @@ class AccountService extends BaseService
 
         $this->setModel($model);
 
-        return true;
+        return !is_null($this->getModel());
     }
 
     public function update(mixed $model = null, Collection $data): bool
@@ -56,7 +56,7 @@ class AccountService extends BaseService
 
         $this->setModel($model);
 
-        return true;
+        return !is_null($this->getModel());
     }
 
     public function destroy(mixed $model = null): bool
@@ -68,6 +68,6 @@ class AccountService extends BaseService
         
         $this->setModel(null);
 
-        return true;
+        return is_null($this->getModel());
     }
 }
