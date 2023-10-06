@@ -63,7 +63,7 @@ const totalSummary = (transaction) => {
         <Header title="Transactions"/>
 
         <div class="mb-3">  
-            <PrimaryButton id="addNewHoverButton" data-dropdown-toggle="addNewHover" data-dropdown-trigger="hover" type="button">
+            <PrimaryButton id="addNewHoverButton" data-dropdown-toggle="addNewHover" data-dropdown-trigger="click" type="button">
                 Add New
                 <svg class="w-2.5 h-2.5 ml-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
@@ -99,7 +99,7 @@ const totalSummary = (transaction) => {
                 </div>
             </div>
             <div class="px-3 pb-4">
-                <div v-for="(transaction, index) in data_by_date" class="flow-root my-5">
+                <Link :href="route('transactions.edit', {'transaction': transaction.id})" v-for="(transaction, index) in data_by_date" class="flow-root my-5 hover:px-6 hover:py-3 hover:border hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:rounded-lg hover:scale-110">
                     <div class="float-left">
                         {{ (transaction.type != 'T') ? transaction.category.name : '[TRANSFER]' }}
                         <br>
@@ -109,7 +109,7 @@ const totalSummary = (transaction) => {
                         {{ transaction.currency }} {{ transaction.amount }}
                         <br>
                     </div>
-                </div>
+                </Link>
             </div>
         </div>
     </Dashboard>
