@@ -117,6 +117,99 @@ class TransactionService extends BaseService
 
         return !is_null($this->getModel());
     }
+    
+
+    public function update(mixed $model = null, Collection $data): bool
+    {
+        if(is_null($model))
+            throw new ServiceException('Model Not Found');
+
+        $data = $data->merge(['due_at' => Carbon::createFromFormat('d/m/Y H:i A', $data->get('due_date').' '.$data->get('due_time', '00:00 AM'))->format('Y-m-d H:i:s')]);
+
+        return match($data->get('type')) {
+            TransactionsType::EXPENSE->value => $this->updateExpense($model, $data),
+            TransactionsType::INCOME->value => $this->updateIncome($model, $data),
+            TransactionsType::TRANSFER->value => $this->updateTransfer($model, $data),
+            default => throw new ServiceException('Undefined Transaction Type'),
+        };
+    }
+
+    protected function updateExpense(mixed $model = null, Collection $data): bool
+    {
+        $amount = $this->modifyNegativeAmount($data->get('amount'));
+        
+        $model->update([
+            'due_at' => $data->get('due_at'),
+            'type' => $data->get('type'),
+            'category_id' => $data->get('category'),
+            'account_id' => $data->get('account_from'),
+            'amount' => $amount,
+            'currency' => $data->get('currency'),
+            'currency_rate' => $data->get('currency_rate'),
+            'status' => $data->get('status'),
+            'notes' => $data->get('notes'),
+        ]);
+
+        $this->setModel($model);
+
+        return !is_null($this->getModel());
+    }
+
+    protected function updateIncome(mixed $model = null, Collection $data): bool
+    {
+        $amount = $this->modifyPositiveAmount($data->get('amount'));
+
+        $model->update([
+            'due_at' => $data->get('due_at'),
+            'type' => $data->get('type'),
+            'category_id' => $data->get('category'),
+            'account_id' => $data->get('account_from'),
+            'amount' => $amount,
+            'currency' => $data->get('currency'),
+            'currency_rate' => $data->get('currency_rate'),
+            'status' => $data->get('status'),
+            'notes' => $data->get('notes'),
+        ]);
+
+        $this->setModel($model);
+
+        return !is_null($this->getModel());
+    }
+
+    protected function updateTransfer(mixed $model = null, Collection $data): bool
+    {
+
+        if($model->amount < 0) {
+            $amount_from = $this->modifyNegativeAmount($data->get('amount'));
+            $amount_to = $this->modifyPositiveAmount($data->get('amount'));
+        } else {
+            $amount_from = $this->modifyPositiveAmount($data->get('amount'));
+            $amount_to = $this->modifyNegativeAmount($data->get('amount'));
+        }
+
+        $model_from = $model->update([
+            'due_at' => $data->get('due_at'),
+            'type' => $data->get('type'),
+            'amount' => $amount_from,
+            'currency' => $data->get('currency'),
+            'currency_rate' => $data->get('currency_rate'),
+            'status' => $data->get('status'),
+            'notes' => $data->get('notes'),
+        ]);
+        $model_to = $model->transfer_pair->update([
+            'due_at' => $data->get('due_at'),
+            'type' => $data->get('type'),
+            'amount' => $amount_to,
+            'currency' => $data->get('currency'),
+            'currency_rate' => $data->get('currency_rate'),
+            'status' => $data->get('status'),
+            'notes' => $data->get('notes'),
+        ]);
+
+        $this->setModel($model_from);
+
+        return !is_null($this->getModel());
+    }
 
 
 }

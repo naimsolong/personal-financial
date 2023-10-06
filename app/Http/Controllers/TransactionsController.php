@@ -18,7 +18,7 @@ class TransactionsController extends Controller
 {
     public function index(Request $request)
     {        
-        $data = Transaction::select('due_at', 'type', 'category_id', 'account_id', 'amount', 'currency', 'currency_amount', 'currency_rate', 'transfer_pair_id', 'status', 'notes')
+        $data = Transaction::select('id', 'due_at', 'type', 'category_id', 'account_id', 'amount', 'currency', 'currency_amount', 'currency_rate', 'transfer_pair_id', 'status', 'notes')
             ->with([
                 'category' => function($query) {
                     $query->select('id', 'name');
@@ -105,6 +105,61 @@ class TransactionsController extends Controller
      */
     public function edit(Transaction $transaction)
     {
+        $accounts = AccountGroup::selectRaw('id, name AS label, type')
+            ->with([
+                'accounts' => function($query) {
+                    $query->selectRaw('accounts.id AS value, accounts.name AS text');
+                }
+            ])->orderBy('type')->get();
+        $categories = CategoryGroup::selectRaw('id, name AS label, type')
+            ->with([
+                'categories' => function($query) {
+                    $query->selectRaw('categories.id AS value, categories.name AS text');
+                }
+            ])->orderBy('type')->get();
+            
+        if($transaction->type == 'T') {
+            $pair = $transaction->transfer_pair;
+
+            $amount = app(TransactionService::class)->modifyPositiveAmount($transaction->amount);
+
+            if($transaction->amount < 0) {
+                $account_id_from = $transaction->account_id;
+                $account_id_to = $pair->account_id;
+            } else {
+                $account_id_from = $pair->account_id;
+                $account_id_to = $transaction->account_id;
+            }
+        } else {
+            $account_id_from = $transaction->account_id;
+            $account_id_to = $transaction->account_id;
+            $amount = $transaction->amount;
+        }
+
+        return Inertia::render('Dashboard/Transactions/Form', [
+            'edit_mode' => true,
+            'accounts' => $accounts,
+            'categories' => [
+                'expense' => $categories->where('type', TransactionsType::EXPENSE->value)->toArray(),
+                'income' => $categories->where('type', TransactionsType::INCOME->value)->toArray(),
+            ],
+            'types' => TransactionsType::dropdown(),
+            'statuses' => TransactionsStatus::dropdown(),
+            'data' => [
+                'id' => $transaction->id,
+                'due_date' => $transaction->due_date,
+                'due_time' => $transaction->due_time,
+                'type' => $transaction->type,
+                'category' => $transaction->category_id,
+                'account_from' => $account_id_from,
+                'account_to' => $account_id_to,
+                'amount' => $amount,
+                'currency' => $transaction->currency,
+                'currency_rate' => $transaction->currency_rate,
+                'status' => $transaction->status,
+                'notes' => $transaction->notes,
+            ],
+        ]);
     }
 
     /**
@@ -112,6 +167,9 @@ class TransactionsController extends Controller
      */
     public function update(TransactionFormRequest $request, Transaction $transaction)
     {
+        app(TransactionService::class)->update($transaction, $request->collect());
+        
+        return Redirect::route('transactions.index');
     }
 
     /**

@@ -29,9 +29,9 @@ class TransactionFormRequest extends FormRequest
             'due_date' => ['required', 'date_format:d/m/Y'],
             // 'due_time' => ['required', 'date_format:H:i A'], // TODO: Enable this after found timepicker
             'type' => ['required', 'string', new Enum(TransactionsType::class)],
-            'category' => ['exclude_if:type,T', 'string'],
-            'account_from' => ['required', 'string'],
-            'account_to' => ['required_if:type,T', 'string'],
+            'category' => ['exclude_if:type,T', 'integer'],
+            'account_from' => ['required', 'integer'],
+            'account_to' => ['required_if:type,T', 'integer'],
             'amount' => ['required', 'numeric', 'min:1'],
             'currency' => ['required', 'string', new Enum(CurrencyAlpha3::class)],
             'currency_rate' => ['required', 'numeric'],
