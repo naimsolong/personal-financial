@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\AccountsType;
 use App\Http\Requests\AccountGroupFormRequest;
 use App\Models\AccountGroup;
+use App\Services\AccountGroupService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -46,7 +47,7 @@ class AccountGroupController extends Controller
      */
     public function store(AccountGroupFormRequest $request)
     {
-        AccountGroup::create($request->only('name', 'type'));
+        app(AccountGroupService::class)->store(AccountGroup::query(), collect($request->only('name', 'type')));
 
         return Redirect::route('account.group.index');
     }
@@ -68,7 +69,7 @@ class AccountGroupController extends Controller
      */
     public function update(AccountGroupFormRequest $request, AccountGroup $group)
     {
-        $group->update($request->only('name', 'type'));
+        app(AccountGroupService::class)->update($group, collect($request->only('name', 'type')));
 
         return Redirect::route('account.group.index');
     }
@@ -78,7 +79,7 @@ class AccountGroupController extends Controller
      */
     public function destroy(AccountGroup $group)
     {
-        $group->delete();
+        app(AccountGroupService::class)->destroy($group);
 
         return Redirect::route('account.group.index');
     }

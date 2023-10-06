@@ -129,5 +129,8 @@ test('user can perform store, update and destroy', function () {
     $response = $this->actingAs($user)
         ->delete(route('accounts.destroy', ['account' => $account->id]));
     $response->assertRedirectToRoute('accounts.index');
-    $this->assertSoftDeleted($account);
+    $this->assertDatabaseMissing('account_pivot', [
+        'account_id' => $account->id,
+        'account_group_id' => $data['account_group'],
+    ]);
 });

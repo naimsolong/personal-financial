@@ -11,22 +11,22 @@ it('able to store, update and destroy model', function() {
     $service = app(BaseService::class);
 
     $user = User::query();
-    $data = [
+    $data = collect([
         'name' => 'Name '.rand(5,10),
         'email' => 'test'.rand(5,10).'@email.com',
         'password' => 'password',
-    ];
+    ]);
 
     $is_created = $service->store($user, $data);
-    $this->assertDatabaseHas('users', $data);
+    $this->assertDatabaseHas('users', $data->toArray());
     expect($is_created)->toBeTrue();
     
     $user = User::factory()->create();
-    $data = [
-        'name' => 'Name '.rand(5,10),
-        'email' => 'test'.rand(5,10).'@email.com',
+    $data = collect([
+        'name' => 'Name '.rand(1000,200),
+        'email' => 'test'.rand(1000,200).'@email.com',
         'password' => 'password',
-    ];
+    ]);
     $is_updated = $service->update($user, $data);
     $this->assertDatabaseHas('users', collect($data)->merge([
         'id' => $user->id
@@ -34,7 +34,7 @@ it('able to store, update and destroy model', function() {
     expect($is_updated)->toBeTrue();
     
     $user = User::factory()->create();
-    $is_destroyed = $service->destroy($user, $data);
+    $is_destroyed = $service->destroy($user);
     $this->assertModelMissing($user);
     expect($is_destroyed)->toBeTrue();
 });

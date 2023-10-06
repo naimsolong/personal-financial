@@ -6,6 +6,7 @@ use App\Enums\AccountsType;
 use App\Http\Requests\AccountFormRequest;
 use App\Models\Account;
 use App\Models\AccountGroup;
+use App\Services\AccountService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -62,17 +63,16 @@ class AccountsController extends Controller
      */
     public function store(AccountFormRequest $request)
     {
-        $accountGroup = AccountGroup::select('id', 'name', 'type')->find($request->account_group);
-
-        $account = Account::create($request->only('name', 'type'));
-
-        $accountGroup->accounts()->attach($account->id, [
-            'opening_date' => $request->opening_date,
-            'starting_balance' => $request->starting_balance,
-            'latest_balance' => $request->starting_balance,
-            'currency' => $request->currency,
-            'notes' => $request->notes,
-        ]);
+        app(AccountService::class)->store(Account::query(), collect($request->only(
+            'account_group',
+            'name',
+            'type',
+            'opening_date',
+            'starting_balance',
+            'latest_balance',
+            'currency',
+            'notes',
+        )));
 
         return Redirect::route('accounts.index');
     }
@@ -111,19 +111,15 @@ class AccountsController extends Controller
      */
     public function update(AccountFormRequest $request, Account $account)
     {
-        $accountGroup = AccountGroup::select('id', 'name', 'type')->find($request->account_group);
-
-        $account->update($request->only('name', 'type'));
-
-        $account->group()->sync([
-            $accountGroup->id => [
-                'opening_date' => $request->opening_date,
-                'starting_balance' => $request->starting_balance,
-                'latest_balance' => $request->starting_balance,
-                'currency' => $request->currency,
-                'notes' => $request->notes,
-            ]
-        ]);
+        app(AccountService::class)->update($account, collect($request->only(
+            'account_group',
+            'name',
+            'type',
+            'opening_date',
+            'starting_balance',
+            'currency',
+            'notes',
+        )));
 
         return Redirect::route('accounts.index');
     }
@@ -133,7 +129,7 @@ class AccountsController extends Controller
      */
     public function destroy(Account $account)
     {
-        $account->delete();
+        app(AccountService::class)->destroy($account);
 
         return Redirect::route('accounts.index');
     }
