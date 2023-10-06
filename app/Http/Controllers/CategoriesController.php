@@ -6,6 +6,7 @@ use App\Enums\TransactionsType;
 use App\Http\Requests\CategoryFormRequest;
 use App\Models\Category;
 use App\Models\CategoryGroup;
+use App\Services\CategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -57,11 +58,11 @@ class CategoriesController extends Controller
      */
     public function store(CategoryFormRequest $request)
     {
-        $categoryGroup = CategoryGroup::select('id', 'name', 'type')->find($request->category_group);
-
-        $category = Category::create($request->only('name', 'type'));
-
-        $categoryGroup->categories()->attach($category->id);
+        app(CategoryService::class)->store(Category::query(), collect($request->only(
+            'category_group',
+            'name',
+            'type',
+        )));
 
         return Redirect::route('categories.index');
     }
@@ -89,9 +90,11 @@ class CategoriesController extends Controller
      */
     public function update(CategoryFormRequest $request, Category $category)
     {
-        $category->update($request->only('name', 'type'));
-
-        $category->group()->sync($request->category_group);
+        app(CategoryService::class)->update($category, collect($request->only(
+            'category_group',
+            'name',
+            'type',
+        )));
 
         return Redirect::route('categories.index');
     }
@@ -101,7 +104,7 @@ class CategoriesController extends Controller
      */
     public function destroy(Category $category)
     {
-        $category->delete();
+        app(CategoryService::class)->destroy($category);
 
         return Redirect::route('categories.index');
     }

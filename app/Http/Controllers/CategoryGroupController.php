@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\TransactionsType;
 use App\Http\Requests\CategoryGroupFormRequest;
 use App\Models\CategoryGroup;
+use App\Services\CategoryGroupService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -46,7 +47,7 @@ class CategoryGroupController extends Controller
      */
     public function store(CategoryGroupFormRequest $request)
     {
-        CategoryGroup::create($request->only('name', 'type'));
+        app(CategoryGroupService::class)->store(CategoryGroup::query(), collect($request->only('name', 'type')));
 
         return Redirect::route('category.group.index');
     }
@@ -68,7 +69,7 @@ class CategoryGroupController extends Controller
      */
     public function update(CategoryGroupFormRequest $request, CategoryGroup $group)
     {
-        $group->update($request->only('name', 'type'));
+        app(CategoryGroupService::class)->update($group, collect($request->only('name', 'type')));
 
         return Redirect::route('category.group.index');
     }
@@ -78,7 +79,7 @@ class CategoryGroupController extends Controller
      */
     public function destroy(CategoryGroup $group)
     {
-        $group->delete();
+        app(CategoryGroupService::class)->destroy($group);
 
         return Redirect::route('category.group.index');
     }

@@ -91,5 +91,8 @@ test('user can perform store, update and destroy', function () {
     $response = $this->actingAs($user)
         ->delete(route('categories.destroy', ['category' => $category->id]));
     $response->assertRedirectToRoute('categories.index');
-    $this->assertSoftDeleted($category);
+    $this->assertDatabaseMissing('category_pivot', [
+        'category_id' => $category->id,
+        'category_group_id' => $data['category_group'],
+    ]);
 });
