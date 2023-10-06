@@ -8,8 +8,9 @@ use App\Http\Requests\TransactionFormRequest;
 use App\Models\AccountGroup;
 use App\Models\CategoryGroup;
 use App\Models\Transaction;
+use App\Services\TransactionService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
@@ -94,6 +95,9 @@ class TransactionsController extends Controller
      */
     public function store(TransactionFormRequest $request)
     {
+        app(TransactionService::class)->store(Transaction::query(), $request->collect());
+        
+        return Redirect::route('transactions.index');
     }
 
     /**

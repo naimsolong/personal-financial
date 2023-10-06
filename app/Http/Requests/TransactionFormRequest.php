@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\TransactionsStatus;
+use App\Enums\TransactionsType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
+use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
 class TransactionFormRequest extends FormRequest
 {
@@ -22,17 +26,17 @@ class TransactionFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'due_date' => ['required'],
-            'due_time' => ['required'],
-            'type' => ['required'],
-            'category' => ['required'],
-            'account_from' => ['required'],
-            'account_to' => ['required_if:type,T'],
-            'amount' => ['required'],
-            'currency' => ['required'],
-            'currency_rate' => ['required'],
-            'status' => ['nullable'],
-            'notes' => ['nullable'],
+            'due_date' => ['required', 'date_format:d/m/Y'],
+            // 'due_time' => ['required', 'date_format:H:i A'], // TODO: Enable this after found timepicker
+            'type' => ['required', 'string', new Enum(TransactionsType::class)],
+            'category' => ['exclude_if:type,T', 'string'],
+            'account_from' => ['required', 'string'],
+            'account_to' => ['required_if:type,T', 'string'],
+            'amount' => ['required', 'numeric', 'min:1'],
+            'currency' => ['required', 'string', new Enum(CurrencyAlpha3::class)],
+            'currency_rate' => ['required', 'numeric'],
+            'status' => ['nullable', 'string', new Enum(TransactionsStatus::class)],
+            'notes' => ['nullable', 'string'],
         ];
     }
 }

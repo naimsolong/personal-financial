@@ -42,6 +42,15 @@ onMounted(() => {
     switchCategoriesGroup()
 })
 
+const getTransactionType = () => {
+    if(form.type == 'E')
+        return 'Expense'
+    else if(form.type == 'I')
+        return 'Income'
+    else
+        return 'Transfer'
+}
+
 const switchCategoriesGroup = () => {
     state.categories = form.type == 'E' ? props.categories.expense : props.categories.income
 };
@@ -85,7 +94,7 @@ const deleteTransaction = () => {
 
 <template>
     <Dashboard title="Transaction">
-        <Header :title="(props.edit_mode ? 'Edit' : 'New') + ' - Transaction'"/>
+        <Header :title="(props.edit_mode ? 'Edit ' : 'New ') + getTransactionType() +  ' - Transaction'"/>
 
         <form @submit.prevent="submitForm">
             <div class="mb-3">
@@ -118,14 +127,15 @@ const deleteTransaction = () => {
 
                     <div class="mb-3">
                         <InputLabel for="due_time" value="Time" />
-                        <vue-tailwind-datepicker
+                        <!-- TODO: Integrate timepicker -->
+                        <!-- <vue-tailwind-datepicker
                             v-model="form.due_time"
                             as-single
                             placeholder="Select Date"
                             :formatter="{
                                 date: 'HH:ii A',
                             }"
-                        />
+                        /> -->
                         <InputError :message="form.errors.due_time" class="mt-2" />
                     </div>
                 </div>
@@ -145,28 +155,25 @@ const deleteTransaction = () => {
                     </div>
 
                     <div class="hidden md:block pt-8">
-                        <svg v-if="form.type == 'E'" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                        <svg v-if="form.type == 'E' || form.type == 'T'" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                         </svg>
-                        <svg v-else-if="form.type == 'I'" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                        <svg v-else class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0 4 4M1 5l4-4"/>
-                        </svg>
-                        <svg v-else class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 14 3-3m-3 3 3 3m-3-3h16v-3m2-7-3 3m3-3-3-3m3 3H3v3"/>
                         </svg>
                     </div>
 
                     <div class="basis-1/2 mb-3" v-if="form.type != 'T'">
-                        <InputLabel for="categories" value="Categories" />
+                        <InputLabel for="category" value="Categories" />
                         <GroupSelectInput
-                            id="categories"
+                            id="category"
                             :select-options="state.categories"
                             option-key="categories"
-                            v-model="form.categories"
+                            v-model="form.category"
                             class="mt-1 block w-full"
                             autocomplete="false"
                         />
-                        <InputError :message="form.errors.categories" class="mt-2" />
+                        <InputError :message="form.errors.category" class="mt-2" />
                     </div>
                     
                     <div class="basis-1/2 mb-3" v-else>
