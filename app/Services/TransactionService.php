@@ -4,11 +4,14 @@ namespace App\Services;
 
 use App\Enums\TransactionsType;
 use App\Exceptions\ServiceException;
+use App\Services\Traits\TransactionOperation;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class TransactionService extends BaseService
 {
+    use TransactionOperation;
+    
     public function modifyNegativeAmount(int $amount): int
     {
         return $amount > 0 ? $amount * -1 : $amount;
