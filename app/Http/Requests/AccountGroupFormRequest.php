@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\AccountsType;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class AccountGroupFormRequest extends FormRequest
 {
@@ -25,7 +25,7 @@ class AccountGroupFormRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'type' => ['required', 'string', Rule::in([AccountsType::ASSETS->value, AccountsType::LIABILITIES->value])],
+            'type' => ['required', 'string', new Enum(AccountsType::class)],
         ];
     }
 }

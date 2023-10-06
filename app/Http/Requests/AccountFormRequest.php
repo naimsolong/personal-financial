@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\AccountsType;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class AccountFormRequest extends FormRequest
 {
@@ -26,7 +26,7 @@ class AccountFormRequest extends FormRequest
         return [
             'account_group' => ['required', 'integer'],
             'name' => ['required', 'string'],
-            'type' => ['required', 'string', Rule::in([AccountsType::ASSETS->value, AccountsType::LIABILITIES->value])],
+            'type' => ['required', 'string', new Enum(AccountsType::class)],
             'opening_date' => ['required', 'date_format:d/m/Y'],
             'starting_balance' => ['required'],
             'currency' => ['required'],
