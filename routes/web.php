@@ -46,7 +46,7 @@ Route::middleware([
     })->name('dashboard');
 
     Route::group(['prefix' => 'transactions'], function() {
-        Route::match(['get', 'post'], '/', [TransactionsController::class, 'index'])->name('transactions.index');
+        Route::post('/partial', [TransactionsController::class, 'index'])->name('transactions.partial');
     });
 
     Route::resource('transactions', TransactionsController::class)->except([

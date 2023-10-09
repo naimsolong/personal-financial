@@ -32,14 +32,12 @@ onMounted(() => {
         let pixelsFromBottom = document.documentElement.offsetHeight - document.documentElement.scrollTop - window.innerHeight
         
         if(pixelsFromBottom < 400 && transactions.next_page != null) {
-            axios.post(route('transactions.index'), {'next_page': transactions.next_page}).then(response => {
-                
+            axios.post(route('transactions.partial'), {'next_page': transactions.next_page}).then(response => {
                 for (const index of Object.keys(response.data.transaction)) {
                     transactions.data[index] = response.data.transaction[index];
                 }
 
                 transactions.next_page = response.data.next_page
-                console.log(transactions)
             })
         }
     }, 100))
