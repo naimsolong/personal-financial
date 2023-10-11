@@ -1,8 +1,11 @@
 <?php
 
 use App\Enums\AccountsType;
+use App\Enums\TransactionsType;
 use App\Models\Account;
 use App\Models\AccountGroup;
+use App\Models\AccountPivot;
+use App\Models\Category;
 use App\Models\User;
 use Carbon\Carbon;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -105,7 +108,13 @@ test('user can perform store, update and destroy', function () {
         'name', 'account_group', 'type'
     ])->toArray());
 
-    // TODO: Check has transaction for opening balance
+    $account = AccountPivot::where('account_group_id', $data['account_group'])->where('starting_balance', $data['starting_balance'])->select('account_id')->first();
+    $this->assertDatabaseHas('transactions', [
+        'type' => TransactionsType::INCOME->value,
+        'category_id' => Category::isPositiveOpeningBalance()->select('id')->first()->id,
+        'account_id' => $account->account_id,
+        'amount' => $data['starting_balance'],
+    ]);
     
     $account = Account::factory()->create();
     $this->assertModelExists($account);
