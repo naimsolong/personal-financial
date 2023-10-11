@@ -34,12 +34,12 @@ class TransactionFactory extends Factory
         [$amount, $category, $account] = match($type) {
             TransactionsType::INCOME->value => [
                 rand(300,9000),
-                Category::where('type', $type)->inRandomOrder()->first(),
+                Category::where('type', $type)->forUser()->inRandomOrder()->first(),
                 Account::where('type', AccountsType::ASSETS)->inRandomOrder()->first()
             ],
             TransactionsType::EXPENSE->value => [
                 rand(300,9000) * -1,
-                Category::where('type', $type)->inRandomOrder()->first(),
+                Category::where('type', $type)->forUser()->inRandomOrder()->first(),
                 Account::where('type', AccountsType::ASSETS)->inRandomOrder()->first()
             ],
             default => [null, null, null], // Transfer type transaction is manually handle in TransactionSeeder

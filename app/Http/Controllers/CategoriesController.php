@@ -19,8 +19,8 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        $categories = CategoryGroup::select('id', 'name', 'type')->with('categories', function($query) {
-            $query->select('categories.id', 'name', 'type')->orderBy('name');
+        $categories = CategoryGroup::forUser()->select('id', 'name', 'type')->with('categories', function($query) {
+            $query->select('categories.id', 'name', 'type')->forUser()->orderBy('name');
         })->orderBy('category_groups.name')->orderBy('name')->get();
         
         return Inertia::render('Dashboard/Categories/Index', [
@@ -36,7 +36,7 @@ class CategoriesController extends Controller
      */
     public function create(Request $request)
     {
-        $categoryGroup = CategoryGroup::select(DB::raw('id AS value'), DB::raw('name AS text'), 'type')->get();
+        $categoryGroup = CategoryGroup::forUser()->selectRaw('id AS value, name AS text, type')->get();
         
         return Inertia::render('Dashboard/Categories/Form', [
             'category_group' => [
@@ -72,7 +72,7 @@ class CategoriesController extends Controller
      */
     public function edit(Category $category)
     {
-        $categoryGroup = CategoryGroup::select(DB::raw('id AS value'), DB::raw('name AS text'), 'type')->get();
+        $categoryGroup = CategoryGroup::forUser()->selectRaw('id AS value, name AS text, type')->get();
 
         return Inertia::render('Dashboard/Categories/Form', [
             'edit_mode' => true,
