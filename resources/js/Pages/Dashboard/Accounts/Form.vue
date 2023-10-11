@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
 import Dashboard from '@/Layouts/Dashboard.vue';
@@ -36,8 +36,12 @@ const state  = reactive({
     account_group: props.account_group.assets
 })
 
+onMounted(() => {
+    switchAccountGroup()
+})
+
 const switchAccountGroup = () => {
-    state.account_group = form.type == 'E' ? props.account_group.assets : props.account_group.liabilities
+    state.account_group = form.type == 'A' ? props.account_group.assets : props.account_group.liabilities
 };
 
 const confirmAccountDeletion = () => {

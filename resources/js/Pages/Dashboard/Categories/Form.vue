@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
 import Dashboard from '@/Layouts/Dashboard.vue';
@@ -32,6 +32,10 @@ const form = useForm(props.data);
 
 const state  = reactive({
     category_group: props.category_group.expense
+})
+
+onMounted(() => {
+    switchCategoryGroup()
 })
 
 const switchCategoryGroup = () => {
