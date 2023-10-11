@@ -22,7 +22,7 @@ class AccountsController extends Controller
     {
         $accounts = AccountGroup::select('id', 'name', 'type')->with('accounts', function($query) {
             $query->select('accounts.id', 'name', 'type')->orderBy('name');
-        })->orderBy('account_groups.name')->orderBy('name')->get();
+        })->orderBy('account_groups.name')->get();
 
         return Inertia::render('Dashboard/Accounts/Index', [
             'accounts' => [
@@ -37,7 +37,7 @@ class AccountsController extends Controller
      */
     public function create(Request $request)
     {
-        $accountGroup = AccountGroup::select(DB::raw('id AS value'), DB::raw('name AS text'), 'type')->get();
+        $accountGroup = AccountGroup::selectRaw('id AS value, name AS text, type')->get();
         
         return Inertia::render('Dashboard/Accounts/Form', [
             'account_group' => [
@@ -84,7 +84,7 @@ class AccountsController extends Controller
     {
         $group = $account->group()->first();
 
-        $accountGroup = AccountGroup::select(DB::raw('id AS value'), DB::raw('name AS text'), 'type')->get();
+        $accountGroup = AccountGroup::selectRaw('id AS value, name AS text, type')->get();
 
         return Inertia::render('Dashboard/Accounts/Form', [
             'edit_mode' => true,
