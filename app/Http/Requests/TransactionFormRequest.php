@@ -27,7 +27,7 @@ class TransactionFormRequest extends FormRequest
     {
         return [
             'due_date' => ['required', 'date_format:d/m/Y'],
-            // 'due_time' => ['required', 'date_format:H:i A'], // TODO: Enable this after found timepicker
+            // 'due_time' => ['required', 'date_format:h:i A'], // TODO: Enable this after found timepicker
             'type' => ['required', 'string', new Enum(TransactionsType::class)],
             'category' => ['exclude_if:type,T', 'integer'],
             'account_from' => ['required', 'integer'],
