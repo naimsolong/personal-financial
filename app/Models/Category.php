@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Traits\CategoryCodeFilter;
+use App\Models\Traits\SystemFlagFilter;
 use App\Models\Traits\TransactionsTypeFilter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
-    use TransactionsTypeFilter, HasFactory, SoftDeletes;
+    use TransactionsTypeFilter, SystemFlagFilter, CategoryCodeFilter, HasFactory, SoftDeletes;
     
     /**
      * The attributes that are mass assignable.
@@ -20,8 +22,10 @@ class Category extends Model
      */
     protected $fillable = [
         'name',
+        'code',
         'icon',
         'type',
+        'only_system_flag',
     ];
 
     /**

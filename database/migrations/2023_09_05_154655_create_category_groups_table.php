@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->enum('type', TransactionsType::getAllValues());
+            $table->boolean('only_system_flag')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });

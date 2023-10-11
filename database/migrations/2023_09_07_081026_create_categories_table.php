@@ -15,8 +15,10 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('code')->nullable();
             $table->string('icon')->nullable();
             $table->enum('type', TransactionsType::getAllValues());
+            $table->boolean('only_system_flag')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });
