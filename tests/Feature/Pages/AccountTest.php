@@ -104,6 +104,8 @@ test('user can perform store, update and destroy', function () {
     ])->except([
         'name', 'account_group', 'type'
     ])->toArray());
+
+    // TODO: Check has transaction for opening balance
     
     $account = Account::factory()->create();
     $this->assertModelExists($account);

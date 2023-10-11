@@ -6,6 +6,7 @@ test('model class has correct properties', function () {
     expect(app(CategoryGroup::class)->getFillable())->toBeArray()->toBe([
         'name',
         'type',
+        'only_system_flag',
     ]);
 });
 
@@ -24,3 +25,7 @@ test('model able to perform CRUD', function () {
     $categoryGroup->delete();
     $this->assertSoftDeleted($categoryGroup);
 });
+
+// TODO: Perform test on relationship
+
+// TODO: Perform test on scope

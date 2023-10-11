@@ -5,8 +5,10 @@ use App\Models\Category;
 test('model class has correct properties', function () {
     expect(app(Category::class)->getFillable())->toBeArray()->toBe([
         'name',
+        'code',
         'icon',
         'type',
+        'only_system_flag',
     ]);
 });
 
@@ -25,3 +27,7 @@ test('model able to perform CRUD', function () {
     $category->delete();
     $this->assertSoftDeleted($category);
 });
+
+// TODO: Perform test on relationship
+
+// TODO: Perform test on scope
