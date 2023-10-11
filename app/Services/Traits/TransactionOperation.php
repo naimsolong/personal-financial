@@ -2,6 +2,7 @@
 
 namespace App\Services\Traits;
 
+use App\Enums\TransactionsStatus;
 use Illuminate\Support\Collection;
 
 trait TransactionOperation
@@ -18,7 +19,7 @@ trait TransactionOperation
             'amount' => $amount,
             'currency' => $data->get('currency'),
             'currency_rate' => $data->get('currency_rate'),
-            'status' => $data->get('status'),
+            'status' => $data->get('status', TransactionsStatus::NONE->value),
             'notes' => $data->get('notes'),
         ]);
 
@@ -39,7 +40,7 @@ trait TransactionOperation
             'amount' => $amount,
             'currency' => $data->get('currency'),
             'currency_rate' => $data->get('currency_rate'),
-            'status' => $data->get('status'),
+            'status' => $data->get('status', TransactionsStatus::NONE->value),
             'notes' => $data->get('notes'),
         ]);
 
@@ -60,7 +61,7 @@ trait TransactionOperation
             'amount' => $amount_from,
             'currency' => $data->get('currency'),
             'currency_rate' => $data->get('currency_rate'),
-            'status' => $data->get('status'),
+            'status' => $data->get('status', TransactionsStatus::NONE->value),
             'notes' => $data->get('notes'),
         ]);
         $model_to = $model->create([
@@ -70,7 +71,7 @@ trait TransactionOperation
             'amount' => $amount_to,
             'currency' => $data->get('currency'),
             'currency_rate' => $data->get('currency_rate'),
-            'status' => $data->get('status'),
+            'status' => $data->get('status', TransactionsStatus::NONE->value),
             'notes' => $data->get('notes'),
         ]);
 
