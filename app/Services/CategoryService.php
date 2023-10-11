@@ -38,6 +38,8 @@ class CategoryService extends BaseService
 
         $this->setModel($model);
 
+        // TODO: What happen to transactions
+
         return !is_null($this->getModel());
     }
 
@@ -49,6 +51,8 @@ class CategoryService extends BaseService
         $model->group()->detach();
         
         $this->setModel(null);
+
+        // TODO: What happen to transactions
 
         return is_null($this->getModel());
     }

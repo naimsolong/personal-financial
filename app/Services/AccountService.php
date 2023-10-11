@@ -73,6 +73,8 @@ class AccountService extends BaseService
             ]
         ]);
 
+        // TODO: Make adjustment on latest_balance
+
         $this->setModel($model);
 
         return !is_null($this->getModel());
@@ -86,6 +88,8 @@ class AccountService extends BaseService
         $model->group()->detach();
         
         $this->setModel(null);
+
+        // TODO: What happen to transactions
 
         return is_null($this->getModel());
     }

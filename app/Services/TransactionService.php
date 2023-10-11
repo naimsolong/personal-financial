@@ -35,6 +35,8 @@ class TransactionService extends BaseService
             TransactionsType::TRANSFER->value => $this->storeTransfer($model, $data),
             default => throw new ServiceException('Undefined Transaction Type'),
         };
+
+        // TODO: What happen to transactions latest_balance
     }
     
     public function update(mixed $model = null, Collection $data): bool
@@ -50,6 +52,8 @@ class TransactionService extends BaseService
             TransactionsType::TRANSFER->value => $this->updateTransfer($model, $data),
             default => throw new ServiceException('Undefined Transaction Type'),
         };
+
+        // TODO: What happen to transactions latest_balance
     }
     
     public function destroy(mixed $model = null): bool
@@ -63,5 +67,7 @@ class TransactionService extends BaseService
             TransactionsType::TRANSFER->value => $this->destroyTransfer($model),
             default => throw new ServiceException('Undefined Transaction Type'),
         };
+
+        // TODO: What happen to transactions latest_balance
     }
 }
