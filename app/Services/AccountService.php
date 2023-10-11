@@ -3,9 +3,12 @@
 namespace App\Services;
 
 use App\Enums\AccountsType;
+use App\Enums\TransactionsType;
 use App\Exceptions\ServiceException;
 use App\Models\Account;
 use App\Models\AccountGroup;
+use App\Models\Category;
+use App\Models\Transaction;
 use Illuminate\Support\Collection;
 
 class AccountService extends BaseService
@@ -31,6 +34,22 @@ class AccountService extends BaseService
         ]);
 
         $this->setModel($model);
+
+        app(TransactionService::class)->store(Transaction::query(), collect([
+            'due_date' => $data->get('opening_date'),
+            'due_time' => now()->format('h:i A'),
+            'type' => ($data->get('type') == AccountsType::ASSETS->value) ? TransactionsType::INCOME->value : TransactionsType::EXPENSE->value,
+            'category' => Category::forSystem()->when($data->get('type') == AccountsType::ASSETS->value, function($query) {
+                                $query->isPositiveOpeningBalance();
+                            }, function($query) {
+                                $query->isNegativeOpeningBalance();
+                            })->select('id')->first()->id,
+            'account_from' => $model->id,
+            'amount' => $data->get('starting_balance'),
+            'currency' => $data->get('currency'),
+            'currency_rate' => 1,
+            'notes' => $data->get('notes'),
+        ]));
 
         return !is_null($this->getModel());
     }
