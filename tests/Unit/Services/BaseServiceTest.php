@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\ServiceException;
 use App\Models\User;
 use App\Services\BaseService;
 
@@ -37,4 +38,12 @@ it('able to store, update and destroy model', function() {
     $is_destroyed = $service->destroy($user);
     $this->assertModelMissing($user);
     expect($is_destroyed)->toBeTrue();
+});
+
+it('able to throw exeception if model is null', function() {
+    $service = app(BaseService::class);
+
+    expect(fn () => ($service->store(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
+    expect(fn () => ($service->update(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
+    expect(fn () => ($service->destroy(null)))->toThrow(ServiceException::class, 'Model Not Found');
 });
