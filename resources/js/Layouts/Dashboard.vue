@@ -205,7 +205,7 @@ const logout = () => {
     </aside>
     
     <div class="p-2 sm:ml-64">
-        <div class="px-6 py-8 border bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg mt-14">
+        <div class="px-6 py-8 border bg-white dark:bg-gray-800 shadow-xl sm:rounded-lg mt-14">
             <slot>Empty slot here</slot>
         </div>
     </div>
