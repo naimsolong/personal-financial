@@ -12,6 +12,11 @@ class TransactionService extends BaseService
 {
     use TransactionOperation;
 
+    public function reverseAmount(int $amount): int
+    {
+        return $amount * -1;
+    }
+
     public function modifyNegativeAmount(int $amount): int
     {
         return $amount > 0 ? $amount * -1 : $amount;
