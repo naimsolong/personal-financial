@@ -77,6 +77,15 @@ it('able to update latest_balance column', function() {
         'latest_balance' => $balance1 + 100.1
     ]);
     expect($is_updated)->toBeTrue();
+
+    $is_updated = $service->updateLatestBalance($account1->group()->first(), 99, -1);
+
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $group1->id,
+        'account_id' => $account1->id,
+        'latest_balance' => $balance1 + 100.1 + 99 - 1
+    ]);
+    expect($is_updated)->toBeTrue();
 });
 
 it('able to throw exeception', function() {

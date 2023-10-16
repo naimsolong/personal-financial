@@ -93,7 +93,7 @@ class AccountService extends BaseService
         return is_null($this->getModel());
     }
 
-    public function updateLatestBalance(mixed $model = null, float $amount): bool
+    public function updateLatestBalance(mixed $model = null, float $amount, float $previous_amount = 0): bool
     {
         if(is_null($model))
             throw new ServiceException('Model Not Found');
@@ -104,7 +104,7 @@ class AccountService extends BaseService
         $previous_balance = $model->details->latest_balance;
 
         $is_updated = $model->details->update([
-            'latest_balance' => $previous_balance + $amount
+            'latest_balance' => $previous_balance + $amount + $previous_amount
         ]);
 
         $model->refresh();
