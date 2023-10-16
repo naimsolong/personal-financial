@@ -77,7 +77,6 @@ it('able to update latest_balance column', function() {
         'latest_balance' => $balance1 + 100.1
     ]);
     expect($is_updated)->toBeTrue();
-
 });
 
 it('able to throw exeception', function() {
