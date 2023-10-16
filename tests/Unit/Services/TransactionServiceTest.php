@@ -117,7 +117,7 @@ it('able to store, update and destroy for transfer transaction', function() {
     expect($is_destroyed)->toBeTrue();
 })->skip();
 
-it('able to throw exeception if model is null', function() {
+it('able to throw exeception', function() {
     $service = app(TransactionService::class);
 
     expect(fn () => ($service->store(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
