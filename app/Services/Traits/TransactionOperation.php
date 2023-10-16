@@ -3,6 +3,8 @@
 namespace App\Services\Traits;
 
 use App\Enums\TransactionsStatus;
+use App\Models\Account;
+use App\Services\AccountService;
 use Illuminate\Support\Collection;
 
 trait TransactionOperation
@@ -25,6 +27,8 @@ trait TransactionOperation
 
         $this->setModel($model);
 
+        $this->updateAccountBalance($data->get('account_from'), $amount);
+
         return !is_null($this->getModel());
     }
 
@@ -45,6 +49,8 @@ trait TransactionOperation
         ]);
 
         $this->setModel($model);
+
+        $this->updateAccountBalance($data->get('account_from'), $amount);
 
         return !is_null($this->getModel());
     }
@@ -87,6 +93,10 @@ trait TransactionOperation
 
         $this->setModel($model_from);
 
+        $this->updateAccountBalance($data->get('account_from'), $amount_from);
+        
+        $this->updateAccountBalance($data->get('account_to'), $amount_to);
+
         return !is_null($this->getModel());
     }
 
@@ -107,6 +117,8 @@ trait TransactionOperation
         ]);
 
         $this->setModel($model);
+
+        $this->updateAccountBalance($data->get('account_from'), $amount);
 
         return !is_null($this->getModel());
     }
@@ -129,12 +141,13 @@ trait TransactionOperation
 
         $this->setModel($model);
 
+        $this->updateAccountBalance($data->get('account_from'), $amount);
+
         return !is_null($this->getModel());
     }
 
     protected function updateTransfer(mixed $model = null, Collection $data): bool
     {
-
         if($model->amount < 0) {
             $amount_from = $this->modifyNegativeAmount($data->get('amount'));
             $amount_to = $this->modifyPositiveAmount($data->get('amount'));
@@ -164,36 +177,77 @@ trait TransactionOperation
 
         $this->setModel($model_from);
 
+        $this->updateAccountBalance($data->get('account_from'), $amount_from);
+        
+        $this->updateAccountBalance($data->get('account_to'), $amount_to);
+
         return !is_null($this->getModel());
     }
     
 
     protected function destroyExpense(mixed $model = null): bool
     {
+        $account_id = $model->account_id;
+
+        $amount = $this->modifyPositiveAmount($model->amount);
+    
         $model->delete();
 
         $this->setModel(null);
+        
+        $this->updateAccountBalance($account_id, $amount);
 
         return is_null($this->getModel());
     }
 
     protected function destroyIncome(mixed $model = null): bool
     {
+        $account_id = $model->account_id;
+
+        $amount = $this->modifyNegativeAmount($model->amount);
+
         $model->delete();
 
         $this->setModel(null);
+        
+        $this->updateAccountBalance($account_id, $amount);
 
         return is_null($this->getModel());
     }
 
     protected function destroyTransfer(mixed $model = null): bool
     {
+        if($model->amount < 0) {
+            $account_id_from = $model->account_id;
+            $account_id_to = $model->transfer_pair->account_id;
+
+            $amount_from = $this->modifyPositiveAmount($model->amount);
+            $amount_to = $this->modifyNegativeAmount($model->transfer_pair->amount);
+        } else {
+            $account_id_from = $model->transfer_pair->account_id;
+            $account_id_to = $model->account_id;
+
+            $amount_from = $this->modifyPositiveAmount($model->transfer_pair->amount);
+            $amount_to = $this->modifyNegativeAmount($model->amount);
+        }
+
         $model->transfer_pair->delete();
 
         $model->delete();
 
         $this->setModel(null);
 
+        $this->updateAccountBalance($account_id_from, $amount_from);
+        
+        $this->updateAccountBalance($account_id_to, $amount_to);
+
         return is_null($this->getModel());
+    }
+
+    protected function updateAccountBalance($account_id, $amount): bool
+    {
+        $account = Account::with('group')->find($account_id);
+
+        return app(AccountService::class)->updateLatestBalance($account, $amount);        
     }
 }

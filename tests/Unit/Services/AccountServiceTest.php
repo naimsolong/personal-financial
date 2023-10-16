@@ -51,6 +51,34 @@ it('able to store, update and destroy accounts table', function() {
     expect($is_destroyed)->toBeTrue();
 });
 
+it('able to update latest_balance column', function() {
+    $service = app(AccountService::class);
+
+    $group1 = AccountGroup::factory()->create([
+        'type' => AccountsType::ASSETS,
+    ]);
+    $account1 = Account::factory()->create([
+        'type' => AccountsType::ASSETS,
+    ]);
+    $balance1 = rand(1000, 5000);
+    $group1->accounts()->attach($account1->id, [
+        'opening_date' => now()->format('d/m/Y'),
+        'starting_balance' => $balance1,
+        'latest_balance' => $balance1,
+        'currency' => CurrencyAlpha3::from('MYR')->value,
+        'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
+    ]);
+
+    $is_updated = $service->updateLatestBalance($account1->group()->first(), 100.1);
+
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $group1->id,
+        'account_id' => $account1->id,
+        'latest_balance' => $balance1 + 100.1
+    ]);
+    expect($is_updated)->toBeTrue();
+
+});
 
 it('able to throw exeception', function() {
     $service = app(AccountService::class);
@@ -58,4 +86,7 @@ it('able to throw exeception', function() {
     expect(fn () => ($service->store(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->update(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->destroy(null)))->toThrow(ServiceException::class, 'Model Not Found');
+    
+    expect(fn () => ($service->updateLatestBalance(null, 0)))->toThrow(ServiceException::class, 'Model Not Found');
+    expect(fn () => ($service->updateLatestBalance(true, 0)))->toThrow(ServiceException::class, 'Amount cannot be zero');
 });

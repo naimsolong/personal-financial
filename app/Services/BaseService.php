@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 class BaseService implements BasicOperation
 {
     public function __construct(
-        protected $_model = null
+        protected mixed $_model = null
     ) { }
 
     public function setModel(mixed $model)

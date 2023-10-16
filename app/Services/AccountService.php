@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Enums\AccountsType;
 use App\Enums\TransactionsType;
 use App\Exceptions\ServiceException;
-use App\Models\Account;
 use App\Models\AccountGroup;
 use App\Models\Category;
 use App\Models\Transaction;
@@ -92,5 +91,26 @@ class AccountService extends BaseService
         // TODO: What happen to transactions
 
         return is_null($this->getModel());
+    }
+
+    public function updateLatestBalance(mixed $model = null, float $amount): bool
+    {
+        if(is_null($model))
+            throw new ServiceException('Model Not Found');
+
+        if($amount == 0)
+            throw new ServiceException('Amount cannot be zero');
+
+        $previous_balance = $model->details->latest_balance;
+
+        $is_updated = $model->details->update([
+            'latest_balance' => $previous_balance + $amount
+        ]);
+
+        $model->refresh();
+
+        $this->setModel($model);
+
+        return $is_updated;
     }
 }
