@@ -13,7 +13,7 @@ trait TransactionOperation
     {
         $amount = $this->modifyNegativeAmount($data->get('amount'));
         
-        $model->create([
+        $model = $model->create([
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'category_id' => $data->get('category'),
@@ -36,7 +36,7 @@ trait TransactionOperation
     {
         $amount = $this->modifyPositiveAmount($data->get('amount'));
 
-        $model->create([
+        $model = $model->create([
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'category_id' => $data->get('category'),
@@ -102,6 +102,8 @@ trait TransactionOperation
 
     protected function updateExpense(mixed $model = null, Collection $data): bool
     {
+        $previous_amount = $this->reverseAmount($model->amount);
+
         $amount = $this->modifyNegativeAmount($data->get('amount'));
         
         $model->update([
@@ -118,13 +120,15 @@ trait TransactionOperation
 
         $this->setModel($model);
 
-        $this->updateAccountBalance($data->get('account_from'), $amount);
+        $this->updateAccountBalance($data->get('account_from'), $amount, $previous_amount);
 
         return !is_null($this->getModel());
     }
 
     protected function updateIncome(mixed $model = null, Collection $data): bool
     {
+        $previous_amount = $this->reverseAmount($model->amount);
+
         $amount = $this->modifyPositiveAmount($data->get('amount'));
 
         $model->update([
@@ -141,22 +145,31 @@ trait TransactionOperation
 
         $this->setModel($model);
 
-        $this->updateAccountBalance($data->get('account_from'), $amount);
+        $this->updateAccountBalance($data->get('account_from'), $amount, $previous_amount);
 
         return !is_null($this->getModel());
     }
 
     protected function updateTransfer(mixed $model = null, Collection $data): bool
     {
+        $amount_from = $this->modifyNegativeAmount($data->get('amount'));
+        $amount_to = $this->modifyPositiveAmount($data->get('amount'));
+
         if($model->amount < 0) {
-            $amount_from = $this->modifyNegativeAmount($data->get('amount'));
-            $amount_to = $this->modifyPositiveAmount($data->get('amount'));
+            $previous_amount_from = $this->reverseAmount($model->amount);
+            $previous_amount_to = $this->reverseAmount($model->transfer_pair->amount);
+
+            $model_from = $model;
+            $model_to = $model->transfer_pair;
         } else {
-            $amount_from = $this->modifyPositiveAmount($data->get('amount'));
-            $amount_to = $this->modifyNegativeAmount($data->get('amount'));
+            $previous_amount_from = $this->reverseAmount($model->transfer_pair->amount);
+            $previous_amount_to = $this->reverseAmount($model->amount);
+            
+            $model_from = $model->transfer_pair;
+            $model_to = $model;
         }
 
-        $model_from = $model->update([
+        $model_from = $model_from->update([
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'amount' => $amount_from,
@@ -165,7 +178,7 @@ trait TransactionOperation
             'status' => $data->get('status'),
             'notes' => $data->get('notes'),
         ]);
-        $model_to = $model->transfer_pair->update([
+        $model_to = $model_to->update([
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'amount' => $amount_to,
@@ -177,9 +190,9 @@ trait TransactionOperation
 
         $this->setModel($model_from);
 
-        $this->updateAccountBalance($data->get('account_from'), $amount_from);
+        $this->updateAccountBalance($data->get('account_from'), $amount_from, $previous_amount_from);
         
-        $this->updateAccountBalance($data->get('account_to'), $amount_to);
+        $this->updateAccountBalance($data->get('account_to'), $amount_to, $previous_amount_to);
 
         return !is_null($this->getModel());
     }
@@ -244,10 +257,10 @@ trait TransactionOperation
         return is_null($this->getModel());
     }
 
-    protected function updateAccountBalance($account_id, $amount): bool
+    protected function updateAccountBalance(int $account_id, float $amount, float $previous_amount = 0): bool
     {
-        $account = Account::with('group')->find($account_id);
+        $account = Account::find($account_id);
 
-        return app(AccountService::class)->updateLatestBalance($account, $amount);        
+        return app(AccountService::class)->updateLatestBalance($account->group()->first(), $amount, $previous_amount);        
     }
 }
