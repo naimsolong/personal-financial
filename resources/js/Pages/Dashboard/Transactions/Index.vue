@@ -97,7 +97,7 @@ const totalSummary = (transaction) => {
                 </div>
             </div>
             <div class="px-3 pb-4">
-                <Link :href="route('transactions.edit', {'transaction': transaction.id})" v-for="(transaction, index) in data_by_date" class="flow-root my-5 hover:px-6 hover:py-3 hover:border hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:rounded-lg hover:scale-110">
+                <Link :href="route('transactions.edit', {'transaction': transaction.id})" v-for="(transaction, index) in data_by_date" class="flow-root my-5 hover:px-6 hover:py-3 hover:border hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:rounded-lg hover:scale-105">
                     <div class="float-left">
                         {{ (transaction.type != 'T') ? transaction.category.name : '[TRANSFER]' }}
                         <br>
