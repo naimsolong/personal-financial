@@ -36,7 +36,7 @@ class AccountService extends BaseService
 
         app(TransactionService::class)->store(Transaction::query(), collect([
             'due_date' => $data->get('opening_date'),
-            'due_time' => now()->format('h:i A'),
+            'due_time' => now()->format('H:i'),
             'type' => ($data->get('type') == AccountsType::ASSETS->value) ? TransactionsType::INCOME->value : TransactionsType::EXPENSE->value,
             'category' => Category::forSystem()->when($data->get('type') == AccountsType::ASSETS->value, function($query) {
                                 $query->isPositiveOpeningBalance();

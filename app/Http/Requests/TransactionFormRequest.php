@@ -27,14 +27,14 @@ class TransactionFormRequest extends FormRequest
     {
         return [
             'due_date' => ['required', 'date_format:d/m/Y'],
-            // 'due_time' => ['required', 'date_format:h:i A'], // TODO: Enable this after found timepicker
+            'due_time' => ['required', 'date_format:H:i'],
             'type' => ['required', 'string', new Enum(TransactionsType::class)],
-            'category' => ['exclude_if:type,T', 'integer'], // TODO: Check if category type is same transaction type
+            'category' => ['exclude_if:type,T'], // TODO: Check if category type is same transaction type
             'account_from' => ['required', 'integer'],
-            'account_to' => ['required_if:type,T', 'integer'],
+            'account_to' => ['required_if:type,T'],
             'amount' => ['required', 'numeric', 'min:1'],
-            'currency' => ['required', 'string', new Enum(CurrencyAlpha3::class)],
-            'currency_rate' => ['required', 'numeric'],
+            // 'currency' => ['required', 'string', new Enum(CurrencyAlpha3::class)],
+            // 'currency_rate' => ['required', 'numeric'],
             'status' => ['nullable', 'string', new Enum(TransactionsStatus::class)],
             'notes' => ['nullable', 'string'],
         ];

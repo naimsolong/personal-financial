@@ -54,7 +54,7 @@ it('able to store, update and destroy for expense transaction', function() {
     $store_account = $account->random();
     $store_data = collect([
         'due_date' => now()->format('d/m/Y'),
-        'due_time' => now()->format('h:i A'),
+        'due_time' => now()->format('H:i'),
         'type' => TransactionsType::EXPENSE->value,
         'category' => $store_category->id,
         'account_from' => $store_account->id,
@@ -136,7 +136,7 @@ it('able to store, update and destroy for income transaction', function() {
     $store_account = $account->random();
     $store_data = collect([
         'due_date' => now()->format('d/m/Y'),
-        'due_time' => now()->format('h:i A'),
+        'due_time' => now()->format('H:i'),
         'type' => TransactionsType::INCOME->value,
         'category' => $store_category->id,
         'account_from' => $store_account->id,
@@ -215,7 +215,7 @@ it('able to store, update and destroy for transfer transaction', function() {
     $store_account_to = $account->random();
     $store_data = collect([
         'due_date' => now()->format('d/m/Y'),
-        'due_time' => now()->format('h:i A'),
+        'due_time' => now()->format('H:i'),
         'type' => TransactionsType::TRANSFER->value,
         'account_from' => $store_account_from->id,
         'account_to' => $store_account_to->id,
@@ -320,7 +320,7 @@ it('able to throw exeception', function() {
     $model->type = 'L';
     $data = collect([
         'due_date' => now()->format('d/m/Y'),
-        'due_time' => now()->format('h:i A'),
+        'due_time' => now()->format('H:i'),
         'type' => 'UNKNOWN_TYPE'
     ]);
     expect(fn () => ($service->store($model, $data)))->toThrow(ServiceException::class, 'Undefined Transaction Type');

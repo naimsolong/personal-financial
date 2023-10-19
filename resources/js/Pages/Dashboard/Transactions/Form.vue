@@ -127,15 +127,13 @@ const deleteTransaction = () => {
 
                     <div class="mb-3">
                         <InputLabel for="due_time" value="Time" />
-                        <!-- TODO: Integrate timepicker -->
-                        <!-- <vue-tailwind-datepicker
+                        <TextInput
+                            id="due_time"
                             v-model="form.due_time"
-                            as-single
-                            placeholder="Select Date"
-                            :formatter="{
-                                date: 'HH:ii A',
-                            }"
-                        /> -->
+                            type="time"
+                            class="block w-full"
+                            autocomplete="false"
+                        />
                         <InputError :message="form.errors.due_time" class="mt-2" />
                     </div>
                 </div>

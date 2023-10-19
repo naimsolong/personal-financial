@@ -76,7 +76,7 @@ class TransactionsController extends Controller
             'statuses' => TransactionsStatus::dropdown(),
             'data' => [
                 'due_date' => now()->format('d/m/Y'),
-                'due_time' => now()->format('h:i A'),
+                'due_time' => now()->format('H:i'),
                 'type' => $request->query('type', 'E'),
                 'category' => '',
                 'account_from' => '',
@@ -117,11 +117,11 @@ class TransactionsController extends Controller
                     $query->selectRaw('categories.id AS value, categories.name AS text');
                 }
             ])->orderBy('type')->get();
+
+        $amount = app(TransactionService::class)->modifyPositiveAmount($transaction->amount);
             
         if($transaction->type == 'T') {
             $pair = $transaction->transfer_pair;
-
-            $amount = app(TransactionService::class)->modifyPositiveAmount($transaction->amount);
 
             if($transaction->amount < 0) {
                 $account_id_from = $transaction->account_id;
@@ -133,7 +133,6 @@ class TransactionsController extends Controller
         } else {
             $account_id_from = $transaction->account_id;
             $account_id_to = $transaction->account_id;
-            $amount = $transaction->amount;
         }
 
         return Inertia::render('Dashboard/Transactions/Form', [

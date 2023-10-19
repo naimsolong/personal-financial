@@ -32,7 +32,7 @@ class TransactionService extends BaseService
         if(is_null($model))
             throw new ServiceException('Model Not Found');
 
-        $data = $data->merge(['due_at' => Carbon::createFromFormat('d/m/Y h:i A', $data->get('due_date').' '.$data->get('due_time', '00:00 AM'))->format('Y-m-d H:i:s')]);
+        $data = $data->merge(['due_at' => Carbon::createFromFormat('d/m/Y H:i', $data->get('due_date').' '.$data->get('due_time', '00:00 AM'))->format('Y-m-d H:i:s')]);
 
         return match($data->get('type')) {
             TransactionsType::EXPENSE->value => $this->storeExpense($model, $data),
@@ -47,7 +47,7 @@ class TransactionService extends BaseService
         if(is_null($model))
             throw new ServiceException('Model Not Found');
 
-        $data = $data->merge(['due_at' => Carbon::createFromFormat('d/m/Y h:i A', $data->get('due_date').' '.$data->get('due_time', '00:00 AM'))->format('Y-m-d H:i:s')]);
+        $data = $data->merge(['due_at' => Carbon::createFromFormat('d/m/Y H:i', $data->get('due_date').' '.$data->get('due_time', '00:00 AM'))->format('Y-m-d H:i:s')]);
 
         return match($data->get('type')) {
             TransactionsType::EXPENSE->value => $this->updateExpense($model, $data),

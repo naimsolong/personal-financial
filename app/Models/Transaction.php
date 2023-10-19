@@ -137,7 +137,7 @@ class Transaction extends Model
     protected function dueTime(): Attribute
     {
         return new Attribute(
-            get: fn () => $this->due_at->format('h:i A'),
+            get: fn () => $this->due_at->format('H:i'),
         );
     }
     
