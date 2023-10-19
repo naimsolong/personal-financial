@@ -8,6 +8,17 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+    protected const LOCAL_SEEDER = [
+        UserSeeder::class,
+        CategorySeeder::class,
+        AccountSeeder::class,
+        TransactionSeeder::class,
+    ];
+    
+    protected const TESTING_SEEDER = [];
+    
+    protected const PRODUCTION_SEEDER = [];
+
     /**
      * Seed the application's database.
      */
@@ -15,13 +26,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(InitSeeder::class);
         
-        if(app()->isLocal()) {
-            $this->call([
-                UserSeeder::class,
-                CategorySeeder::class,
-                AccountSeeder::class,
-                TransactionSeeder::class,
-            ]);
-        }
+        $this->call(match(app()->environment()) {
+            'local' => self::LOCAL_SEEDER,
+            'testing' => self::TESTING_SEEDER,
+            'production' => self::PRODUCTION_SEEDER,
+        });
     }
 }
