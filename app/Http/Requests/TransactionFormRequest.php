@@ -29,7 +29,7 @@ class TransactionFormRequest extends FormRequest
             'due_date' => ['required', 'date_format:d/m/Y'],
             // 'due_time' => ['required', 'date_format:h:i A'], // TODO: Enable this after found timepicker
             'type' => ['required', 'string', new Enum(TransactionsType::class)],
-            'category' => ['exclude_if:type,T', 'integer'],
+            'category' => ['exclude_if:type,T', 'integer'], // TODO: Check if category type is same transaction type
             'account_from' => ['required', 'integer'],
             'account_to' => ['required_if:type,T', 'integer'],
             'amount' => ['required', 'numeric', 'min:1'],
