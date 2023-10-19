@@ -76,22 +76,22 @@ class CategorySeeder extends Seeder
             ],
         ]);
 
-        $group5 = CategoryGroup::create([
+        $group4 = CategoryGroup::create([
             'name' => 'Others',
             'type' => TransactionsType::EXPENSE,
         ]);
-        $group5->categories()->createMany([
+        $group4->categories()->createMany([
             [
                 'name' => 'Other',
                 'type' => TransactionsType::EXPENSE,
             ],
         ]);
 
-        $group4 = CategoryGroup::create([
+        $group5 = CategoryGroup::create([
             'name' => 'Active',
             'type' => TransactionsType::INCOME,
         ]);
-        $group4->categories()->createMany([
+        $group5->categories()->createMany([
             [
                 'name' => 'Net Salary',
                 'type' => TransactionsType::INCOME,
@@ -102,11 +102,11 @@ class CategorySeeder extends Seeder
             ],
         ]);
 
-        $group5 = CategoryGroup::create([
+        $group6 = CategoryGroup::create([
             'name' => 'Others',
             'type' => TransactionsType::INCOME,
         ]);
-        $group5->categories()->createMany([
+        $group6->categories()->createMany([
             [
                 'name' => 'Other',
                 'type' => TransactionsType::INCOME,
