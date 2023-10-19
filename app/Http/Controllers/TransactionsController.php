@@ -59,7 +59,7 @@ class TransactionsController extends Controller
                     $query->selectRaw('accounts.id AS value, accounts.name AS text');
                 }
             ])->orderBy('type')->get();
-        $categories = CategoryGroup::selectRaw('id, name AS label, type')
+        $categories = CategoryGroup::forUser()->selectRaw('id, name AS label, type')
             ->with([
                 'categories' => function($query) {
                     $query->selectRaw('categories.id AS value, categories.name AS text');
@@ -111,7 +111,7 @@ class TransactionsController extends Controller
                     $query->selectRaw('accounts.id AS value, accounts.name AS text');
                 }
             ])->orderBy('type')->get();
-        $categories = CategoryGroup::selectRaw('id, name AS label, type')
+        $categories = CategoryGroup::forUser()->selectRaw('id, name AS label, type')
             ->with([
                 'categories' => function($query) {
                     $query->selectRaw('categories.id AS value, categories.name AS text');
