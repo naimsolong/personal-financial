@@ -106,7 +106,7 @@ trait TransactionOperation
 
         $amount = $this->modifyNegativeAmount($data->get('amount'));
         
-        $model->update([
+        $is_update = $model->update([
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'category_id' => $data->get('category'),
@@ -122,7 +122,7 @@ trait TransactionOperation
 
         $this->updateAccountBalance($data->get('account_from'), $amount, $previous_amount);
 
-        return !is_null($this->getModel());
+        return $is_update;
     }
 
     protected function updateIncome(mixed $model = null, Collection $data): bool
@@ -131,7 +131,7 @@ trait TransactionOperation
 
         $amount = $this->modifyPositiveAmount($data->get('amount'));
 
-        $model->update([
+        $is_update = $model->update([
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'category_id' => $data->get('category'),
@@ -147,7 +147,7 @@ trait TransactionOperation
 
         $this->updateAccountBalance($data->get('account_from'), $amount, $previous_amount);
 
-        return !is_null($this->getModel());
+        return $is_update;
     }
 
     protected function updateTransfer(mixed $model = null, Collection $data): bool
@@ -169,7 +169,7 @@ trait TransactionOperation
             $model_to = $model;
         }
 
-        $model_from = $model_from->update([
+        $is_update_from = $model_from->update([
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'amount' => $amount_from,
@@ -178,7 +178,7 @@ trait TransactionOperation
             'status' => $data->get('status'),
             'notes' => $data->get('notes'),
         ]);
-        $model_to = $model_to->update([
+        $is_update_to = $model_to->update([
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'amount' => $amount_to,
@@ -194,7 +194,7 @@ trait TransactionOperation
         
         $this->updateAccountBalance($data->get('account_to'), $amount_to, $previous_amount_to);
 
-        return !is_null($this->getModel());
+        return $is_update_from && $is_update_to;
     }
     
 
@@ -204,13 +204,13 @@ trait TransactionOperation
 
         $amount = $this->modifyPositiveAmount($model->amount);
     
-        $model->delete();
+        $is_destroy = $model->delete();
 
         $this->setModel(null);
         
         $this->updateAccountBalance($account_id, $amount);
 
-        return is_null($this->getModel());
+        return $is_destroy;
     }
 
     protected function destroyIncome(mixed $model = null): bool
@@ -219,13 +219,13 @@ trait TransactionOperation
 
         $amount = $this->modifyNegativeAmount($model->amount);
 
-        $model->delete();
+        $is_destroy = $model->delete();
 
         $this->setModel(null);
         
         $this->updateAccountBalance($account_id, $amount);
 
-        return is_null($this->getModel());
+        return $is_destroy;
     }
 
     protected function destroyTransfer(mixed $model = null): bool
@@ -244,9 +244,9 @@ trait TransactionOperation
             $amount_to = $this->modifyNegativeAmount($model->amount);
         }
 
-        $model->transfer_pair->delete();
+        $is_destroy_to = $model->transfer_pair->delete();
 
-        $model->delete();
+        $is_destroy_from = $model->delete();
 
         $this->setModel(null);
 
@@ -254,7 +254,7 @@ trait TransactionOperation
         
         $this->updateAccountBalance($account_id_to, $amount_to);
 
-        return is_null($this->getModel());
+        return $is_destroy_from && $is_destroy_to;
     }
 
     protected function updateAccountBalance(int $account_id, float $amount, float $previous_amount = 0): bool

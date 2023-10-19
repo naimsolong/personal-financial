@@ -11,7 +11,15 @@ use App\Models\Transaction;
 use App\Services\TransactionService;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
-test('modify amount', function() {
+it('reverses the amount correctly', function () {
+    $service = app(TransactionService::class);
+
+    expect($service->reverseAmount(10))->toBe(-10);
+    expect($service->reverseAmount(-5))->toBe(5);
+    expect($service->reverseAmount(0))->toBe(0);
+});
+
+it('modify amount correctly', function() {
     $service = app(TransactionService::class);
 
     expect($service->modifyNegativeAmount(0))->toBe(0);
@@ -24,7 +32,6 @@ test('modify amount', function() {
     expect($service->modifyPositiveAmount(-1))->toBeGreaterThan(0);
 });
 
-// TODO: Update these test
 it('able to store, update and destroy for expense transaction', function() {
     $service = app(TransactionService::class);
 
@@ -68,10 +75,11 @@ it('able to store, update and destroy for expense transaction', function() {
         'amount' => $store_data->get('amount') * -1,
     ]);
     expect($is_created)->toBeTrue();
+    $new_balance = $balance + ($store_data->get('amount') * -1);
     $this->assertDatabaseHas('account_pivot', [
         'account_group_id' => $store_account->group()->first()->id,
         'account_id' => $store_account->id,
-        'latest_balance' => $balance + ($store_data->get('amount') * -1),
+        'latest_balance' => $new_balance,
     ]);
     
     $update_data = $store_data->merge([
@@ -79,7 +87,6 @@ it('able to store, update and destroy for expense transaction', function() {
     ]);
     $is_updated = $service->update($model, $update_data);
     $model = $service->getModel();
-    $new_balance = $balance + ($store_data->get('amount') * -1);
     $this->assertDatabaseHas('transactions', [
         'id' => $model->id,
         'type' => $update_data->get('type'),
@@ -88,85 +95,219 @@ it('able to store, update and destroy for expense transaction', function() {
         'amount' => $update_data->get('amount') * -1,
     ]);
     expect($is_updated)->toBeTrue();
+    $new_balance = $new_balance + ($update_data->get('amount') * -1) + ($store_data->get('amount'));
     $this->assertDatabaseHas('account_pivot', [
         'account_group_id' => $store_account->group()->first()->id,
         'account_id' => $store_account->id,
-        'latest_balance' => $new_balance + ($update_data->get('amount') * -1) + ($store_data->get('amount')),
+        'latest_balance' => $new_balance,
     ]);
     
-    // $is_destroyed = $service->destroy($model);
-    // $this->assertDatabaseMissing('transactions', [
-    //     'category_group_id' => $data->get('category_group'),
-    //     'category_id' => $model->id
-    // ]);
-    // expect($is_destroyed)->toBeTrue();
+    $is_destroyed = $service->destroy($model);
+    $this->assertDatabaseMissing('transactions', [
+        'id' => $model->id,
+    ]);
+    expect($is_destroyed)->toBeTrue();
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $store_account->group()->first()->id,
+        'account_id' => $store_account->id,
+        'latest_balance' => $new_balance + $update_data->get('amount'),
+    ]);
 });
 
-// TODO: Update these test
 it('able to store, update and destroy for income transaction', function() {
     $service = app(TransactionService::class);
 
     $model = Transaction::query();
-    $data = collect([
-        'name' => 'test'.rand(4,10),
+    $category = Category::factory(5)
+        ->has(CategoryGroup::factory(), 'group')
+        ->create();
+    $balance = rand(100,500);
+    $account = Account::factory(5)
+        ->hasAttached(AccountGroup::factory(), [
+            'opening_date' => now()->format('d/m/Y'),
+            'starting_balance' => $balance,
+            'latest_balance' => $balance,
+            'currency' => CurrencyAlpha3::from('MYR')->value,
+            'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
+        ], 'group')
+        ->create();
+
+    $store_category = $category->random();
+    $store_account = $account->random();
+    $store_data = collect([
+        'due_date' => now()->format('d/m/Y'),
+        'due_time' => now()->format('h:i A'),
         'type' => TransactionsType::INCOME->value,
+        'category' => $store_category->id,
+        'account_from' => $store_account->id,
+        'amount' => rand(10,100),
+        'currency' => CurrencyAlpha3::from('MYR')->value,
+        'currency_rate' => 1,
+        'status' => TransactionsStatus::NONE->value,
+        'notes' => 'whut',
     ]);
 
-    $is_created = $service->store($model, $data);
+    $is_created = $service->store($model, $store_data);
     $model = $service->getModel();
-    $this->assertDatabaseHas('transactions', $data->only('name','type')->toArray());
-    expect($is_created)->toBeTrue();
-    
-    $model = Transaction::factory()->create();
-    $data = collect([
-        'name' => 'test'.rand(4,10),
-        'type' => TransactionsType::INCOME->value,
+    $this->assertDatabaseHas('transactions', [
+        'id' => $model->id,
+        'type' => $store_data->get('type'),
+        'category_id' => $store_data->get('category'),
+        'account_id' => $store_data->get('account_from'),
+        'amount' => $store_data->get('amount'),
     ]);
-    $is_updated = $service->update($model, $data);
+    expect($is_created)->toBeTrue();
+    $new_balance = $balance + ($store_data->get('amount'));
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $store_account->group()->first()->id,
+        'account_id' => $store_account->id,
+        'latest_balance' => $new_balance,
+    ]);
+    
+    $update_data = $store_data->merge([
+        'amount' => rand(10,100),
+    ]);
+    $is_updated = $service->update($model, $update_data);
     $model = $service->getModel();
-    $this->assertDatabaseHas('transactions', $data->only('name','type')->toArray());
+    $this->assertDatabaseHas('transactions', [
+        'id' => $model->id,
+        'type' => $update_data->get('type'),
+        'category_id' => $update_data->get('category'),
+        'account_id' => $update_data->get('account_from'),
+        'amount' => $update_data->get('amount'),
+    ]);
     expect($is_updated)->toBeTrue();
+    $new_balance = $new_balance + ($update_data->get('amount')) + ($store_data->get('amount') * -1);
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $store_account->group()->first()->id,
+        'account_id' => $store_account->id,
+        'latest_balance' => $new_balance,
+    ]);
     
     $is_destroyed = $service->destroy($model);
     $this->assertDatabaseMissing('transactions', [
-        'category_group_id' => $data->get('category_group'),
-        'category_id' => $model->id
+        'id' => $model->id,
     ]);
     expect($is_destroyed)->toBeTrue();
-})->skip();
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $store_account->group()->first()->id,
+        'account_id' => $store_account->id,
+        'latest_balance' => $new_balance + $update_data->get('amount') * -1,
+    ]);
+});
 
-// TODO: Update these test
 it('able to store, update and destroy for transfer transaction', function() {
     $service = app(TransactionService::class);
 
     $model = Transaction::query();
-    $data = collect([
-        'name' => 'test'.rand(4,10),
-        'type' => TransactionsType::EXPENSE->value,
+    $balance = rand(100,500);
+    $account = Account::factory(5)
+        ->hasAttached(AccountGroup::factory(), [
+            'opening_date' => now()->format('d/m/Y'),
+            'starting_balance' => $balance,
+            'latest_balance' => $balance,
+            'currency' => CurrencyAlpha3::from('MYR')->value,
+            'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
+        ], 'group')
+        ->create();
+
+    $store_account_from = $account->pop();
+    $store_account_to = $account->random();
+    $store_data = collect([
+        'due_date' => now()->format('d/m/Y'),
+        'due_time' => now()->format('h:i A'),
+        'type' => TransactionsType::TRANSFER->value,
+        'account_from' => $store_account_from->id,
+        'account_to' => $store_account_to->id,
+        'amount' => rand(10,100),
+        'currency' => CurrencyAlpha3::from('MYR')->value,
+        'currency_rate' => 1,
+        'status' => TransactionsStatus::NONE->value,
+        'notes' => 'whut',
     ]);
 
-    $is_created = $service->store($model, $data);
+    $is_created = $service->store($model, $store_data);
     $model = $service->getModel();
-    $this->assertDatabaseHas('transactions', $data->only('name','type')->toArray());
-    expect($is_created)->toBeTrue();
-    
-    $model = Transaction::factory()->create();
-    $data = collect([
-        'name' => 'test'.rand(4,10),
-        'type' => TransactionsType::INCOME->value,
+    $this->assertDatabaseHas('transactions', [
+        'id' => $model->id,
+        'type' => $store_data->get('type'),
+        'account_id' => $store_data->get('account_from'),
+        'transfer_pair_id' =>  $model->transfer_pair->id,
+        'amount' => $store_data->get('amount') * -1,
     ]);
-    $is_updated = $service->update($model, $data);
+    $this->assertDatabaseHas('transactions', [
+        'id' => $model->transfer_pair->id,
+        'type' => $store_data->get('type'),
+        'account_id' => $store_data->get('account_to'),
+        'transfer_pair_id' =>  $model->id,
+        'amount' => $store_data->get('amount'),
+    ]);
+    expect($is_created)->toBeTrue();
+    $new_balance_account_from = $balance + ($store_data->get('amount') * -1);
+    $new_balance_account_to = $balance + ($store_data->get('amount'));
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $store_account_from->group()->first()->id,
+        'account_id' => $store_account_from->id,
+        'latest_balance' => $new_balance_account_from,
+    ]);
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $store_account_to->group()->first()->id,
+        'account_id' => $store_account_to->id,
+        'latest_balance' => $new_balance_account_to,
+    ]);
+    
+    $update_data = $store_data->merge([
+        'amount' => rand(10,100),
+    ]);
+    $is_updated = $service->update($model, $update_data);
     $model = $service->getModel();
-    $this->assertDatabaseHas('transactions', $data->only('name','type')->toArray());
+    $this->assertDatabaseHas('transactions', [
+        'id' => $model->id,
+        'type' => $update_data->get('type'),
+        'account_id' => $update_data->get('account_from'),
+        'transfer_pair_id' =>  $model->transfer_pair->id,
+        'amount' => $update_data->get('amount') * -1,
+    ]);
+    $this->assertDatabaseHas('transactions', [
+        'id' => $model->transfer_pair->id,
+        'type' => $update_data->get('type'),
+        'account_id' => $update_data->get('account_to'),
+        'transfer_pair_id' =>  $model->id,
+        'amount' => $update_data->get('amount'),
+    ]);
     expect($is_updated)->toBeTrue();
+    $new_balance_account_from = $new_balance_account_from + ($update_data->get('amount') * -1) + ($store_data->get('amount'));
+    $new_balance_account_to = $new_balance_account_to + ($update_data->get('amount')) + ($store_data->get('amount') * -1);
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $store_account_from->group()->first()->id,
+        'account_id' => $store_account_from->id,
+        'latest_balance' => $new_balance_account_from,
+    ]);
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $store_account_to->group()->first()->id,
+        'account_id' => $store_account_to->id,
+        'latest_balance' => $new_balance_account_to,
+    ]);
     
     $is_destroyed = $service->destroy($model);
     $this->assertDatabaseMissing('transactions', [
-        'category_group_id' => $data->get('category_group'),
-        'category_id' => $model->id
+        'id' => $model->id,
+    ]);
+    $this->assertDatabaseMissing('transactions', [
+        'id' => $model->transfer_pair->id,
     ]);
     expect($is_destroyed)->toBeTrue();
-})->skip();
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $store_account_from->group()->first()->id,
+        'account_id' => $store_account_from->id,
+        'latest_balance' => $new_balance_account_from + $update_data->get('amount'),
+    ]);
+    $this->assertDatabaseHas('account_pivot', [
+        'account_group_id' => $store_account_to->group()->first()->id,
+        'account_id' => $store_account_to->id,
+        'latest_balance' => $new_balance_account_to + $update_data->get('amount') * -1,
+    ]);
+});
 
 it('able to throw exeception', function() {
     $service = app(TransactionService::class);
@@ -174,4 +315,15 @@ it('able to throw exeception', function() {
     expect(fn () => ($service->store(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->update(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->destroy(null)))->toThrow(ServiceException::class, 'Model Not Found');
+    
+    $model = new stdClass();
+    $model->type = 'L';
+    $data = collect([
+        'due_date' => now()->format('d/m/Y'),
+        'due_time' => now()->format('h:i A'),
+        'type' => 'UNKNOWN_TYPE'
+    ]);
+    expect(fn () => ($service->store($model, $data)))->toThrow(ServiceException::class, 'Undefined Transaction Type');
+    expect(fn () => ($service->update($model, $data)))->toThrow(ServiceException::class, 'Undefined Transaction Type');
+    expect(fn () => ($service->destroy($model)))->toThrow(ServiceException::class, 'Undefined Transaction Type');
 });
