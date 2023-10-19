@@ -76,6 +76,17 @@ class CategorySeeder extends Seeder
             ],
         ]);
 
+        $group5 = CategoryGroup::create([
+            'name' => 'Others',
+            'type' => TransactionsType::EXPENSE,
+        ]);
+        $group5->categories()->createMany([
+            [
+                'name' => 'Other',
+                'type' => TransactionsType::EXPENSE,
+            ],
+        ]);
+
         $group4 = CategoryGroup::create([
             'name' => 'Active',
             'type' => TransactionsType::INCOME,
@@ -87,6 +98,17 @@ class CategorySeeder extends Seeder
             ],
             [
                 'name' => 'Freelance',
+                'type' => TransactionsType::INCOME,
+            ],
+        ]);
+
+        $group5 = CategoryGroup::create([
+            'name' => 'Others',
+            'type' => TransactionsType::INCOME,
+        ]);
+        $group5->categories()->createMany([
+            [
+                'name' => 'Other',
                 'type' => TransactionsType::INCOME,
             ],
         ]);
