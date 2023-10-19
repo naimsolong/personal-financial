@@ -25,13 +25,13 @@ class InitSeeder extends Seeder
             $group1->categories()->createMany([
                 [
                     'name' => '[OPENING BALANCE (-)]',
-                    'type' => TransactionsType::INCOME,
+                    'type' => TransactionsType::EXPENSE,
                     'code' => SystemCategoryCode::OPENING_NEGATIVE->value,
                     'only_system_flag' => true,
                 ],
                 [
                     'name' => '[ADJUSTMENT (-)]',
-                    'type' => TransactionsType::INCOME,
+                    'type' => TransactionsType::EXPENSE,
                     'code' => SystemCategoryCode::ADJUST_NEGATIVE->value,
                     'only_system_flag' => true,
                 ],
