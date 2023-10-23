@@ -8,6 +8,7 @@ use App\Http\Controllers\FiltersController;
 use App\Http\Controllers\LabelsController;
 use App\Http\Controllers\SchedulesController;
 use App\Http\Controllers\TransactionsController;
+use App\Http\Controllers\WorkspaceController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -44,6 +45,21 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard/Index');
     })->name('dashboard');
+
+    Route::group(['prefix' => 'workspaces'], function() {
+        Route::post('/change', [WorkspaceController::class, 'change'])->name('workspaces.change');
+    });
+
+    Route::resource('workspaces', WorkspaceController::class)->except([
+        'show'
+    ])->names([
+        'index' => 'workspaces.index',
+        'create' => 'workspaces.create',
+        'store' => 'workspaces.store',
+        'edit' => 'workspaces.edit',
+        'update' => 'workspaces.update',
+        'destroy' => 'workspaces.destroy',
+    ]);
 
     Route::group(['prefix' => 'transactions'], function() {
         Route::post('/partial', [TransactionsController::class, 'index'])->name('transactions.partial');

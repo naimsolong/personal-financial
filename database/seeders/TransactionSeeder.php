@@ -19,7 +19,7 @@ class TransactionSeeder extends Seeder
      */
     public function run(): void
     {
-        $workspace = Workspace::get();
+        $workspace = Workspace::where('name', 'Personal')->first();
 
         // For INCOME and EXPENSE
         for($i = 0; $i < 30; $i++)
@@ -38,7 +38,7 @@ class TransactionSeeder extends Seeder
             $transaction = Transaction::factory(2)
                 ->state(new Sequence(
                     [
-                        'workspace_id' => $workspace->random()->id,
+                        'workspace_id' => $workspace->id,
                         'due_at' => $due_at,
                         'type' => TransactionsType::TRANSFER,
                         'category_id' => null,
@@ -46,7 +46,7 @@ class TransactionSeeder extends Seeder
                         'amount' => $amount
                     ],
                     [
-                        'workspace_id' => $workspace->random()->id,
+                        'workspace_id' => $workspace->id,
                         'due_at' => $due_at,
                         'type' => TransactionsType::TRANSFER,
                         'category_id' => null,

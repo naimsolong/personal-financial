@@ -11,7 +11,7 @@ trait WorkspaceFilter {
     public function scopeCurrentWorkspace()
     {
         return $this->whereHas('workspace', function($query) {
-            $query->where('workspace_id', 1); // TODO: To cater selected workspace from the dashboard
+            $query->where('workspace_id', session()->get('current_workspace'));
         });
     }
 }

@@ -18,7 +18,7 @@ class TransactionsController extends Controller
 {
     public function index(Request $request)
     {
-        $data = Transaction::select('id', 'due_at', 'type', 'category_id', 'account_id', 'amount', 'currency', 'currency_amount', 'currency_rate', 'transfer_pair_id', 'status', 'notes')
+        $data = Transaction::currentWorkspace()->select('id', 'due_at', 'type', 'category_id', 'account_id', 'amount', 'currency', 'currency_amount', 'currency_rate', 'transfer_pair_id', 'status', 'notes')
             ->with([
                 'category' => function($query) {
                     $query->select('id', 'name');

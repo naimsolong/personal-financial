@@ -19,7 +19,7 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        $categories = CategoryGroup::forUser()->select('id', 'name', 'type')->with('categories', function($query) {
+        $categories = CategoryGroup::forUser()->currentWorkspace()->select('id', 'name', 'type')->with('categories', function($query) {
             $query->select('categories.id', 'name', 'type')->forUser()->orderBy('name');
         })->orderBy('category_groups.name')->orderBy('name')->get();
         

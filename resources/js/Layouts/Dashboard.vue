@@ -16,6 +16,15 @@ defineProps({
     title: String,
 });
 
+const changeWorkspace = (event) => {
+    router.post(route('workspaces.change'), {
+        workspace_id: event.target.value
+    }, {
+        preserveScroll: true,
+        onSuccess: () => location.reload(),
+    });
+}
+
 const logout = () => {
     router.post(route('logout'));
 };
@@ -88,6 +97,7 @@ const logout = () => {
                         v-model="selected_workspace"
                         class="block w-full"
                         autocomplete="false"
+                        @change="changeWorkspace"
                     />
                 </li>
                 <li>
