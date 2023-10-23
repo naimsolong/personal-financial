@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
         UserSeeder::class,
         CategorySeeder::class,
         AccountSeeder::class,
+        WorkspaceSeeder::class,
         TransactionSeeder::class,
     ];
     
