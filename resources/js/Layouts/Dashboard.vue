@@ -8,7 +8,7 @@ const page = usePage()
 
 const user = computed(() => page.props.auth.user)
 
-const selected_workspace = computed(() => page.props.auth.user.workspace)
+const selected_workspace = computed(() => page.props.auth.current_workspace)
 
 const workspaces = computed(() => page.props.initial.value.workspaces)
 

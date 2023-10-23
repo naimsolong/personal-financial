@@ -40,7 +40,7 @@ class HandleInertiaRequests extends Middleware
             'auth.user' => fn () => $request->user()
                 ? $request->user()->only('id', 'name', 'email')
                 : null,
-            'auth.user.workspace' => fn () => session()->get('current_workspace', $request->user()?->workspaces()->first()->id),
+            'auth.current_workspace' => fn () => session()->get('current_workspace', null),
             'initial.value.workspaces' => fn () => $request->user()
                 ? $request->user()?->workspaces()->selectRaw('workspaces.id AS value, workspaces.name AS text')->get()->toArray()
                 : [],

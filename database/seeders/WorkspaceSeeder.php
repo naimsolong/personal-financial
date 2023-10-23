@@ -28,5 +28,11 @@ class WorkspaceSeeder extends Seeder
         $workspace->accountGroups()->sync($accountGroupIds);
         
         $workspace->users()->attach(User::first()->id);
+        
+        $workspace = Workspace::create([
+            'name' => 'Side Job',
+        ]);
+        
+        $workspace->users()->attach(User::first()->id);
     }
 }
