@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Interfaces\WorkspaceRelation;
 use App\Models\Traits\SystemFlagFilter;
 use App\Models\Traits\TransactionsTypeFilter;
+use App\Models\Traits\WorkspaceFilter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CategoryGroup extends Model
+class CategoryGroup extends Model implements WorkspaceRelation
 {
-    use TransactionsTypeFilter, SystemFlagFilter, HasFactory, SoftDeletes;
+    use WorkspaceFilter, TransactionsTypeFilter, SystemFlagFilter, HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +26,14 @@ class CategoryGroup extends Model
         'only_system_flag',
     ];
 
+    /**
+     * This category group that belong to the workspace.
+     */
+    public function workspace(): BelongsToMany
+    {
+        return $this->belongsToMany(Workspace::class, 'workspace_categories')->withTimestamps();
+    }
+    
     /**
      * The group that belong to the categories.
      */
