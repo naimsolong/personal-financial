@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Actions\Jetstream\DeleteUser;
-use App\Actions\UpdateWorkspace;
+use App\Actions\Workspace\InitiateWorkspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Actions\AttemptToAuthenticate;
@@ -61,7 +61,7 @@ class JetstreamServiceProvider extends ServiceProvider
                 RedirectIfTwoFactorAuthenticatable::class,
                 AttemptToAuthenticate::class,
                 PrepareAuthenticatedSession::class,
-                UpdateWorkspace::class,
+                InitiateWorkspace::class,
             ]);
         });
     }

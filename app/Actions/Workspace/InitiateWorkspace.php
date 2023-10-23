@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Workspace;
 
 use Illuminate\Http\Request;
 
-class UpdateWorkspace {
+class InitiateWorkspace {
     /**
      * Handle the incoming request.
      *
