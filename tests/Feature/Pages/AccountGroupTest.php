@@ -10,10 +10,11 @@ test('user can access account group pages', function () {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->create();
     $workspace->users()->attach($user->id);
-
     $accountGroup = AccountGroup::factory(3)->create([
         'type' => AccountsType::ASSETS->value
     ]);
+    $workspace->accountGroups()->sync($accountGroup->pluck('id'));
+    
     $response = $this->actingAs($user)
         ->withSession(['current_workspace' => $workspace->id])
         ->get(route('account.group.index'))

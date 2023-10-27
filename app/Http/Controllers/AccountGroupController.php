@@ -17,7 +17,7 @@ class AccountGroupController extends Controller
      */
     public function index()
     {
-        $accounts = AccountGroup::select('id', 'name', 'type')->get();
+        $accounts = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->get();
         
         return Inertia::render('Dashboard/AccountGroup/Index', [
             'accounts' => [

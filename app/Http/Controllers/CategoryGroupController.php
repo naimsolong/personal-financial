@@ -17,7 +17,7 @@ class CategoryGroupController extends Controller
      */
     public function index()
     {
-        $categories = CategoryGroup::forUser()->select('id', 'name', 'type')->get();
+        $categories = CategoryGroup::forUser()->currentWorkspace()->select('id', 'name', 'type')->get();
         
         return Inertia::render('Dashboard/CategoryGroup/Index', [
             'categories' => [
