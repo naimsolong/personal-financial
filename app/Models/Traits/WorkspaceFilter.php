@@ -2,8 +2,6 @@
 
 namespace App\Models\Traits;
 
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
 trait WorkspaceFilter {
     /**
      * This models that belong to the current workspace.

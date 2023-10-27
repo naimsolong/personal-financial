@@ -24,7 +24,7 @@ class TransactionSeeder extends Seeder
         // For INCOME and EXPENSE
         for($i = 0; $i < 30; $i++)
             Transaction::factory(rand(1,10))->create([
-                'workspace_id' => $workspace->random()->id,
+                'workspace_id' => $workspace->id,
                 'due_at' => now()->subDay($i)
             ]);
 

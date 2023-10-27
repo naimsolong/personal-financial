@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\WorkspaceFormRequest;
 use App\Models\Workspace;
 use App\Services\WorkspaceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class WorkspaceController extends Controller
 {
@@ -15,7 +17,11 @@ class WorkspaceController extends Controller
      */
     public function index()
     {
-        //
+        $workspaces = Workspace::currentUser()->select('id', 'name', 'slug')->orderBy('name')->get();
+
+        return Inertia::render('Dashboard/Workspaces/Index', [
+            'workspaces' => $workspaces->toArray(),
+        ]);
     }
 
     /**
@@ -23,23 +29,22 @@ class WorkspaceController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Dashboard/Workspaces/Form', [
+            'data' => [
+                'id' => '',
+                'name' => ''
+            ],
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(WorkspaceFormRequest $request)
     {
-        //
-    }
+        app(WorkspaceService::class)->store(Workspace::query(), collect($request->only('name')));
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Workspace $workspace)
-    {
-        //
+        return Redirect::route('workspaces.index');
     }
 
     /**
@@ -47,15 +52,20 @@ class WorkspaceController extends Controller
      */
     public function edit(Workspace $workspace)
     {
-        //
+        return Inertia::render('Dashboard/Workspaces/Form', [
+            'edit_mode' => true,
+            'data' => $workspace->only('id','name'),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Workspace $workspace)
+    public function update(WorkspaceFormRequest $request, Workspace $workspace)
     {
-        //
+        app(WorkspaceService::class)->update($workspace, collect($request->only('name')));
+
+        return Redirect::route('workspaces.index');
     }
 
     /**
@@ -63,7 +73,9 @@ class WorkspaceController extends Controller
      */
     public function destroy(Workspace $workspace)
     {
-        //
+        app(WorkspaceService::class)->destroy($workspace);
+
+        return Redirect::route('workspaces.index');
     }
 
     /**
