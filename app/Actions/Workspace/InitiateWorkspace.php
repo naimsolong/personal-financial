@@ -2,6 +2,7 @@
 
 namespace App\Actions\Workspace;
 
+use App\Services\WorkspaceService;
 use Illuminate\Http\Request;
 
 class InitiateWorkspace {
@@ -14,7 +15,7 @@ class InitiateWorkspace {
      */
     public function __invoke(Request $request, $next)
     {
-        session()->push('current_workspace', $request->user()?->workspaces()->first()->id);
+        app(WorkspaceService::class)->initiate();
 
         return $next($request);
     }

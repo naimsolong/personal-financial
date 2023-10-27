@@ -6,6 +6,7 @@ use App\Models\Workspace;
 use App\Services\WorkspaceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 
 class WorkspaceController extends Controller
 {
@@ -70,7 +71,11 @@ class WorkspaceController extends Controller
      */
     public function change(Request $request)
     {
-        app(WorkspaceService::class)->changeWorkspace($request);
+        Validator::make($request->all(), [
+            'workspace_id' => 'required',
+        ])->validate();
+
+        app(WorkspaceService::class)->change($request->workspace_id);
 
         return Redirect::back();
     }

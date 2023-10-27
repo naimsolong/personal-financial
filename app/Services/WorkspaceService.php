@@ -2,13 +2,15 @@
 
 namespace App\Services;
 
-use App\Actions\Workspace\UpdateWorkspace;
-use Illuminate\Http\Request;
-
 class WorkspaceService extends BaseService
 {
-    public function changeWorkspace(Request $request): void
+    public function initiate(): void
     {
-        session()->put('current_workspace', $request->user()?->workspaces()->find($request->workspace_id)->id);
+        session()->push('current_workspace', request()->user()?->workspaces()->first()->id);
+    }
+
+    public function change(int $workspace_id): void
+    {
+        session()->put('current_workspace', request()->user()?->workspaces()->find($workspace_id)->id);
     }
 }
