@@ -30,7 +30,7 @@ test('model able to perform CRUD', function () {
     $transaction->update([
         'amount' => $amount,
     ]);
-    $this->assertDatabaseHas('Transactions', [
+    $this->assertDatabaseHas('transactions', [
         'id' => $transaction->id,
         'amount' => $amount,
     ]);
