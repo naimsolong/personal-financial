@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Enums\AccountsType;
 use App\Enums\TransactionsType;
 use App\Exceptions\ServiceException;
+use App\Models\Category;
 use App\Models\Transaction;
 use App\Services\Traits\TransactionOperation;
 use Carbon\Carbon;
@@ -47,6 +49,27 @@ class TransactionService extends BaseService
             TransactionsType::TRANSFER->value => $this->storeTransfer($model, $data),
             default => throw new ServiceException('Undefined Transaction Type'),
         };
+    }
+
+    public function storeOpeningBalance(int $account_id, Collection $data): bool
+    {
+        $category_id = Category::forSystem()->when($data->get('type') == AccountsType::ASSETS->value, function($query) {
+            return $query->isPositiveOpeningBalance();
+        }, function($query) {
+            return $query->isNegativeOpeningBalance();
+        })->select('id')->first()->id;
+
+        return $this->store(collect([
+            'due_date' => $data->get('opening_date'),
+            'due_time' => now()->format('H:i'),
+            'type' => ($data->get('type') == AccountsType::ASSETS->value) ? TransactionsType::INCOME->value : TransactionsType::EXPENSE->value,
+            'category' => $category_id,
+            'account_from' => $account_id,
+            'amount' => $data->get('starting_balance'),
+            'currency' => $data->get('currency'),
+            'currency_rate' => 1,
+            'notes' => $data->get('notes'),
+        ]));
     }
     
     public function update(mixed $model, Collection $data): bool
