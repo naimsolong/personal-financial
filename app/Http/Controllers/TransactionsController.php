@@ -95,7 +95,7 @@ class TransactionsController extends Controller
      */
     public function store(TransactionFormRequest $request)
     {
-        app(TransactionService::class)->store(Transaction::query(), $request->collect());
+        app(TransactionService::class)->store($request->collect());
         
         return Redirect::route('transactions.index');
     }

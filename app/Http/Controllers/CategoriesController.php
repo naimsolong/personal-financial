@@ -58,7 +58,7 @@ class CategoriesController extends Controller
      */
     public function store(CategoryFormRequest $request)
     {
-        app(CategoryService::class)->store(Category::query(), collect($request->only(
+        app(CategoryService::class)->store(collect($request->only(
             'category_group',
             'name',
             'type',

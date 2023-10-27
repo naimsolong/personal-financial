@@ -9,7 +9,8 @@ use Illuminate\Support\Collection;
 class BaseService implements BasicOperation
 {
     public function __construct(
-        protected mixed $_model = null
+        protected mixed $_model = null,
+        protected string $_class = ''
     ) { }
 
     public function setModel(mixed $model)
@@ -21,20 +22,19 @@ class BaseService implements BasicOperation
 
     public function getModel()
     {
-        return $this->_model;
+        return $this->_model ?? app($this->_class);
     }
 
-    public function store(mixed $model = null, Collection $data): bool
+    public function store(Collection $data): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
-
-        $this->setModel($model->create($data->toArray()));
+        $this->setModel(
+            $this->getModel()->create($data->toArray())
+        );
         
         return !is_null($this->getModel());
     }
     
-    public function update(mixed $model = null, Collection $data): bool
+    public function update(mixed $model, Collection $data): bool
     {
         if(is_null($model))
             throw new ServiceException('Model Not Found');
@@ -47,7 +47,7 @@ class BaseService implements BasicOperation
         return $is_updated;
     }
     
-    public function destroy(mixed $model = null): bool
+    public function destroy(mixed $model): bool
     {
         if(is_null($model))
             throw new ServiceException('Model Not Found');

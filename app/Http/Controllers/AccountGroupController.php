@@ -47,7 +47,7 @@ class AccountGroupController extends Controller
      */
     public function store(AccountGroupFormRequest $request)
     {
-        app(AccountGroupService::class)->store(AccountGroup::query(), collect($request->only('name', 'type')));
+        app(AccountGroupService::class)->store(collect($request->only('name', 'type')));
 
         return Redirect::route('account.group.index');
     }

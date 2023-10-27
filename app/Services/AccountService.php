@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\AccountsType;
 use App\Enums\TransactionsType;
 use App\Exceptions\ServiceException;
+use App\Models\Account;
 use App\Models\AccountGroup;
 use App\Models\Category;
 use App\Models\Transaction;
@@ -12,14 +13,18 @@ use Illuminate\Support\Collection;
 
 class AccountService extends BaseService
 {
-    public function store(mixed $model = null, Collection $data): bool
+    public function __construct()
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        parent::__construct(
+            _class: Account::class
+        );
+    }
 
+    public function store(Collection $data): bool
+    {
         $accountGroup = AccountGroup::select('id', 'name', 'type')->find($data->get('account_group'));
 
-        $model = $model->firstOrCreate(
+        $model = $this->getModel()->firstOrCreate(
             ['name' => $data->get('name')],
             ['type' => $data->get('type')],
         );
@@ -40,7 +45,7 @@ class AccountService extends BaseService
             return $query->isNegativeOpeningBalance();
         })->select('id')->first()->id;
 
-        app(TransactionService::class)->store(Transaction::query(), collect([
+        app(TransactionService::class)->store(collect([
             'due_date' => $data->get('opening_date'),
             'due_time' => now()->format('H:i'),
             'type' => ($data->get('type') == AccountsType::ASSETS->value) ? TransactionsType::INCOME->value : TransactionsType::EXPENSE->value,
@@ -55,14 +60,14 @@ class AccountService extends BaseService
         return !is_null($this->getModel());
     }
 
-    public function update(mixed $model = null, Collection $data): bool
+    public function update(mixed $model, Collection $data): bool
     {
         if(is_null($model))
             throw new ServiceException('Model Not Found');
 
         $accountGroup = AccountGroup::select('id', 'name', 'type')->find($data->get('account_group'));
 
-        $model->update($data->only('name', 'type')->toArray());
+        $is_updated = $model->update($data->only('name', 'type')->toArray());
 
         $model->group()->sync([
             $accountGroup->id => [
@@ -78,10 +83,10 @@ class AccountService extends BaseService
 
         $this->setModel($model);
 
-        return !is_null($this->getModel());
+        return $is_updated;
     }
 
-    public function destroy(mixed $model = null): bool
+    public function destroy(mixed $model): bool
     {
         if(is_null($model))
             throw new ServiceException('Model Not Found');
@@ -92,10 +97,10 @@ class AccountService extends BaseService
 
         // TODO: What happen to transactions
 
-        return is_null($this->getModel());
+        return true;
     }
 
-    public function updateLatestBalance(mixed $model = null, float $amount, float $previous_amount = 0): bool
+    public function updateLatestBalance(mixed $model, float $amount, float $previous_amount = 0): bool
     {
         if(is_null($model))
             throw new ServiceException('Model Not Found');

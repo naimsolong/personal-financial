@@ -47,7 +47,7 @@ class CategoryGroupController extends Controller
      */
     public function store(CategoryGroupFormRequest $request)
     {
-        app(CategoryGroupService::class)->store(CategoryGroup::query(), collect($request->only('name', 'type')));
+        app(CategoryGroupService::class)->store(collect($request->only('name', 'type')));
 
         return Redirect::route('category.group.index');
     }

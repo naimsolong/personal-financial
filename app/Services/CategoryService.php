@@ -3,19 +3,24 @@
 namespace App\Services;
 
 use App\Exceptions\ServiceException;
+use App\Models\Category;
 use App\Models\CategoryGroup;
 use Illuminate\Support\Collection;
 
 class CategoryService extends BaseService
 {
-    public function store(mixed $model = null, Collection $data): bool
+    public function __construct()
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        parent::__construct(
+            _class: Category::class
+        );
+    }
 
+    public function store(Collection $data): bool
+    {
         $categoryGroup = CategoryGroup::select('id', 'name', 'type')->find($data->get('category_group'));
 
-        $model = $model->firstOrCreate(
+        $model = $this->getModel()->firstOrCreate(
             ['name' => $data->get('name')],
             ['type' => $data->get('type')],
         );
@@ -27,12 +32,12 @@ class CategoryService extends BaseService
         return !is_null($this->getModel());
     }
 
-    public function update(mixed $model = null, Collection $data): bool
+    public function update(mixed $model, Collection $data): bool
     {
         if(is_null($model))
             throw new ServiceException('Model Not Found');
 
-        $model->update($data->only('name', 'type')->toArray());
+        $is_updated = $model->update($data->only('name', 'type')->toArray());
 
         $model->group()->sync($data->get('category_group'));
 
@@ -40,10 +45,10 @@ class CategoryService extends BaseService
 
         // TODO: What happen to transactions
 
-        return !is_null($this->getModel());
+        return $is_updated;
     }
 
-    public function destroy(mixed $model = null): bool
+    public function destroy(mixed $model): bool
     {
         if(is_null($model))
             throw new ServiceException('Model Not Found');
@@ -54,6 +59,6 @@ class CategoryService extends BaseService
 
         // TODO: What happen to transactions
 
-        return is_null($this->getModel());
+        return true;
     }
 }

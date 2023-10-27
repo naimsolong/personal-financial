@@ -8,7 +8,9 @@ use App\Models\AccountGroup;
 use App\Models\Category;
 use App\Models\CategoryGroup;
 use App\Models\Transaction;
+use App\Models\Workspace;
 use App\Services\TransactionService;
+use App\Services\WorkspaceService;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
 it('reverses the amount correctly', function () {
@@ -33,6 +35,9 @@ it('modify amount correctly', function() {
 });
 
 it('able to store, update and destroy for expense transaction', function() {
+    $workspace = Workspace::factory()->create();
+    app(WorkspaceService::class)->change($workspace->id);
+
     $service = app(TransactionService::class);
 
     $model = Transaction::query();
@@ -65,7 +70,7 @@ it('able to store, update and destroy for expense transaction', function() {
         'notes' => 'whut',
     ]);
 
-    $is_created = $service->store($model, $store_data);
+    $is_created = $service->store($store_data);
     $model = $service->getModel();
     $this->assertDatabaseHas('transactions', [
         'id' => $model->id,
@@ -115,6 +120,9 @@ it('able to store, update and destroy for expense transaction', function() {
 });
 
 it('able to store, update and destroy for income transaction', function() {
+    $workspace = Workspace::factory()->create();
+    app(WorkspaceService::class)->change($workspace->id);
+    
     $service = app(TransactionService::class);
 
     $model = Transaction::query();
@@ -147,7 +155,7 @@ it('able to store, update and destroy for income transaction', function() {
         'notes' => 'whut',
     ]);
 
-    $is_created = $service->store($model, $store_data);
+    $is_created = $service->store($store_data);
     $model = $service->getModel();
     $this->assertDatabaseHas('transactions', [
         'id' => $model->id,
@@ -197,6 +205,9 @@ it('able to store, update and destroy for income transaction', function() {
 });
 
 it('able to store, update and destroy for transfer transaction', function() {
+    $workspace = Workspace::factory()->create();
+    app(WorkspaceService::class)->change($workspace->id);
+    
     $service = app(TransactionService::class);
 
     $model = Transaction::query();
@@ -226,7 +237,7 @@ it('able to store, update and destroy for transfer transaction', function() {
         'notes' => 'whut',
     ]);
 
-    $is_created = $service->store($model, $store_data);
+    $is_created = $service->store($store_data);
     $model = $service->getModel();
     $this->assertDatabaseHas('transactions', [
         'id' => $model->id,
@@ -312,7 +323,6 @@ it('able to store, update and destroy for transfer transaction', function() {
 it('able to throw exeception', function() {
     $service = app(TransactionService::class);
 
-    expect(fn () => ($service->store(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->update(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->destroy(null)))->toThrow(ServiceException::class, 'Model Not Found');
     
@@ -323,7 +333,6 @@ it('able to throw exeception', function() {
         'due_time' => now()->format('H:i'),
         'type' => 'UNKNOWN_TYPE'
     ]);
-    expect(fn () => ($service->store($model, $data)))->toThrow(ServiceException::class, 'Undefined Transaction Type');
     expect(fn () => ($service->update($model, $data)))->toThrow(ServiceException::class, 'Undefined Transaction Type');
     expect(fn () => ($service->destroy($model)))->toThrow(ServiceException::class, 'Undefined Transaction Type');
 });

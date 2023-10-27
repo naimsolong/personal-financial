@@ -4,13 +4,17 @@ use App\Enums\AccountsType;
 use App\Exceptions\ServiceException;
 use App\Models\Account;
 use App\Models\AccountGroup;
+use App\Models\Workspace;
 use App\Services\AccountService;
+use App\Services\WorkspaceService;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
 it('able to store, update and destroy accounts table', function() {
+    $workspace = Workspace::factory()->create();
+    app(WorkspaceService::class)->change($workspace->id);
+    
     $service = app(AccountService::class);
 
-    $model = Account::query();
     $data = collect([
         'account_group' => AccountGroup::factory()->create()->id,
         'name' => 'test'.rand(4,10),
@@ -21,7 +25,7 @@ it('able to store, update and destroy accounts table', function() {
         'notes' => 'TEST'.rand(4,10),
     ]);
 
-    $is_created = $service->store($model, $data);
+    $is_created = $service->store($data);
     $model = $service->getModel();
     $this->assertDatabaseHas('accounts', $data->only('name','type')->toArray());
     $this->assertDatabaseHas('account_pivot', $data->merge(['account_group_id' => $data->get('account_group'), 'account_id' => $model->id])->only('account_group_id','account_id','starting_balance')->toArray());
@@ -91,7 +95,6 @@ it('able to update latest_balance column', function() {
 it('able to throw exeception', function() {
     $service = app(AccountService::class);
 
-    expect(fn () => ($service->store(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->update(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->destroy(null)))->toThrow(ServiceException::class, 'Model Not Found');
     

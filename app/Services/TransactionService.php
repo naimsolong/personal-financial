@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\TransactionsType;
 use App\Exceptions\ServiceException;
+use App\Models\Transaction;
 use App\Services\Traits\TransactionOperation;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -11,6 +12,13 @@ use Illuminate\Support\Collection;
 class TransactionService extends BaseService
 {
     use TransactionOperation;
+
+    public function __construct()
+    {
+        parent::__construct(
+            _class: Transaction::class
+        );
+    }
 
     public function reverseAmount(int $amount): int
     {
@@ -27,12 +35,11 @@ class TransactionService extends BaseService
         return $amount < 0 ? $amount * -1 : $amount;
     }
 
-    public function store(mixed $model = null, Collection $data): bool
+    public function store(Collection $data): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
-
         $data = $data->merge(['due_at' => Carbon::createFromFormat('d/m/Y H:i', $data->get('due_date').' '.$data->get('due_time', '00:00 AM'))->format('Y-m-d H:i:s')]);
+
+        $model = $this->getModel();
 
         return match($data->get('type')) {
             TransactionsType::EXPENSE->value => $this->storeExpense($model, $data),
@@ -42,7 +49,7 @@ class TransactionService extends BaseService
         };
     }
     
-    public function update(mixed $model = null, Collection $data): bool
+    public function update(mixed $model, Collection $data): bool
     {
         if(is_null($model))
             throw new ServiceException('Model Not Found');
@@ -57,7 +64,7 @@ class TransactionService extends BaseService
         };
     }
     
-    public function destroy(mixed $model = null): bool
+    public function destroy(mixed $model): bool
     {
         if(is_null($model))
             throw new ServiceException('Model Not Found');

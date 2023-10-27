@@ -5,20 +5,25 @@ use App\Models\User;
 use App\Services\BaseService;
 
 test('default model is null', function () {
-    expect(app(BaseService::class)->getModel())->toBeNull();
+    $service = new BaseService(
+        _class: User::class
+    );
+
+    expect($service->getModel())->not->toBeNull();
 });
 
 it('able to store, update and destroy model', function() {
-    $service = app(BaseService::class);
+    $service = new BaseService(
+        _class: User::class
+    );
 
-    $user = User::query();
     $data = collect([
         'name' => 'Name '.rand(5,10),
         'email' => 'test'.rand(5,10).'@email.com',
         'password' => 'password',
     ]);
 
-    $is_created = $service->store($user, $data);
+    $is_created = $service->store($data);
     $this->assertDatabaseHas('users', $data->toArray());
     expect($is_created)->toBeTrue();
     
@@ -41,9 +46,10 @@ it('able to store, update and destroy model', function() {
 });
 
 it('able to throw exeception', function() {
-    $service = app(BaseService::class);
+    $service = new BaseService(
+        _class: User::class
+    );
 
-    expect(fn () => ($service->store(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->update(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->destroy(null)))->toThrow(ServiceException::class, 'Model Not Found');
 });

@@ -42,7 +42,7 @@ class WorkspaceController extends Controller
      */
     public function store(WorkspaceFormRequest $request)
     {
-        app(WorkspaceService::class)->store(Workspace::query(), collect($request->only('name')));
+        app(WorkspaceService::class)->store(collect($request->only('name')));
 
         return Redirect::route('workspaces.index');
     }

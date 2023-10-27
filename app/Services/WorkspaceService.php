@@ -3,20 +3,28 @@
 namespace App\Services;
 
 use App\Exceptions\ServiceException;
+use App\Models\Workspace;
 use Illuminate\Support\Collection;
 
 class WorkspaceService extends BaseService
-{    
+{
+    
+    public function __construct()
+    {
+        parent::__construct(
+            _class: Workspace::class
+        );
+    }
+
     /**
      * store workspace function
      *
-     * @param  mixed $model
      * @param  mixed $data
      * @return bool
      */
-    public function store(mixed $model = null, Collection $data): bool
+    public function store(Collection $data): bool
     {
-        $return = parent::store($model, $data);
+        $return = parent::store($data);
 
         $this->attachUser(auth()->user()->id);
 
@@ -29,7 +37,7 @@ class WorkspaceService extends BaseService
      * @param  mixed $model
      * @return bool
      */
-    public function destroy(mixed $model = null): bool
+    public function destroy(mixed $model): bool
     {
         $this->setModel($model)->detachUser(auth()->user()->id);
 
@@ -45,7 +53,7 @@ class WorkspaceService extends BaseService
      */
     public function initiate(): void
     {
-        session()->put('current_workspace', request()->user()?->workspaces()->first()->id);
+        session()->put('current_workspace', request()->user()?->workspaces()->first()?->id);
     }
     
     /**
@@ -56,7 +64,7 @@ class WorkspaceService extends BaseService
      */
     public function change(int $workspace_id): void
     {
-        session()->put('current_workspace', request()->user()?->workspaces()->find($workspace_id)->id);
+        session()->put('current_workspace', $workspace_id);
     }
     
     /**

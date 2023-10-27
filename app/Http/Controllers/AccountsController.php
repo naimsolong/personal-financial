@@ -63,7 +63,7 @@ class AccountsController extends Controller
      */
     public function store(AccountFormRequest $request)
     {
-        app(AccountService::class)->store(Account::query(), collect($request->only(
+        app(AccountService::class)->store(collect($request->only(
             'account_group',
             'name',
             'type',

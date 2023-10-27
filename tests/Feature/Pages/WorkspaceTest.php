@@ -10,6 +10,7 @@ test('user can access workspace pages', function () {
     $workspace->users()->attach($user->id);
 
     $response = $this->actingAs($user)
+        ->withSession(['current_workspace' => $workspace->id])
         ->get(route('workspaces.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/Workspaces/Index')
@@ -18,6 +19,7 @@ test('user can access workspace pages', function () {
     $response->assertStatus(200);
     
     $response = $this->actingAs($user)
+        ->withSession(['current_workspace' => $workspace->id])
         ->get(route('workspaces.create'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/Workspaces/Form')
@@ -29,6 +31,7 @@ test('user can access workspace pages', function () {
     $response->assertStatus(200);
     
     $response = $this->actingAs($user)
+        ->withSession(['current_workspace' => $workspace->id])
         ->get(route('workspaces.edit', ['workspace' => $workspace->id]))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/Workspaces/Form')
@@ -47,6 +50,7 @@ test('user can perform store, update and destroy', function () {
         'name' => 'test'.rand(4,10),
     ];
     $response = $this->actingAs($user)
+        ->withSession(['current_workspace' => $workspace->id])
         ->post(route('workspaces.store'), $data);
     $response->assertRedirectToRoute('workspaces.index');
     $this->assertDatabaseHas('workspaces', $data);
@@ -56,11 +60,13 @@ test('user can perform store, update and destroy', function () {
         'name' => 'test'.rand(4,10),
     ];
     $response = $this->actingAs($user)
+        ->withSession(['current_workspace' => $workspace->id])
         ->put(route('workspaces.update', ['workspace' => $workspace->id]), $data);
     $response->assertRedirectToRoute('workspaces.index');
     $this->assertDatabaseHas('workspaces', collect($data)->merge(['id' => $workspace->id])->toArray());
     
     $response = $this->actingAs($user)
+        ->withSession(['current_workspace' => $workspace->id])
         ->delete(route('workspaces.destroy', ['workspace' => $workspace->id]));
     $response->assertRedirectToRoute('workspaces.index');
     $this->assertModelMissing($workspace);
