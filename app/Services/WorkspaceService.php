@@ -77,8 +77,7 @@ class WorkspaceService extends BaseService
     {
         $workspace = $this->getModel();
 
-        if(is_null($workspace))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($workspace);
 
         $workspace->users()->attach($user_id);
     }
@@ -93,8 +92,7 @@ class WorkspaceService extends BaseService
     {
         $workspace = $this->getModel();
 
-        if(is_null($workspace))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($workspace);
 
         $workspace->users()->detach($user_id);
     }

@@ -74,8 +74,7 @@ class TransactionService extends BaseService
     
     public function update(mixed $model, Collection $data): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         $data = $data->merge(['due_at' => Carbon::createFromFormat('d/m/Y H:i', $data->get('due_date').' '.$data->get('due_time', '00:00 AM'))->format('Y-m-d H:i:s')]);
 
@@ -89,8 +88,7 @@ class TransactionService extends BaseService
     
     public function destroy(mixed $model): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         return match($model->type) {
             TransactionsType::EXPENSE->value => $this->destroyExpense($model),

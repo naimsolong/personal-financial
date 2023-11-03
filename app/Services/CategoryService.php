@@ -34,8 +34,7 @@ class CategoryService extends BaseService
 
     public function update(mixed $model, Collection $data): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         $categoryGroup = CategoryGroup::currentWorkspace()->select('id', 'name', 'type')->find($data->get('category_group'));
 
@@ -52,8 +51,7 @@ class CategoryService extends BaseService
 
     public function destroy(mixed $model): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         $model->group()->detach();
         

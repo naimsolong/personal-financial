@@ -46,8 +46,7 @@ class AccountService extends BaseService
 
     public function update(mixed $model, Collection $data): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         $accountGroup = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->find($data->get('account_group'));
 
@@ -72,8 +71,7 @@ class AccountService extends BaseService
 
     public function destroy(mixed $model): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         $model->group()->detach();
         
@@ -86,8 +84,7 @@ class AccountService extends BaseService
 
     public function updateLatestBalance(mixed $model, float $amount, float $previous_amount = 0): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         if($amount == 0)
             throw new ServiceException('Amount cannot be zero');

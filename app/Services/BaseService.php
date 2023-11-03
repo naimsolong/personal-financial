@@ -22,7 +22,24 @@ class BaseService implements BasicOperation
 
     public function getModel()
     {
-        return $this->_model ?? app($this->_class);
+        $model = null;
+        
+        if(!is_null($this->_model)) {
+            $model = $this->_model;
+        } elseif($this->_class != '') {
+            $model = app($this->_class);
+        }
+
+        $this->verifyModel($model);
+
+        return $model;
+    }
+
+    protected function verifyModel(mixed $model): void
+    {
+        if(is_null($model)) {
+            throw new ServiceException('Model Not Found');
+        }
     }
 
     public function store(Collection $data): bool
@@ -36,8 +53,7 @@ class BaseService implements BasicOperation
     
     public function update(mixed $model, Collection $data): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         $is_updated = $model->update($data->toArray());
 
@@ -49,8 +65,7 @@ class BaseService implements BasicOperation
     
     public function destroy(mixed $model): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         $is_destroyed = $model->delete();
 
