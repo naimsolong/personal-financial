@@ -16,7 +16,6 @@ test('user can access account pages', function () {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->create();
     $workspace->users()->attach($user->id);
-
     $accountGroup = AccountGroup::factory(3)
         ->hasAttached(
             Account::factory(rand(1,10), ['type' => AccountsType::ASSETS->value]),
@@ -29,6 +28,8 @@ test('user can access account pages', function () {
         ->create([
             'type' => AccountsType::ASSETS->value
         ]);
+    $workspace->accountGroups()->attach($accountGroup->pluck('id'));
+
     $response = $this->actingAs($user)
         ->withSession(['current_workspace' => $workspace->id])
         ->get(route('accounts.index'))
@@ -98,6 +99,7 @@ test('user can perform store, update and destroy', function () {
         ->create([
             'type' => AccountsType::ASSETS->value
         ]);
+    $workspace->accountGroups()->sync([$accountGroup1->id, $accountGroup2->id]);
 
     $data = [
         'name' => 'test'.rand(4,10),

@@ -18,7 +18,7 @@ class CategoryService extends BaseService
 
     public function store(Collection $data): bool
     {
-        $categoryGroup = CategoryGroup::select('id', 'name', 'type')->find($data->get('category_group'));
+        $categoryGroup = CategoryGroup::currentWorkspace()->select('id', 'name', 'type')->find($data->get('category_group'));
 
         $model = $this->getModel()->firstOrCreate(
             ['name' => $data->get('name')],
@@ -37,9 +37,11 @@ class CategoryService extends BaseService
         if(is_null($model))
             throw new ServiceException('Model Not Found');
 
+        $categoryGroup = CategoryGroup::currentWorkspace()->select('id', 'name', 'type')->find($data->get('category_group'));
+
         $is_updated = $model->update($data->only('name', 'type')->toArray());
 
-        $model->group()->sync($data->get('category_group'));
+        $model->group()->sync($categoryGroup->id);
 
         $this->setModel($model);
 

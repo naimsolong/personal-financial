@@ -11,12 +11,15 @@ use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
 it('able to store, update and destroy accounts table', function() {
     $workspace = Workspace::factory()->create();
+    $accountGroup = AccountGroup::factory()->create();
     app(WorkspaceService::class)->change($workspace->id);
     
+    $workspace->accountGroups()->attach($accountGroup->id);
+
     $service = app(AccountService::class);
 
     $data = collect([
-        'account_group' => AccountGroup::factory()->create()->id,
+        'account_group' => $accountGroup->id,
         'name' => 'test'.rand(4,10),
         'type' => AccountsType::ASSETS->value,
         'opening_date' => now()->format('d/m/Y'),
@@ -31,9 +34,11 @@ it('able to store, update and destroy accounts table', function() {
     $this->assertDatabaseHas('account_pivot', $data->merge(['account_group_id' => $data->get('account_group'), 'account_id' => $model->id])->only('account_group_id','account_id','starting_balance')->toArray());
     expect($is_created)->toBeTrue();
     
+    $accountGroup = AccountGroup::factory()->create();
     $model = Account::factory()->create();
+    $workspace->accountGroups()->attach($accountGroup->id);
     $data = collect([
-        'account_group' => AccountGroup::factory()->create()->id,
+        'account_group' => $accountGroup->id,
         'name' => 'test'.rand(4,10),
         'type' => AccountsType::ASSETS->value,
         'opening_date' => now()->format('d/m/Y'),

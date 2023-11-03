@@ -10,12 +10,15 @@ use App\Services\WorkspaceService;
 
 it('able to store, update and destroy categories table', function() {
     $workspace = Workspace::factory()->create();
+    $categoryGroup = CategoryGroup::factory()->create();
     app(WorkspaceService::class)->change($workspace->id);
     
+    $workspace->categoryGroups()->attach($categoryGroup->id);
+
     $service = app(CategoryService::class);
 
     $data = collect([
-        'category_group' => CategoryGroup::factory()->create()->id,
+        'category_group' => $categoryGroup->id,
         'name' => 'test'.rand(4,10),
         'type' => TransactionsType::EXPENSE->value,
     ]);
@@ -26,9 +29,11 @@ it('able to store, update and destroy categories table', function() {
     $this->assertDatabaseHas('category_pivot', collect(['category_group_id' => $data->get('category_group'), 'category_id' => $model->id])->toArray());
     expect($is_created)->toBeTrue();
     
+    $categoryGroup = CategoryGroup::factory()->create();
     $model = Category::factory()->create();
+    $workspace->categoryGroups()->attach($categoryGroup->id);
     $data = collect([
-        'category_group' => CategoryGroup::factory()->create()->id,
+        'category_group' => $categoryGroup->id,
         'name' => 'test'.rand(4,10),
         'type' => TransactionsType::INCOME->value,
     ]);

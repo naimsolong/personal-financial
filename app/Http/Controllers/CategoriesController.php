@@ -36,7 +36,7 @@ class CategoriesController extends Controller
      */
     public function create(Request $request)
     {
-        $categoryGroup = CategoryGroup::forUser()->selectRaw('id AS value, name AS text, type')->get();
+        $categoryGroup = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id AS value, name AS text, type')->get();
         
         return Inertia::render('Dashboard/Categories/Form', [
             'category_group' => [
@@ -72,7 +72,7 @@ class CategoriesController extends Controller
      */
     public function edit(Category $category)
     {
-        $categoryGroup = CategoryGroup::forUser()->selectRaw('id AS value, name AS text, type')->get();
+        $categoryGroup = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id AS value, name AS text, type')->get();
 
         return Inertia::render('Dashboard/Categories/Form', [
             'edit_mode' => true,

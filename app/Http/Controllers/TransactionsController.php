@@ -53,13 +53,13 @@ class TransactionsController extends Controller
      */
     public function create(Request $request)
     {
-        $accounts = AccountGroup::selectRaw('id, name AS label, type')
+        $accounts = AccountGroup::currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
                 'accounts' => function($query) {
                     $query->selectRaw('accounts.id AS value, accounts.name AS text');
                 }
             ])->orderBy('type')->get();
-        $categories = CategoryGroup::forUser()->selectRaw('id, name AS label, type')
+        $categories = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
                 'categories' => function($query) {
                     $query->selectRaw('categories.id AS value, categories.name AS text');
@@ -105,13 +105,13 @@ class TransactionsController extends Controller
      */
     public function edit(Transaction $transaction)
     {
-        $accounts = AccountGroup::selectRaw('id, name AS label, type')
+        $accounts = AccountGroup::currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
                 'accounts' => function($query) {
                     $query->selectRaw('accounts.id AS value, accounts.name AS text');
                 }
             ])->orderBy('type')->get();
-        $categories = CategoryGroup::forUser()->selectRaw('id, name AS label, type')
+        $categories = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
                 'categories' => function($query) {
                     $query->selectRaw('categories.id AS value, categories.name AS text');

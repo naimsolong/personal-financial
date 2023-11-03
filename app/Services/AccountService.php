@@ -22,7 +22,7 @@ class AccountService extends BaseService
 
     public function store(Collection $data): bool
     {
-        $accountGroup = AccountGroup::select('id', 'name', 'type')->find($data->get('account_group'));
+        $accountGroup = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->find($data->get('account_group'));
 
         $model = $this->getModel()->firstOrCreate(
             ['name' => $data->get('name')],
@@ -49,7 +49,7 @@ class AccountService extends BaseService
         if(is_null($model))
             throw new ServiceException('Model Not Found');
 
-        $accountGroup = AccountGroup::select('id', 'name', 'type')->find($data->get('account_group'));
+        $accountGroup = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->find($data->get('account_group'));
 
         $is_updated = $model->update($data->only('name', 'type')->toArray());
 
