@@ -5,6 +5,7 @@ namespace App\Services\Traits;
 use App\Enums\TransactionsStatus;
 use App\Models\Account;
 use App\Services\AccountService;
+use App\Services\WorkspaceService;
 use Exception;
 use Illuminate\Support\Collection;
 
@@ -14,7 +15,7 @@ trait TransactionOperation
     {
         $amount = $this->modifyNegativeAmount($data->get('amount'));
         
-        $workspace_id = session()->get('current_workspace');
+        $workspace_id = session()->get(WorkspaceService::KEY);
 
         if(is_null($workspace_id))
             throw new Exception('Current Workspace does not exist');
@@ -43,7 +44,7 @@ trait TransactionOperation
     {
         $amount = $this->modifyPositiveAmount($data->get('amount'));
 
-        $workspace_id = session()->get('current_workspace');
+        $workspace_id = session()->get(WorkspaceService::KEY);
 
         if(is_null($workspace_id))
             throw new Exception('Current Workspace does not exist');
@@ -73,7 +74,7 @@ trait TransactionOperation
         $amount_from = $this->modifyNegativeAmount($data->get('amount'));
         $amount_to = $this->modifyPositiveAmount($data->get('amount'));
 
-        $workspace_id = session()->get('current_workspace');
+        $workspace_id = session()->get(WorkspaceService::KEY);
 
         if(is_null($workspace_id))
             throw new Exception('Current Workspace does not exist');

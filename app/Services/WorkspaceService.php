@@ -57,7 +57,7 @@ class WorkspaceService extends BaseService
             throw new ServiceException('Current Workspace not found');
         }
 
-        session()->put('current_workspace', $workspace_id);
+        session()->put(self::KEY, $workspace_id);
 
         $model = $this->getModel()->where('id', $workspace_id)->first();
 
@@ -68,7 +68,7 @@ class WorkspaceService extends BaseService
 
     public function current(): static
     {
-        $workspace_id = session()->get('current_workspace');
+        $workspace_id = session()->get(self::KEY);
         
         if(is_null($workspace_id)) {
             throw new ServiceException('Current Workspace not found');
@@ -86,7 +86,7 @@ class WorkspaceService extends BaseService
      */
     public function change(int $workspace_id): static
     {
-        session()->put('current_workspace', $workspace_id);
+        session()->put(self::KEY, $workspace_id);
 
         $model = $this->getModel()->where('id', $workspace_id)->first();
 

@@ -8,6 +8,7 @@ use App\Models\AccountPivot;
 use App\Models\Category;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Services\WorkspaceService;
 use Carbon\Carbon;
 use Inertia\Testing\AssertableInertia as Assert;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
@@ -31,7 +32,7 @@ test('user can access account pages', function () {
     $workspace->accountGroups()->attach($accountGroup->pluck('id'));
 
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('accounts.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/Accounts/Index')
@@ -43,7 +44,7 @@ test('user can access account pages', function () {
     $response->assertStatus(200);
     
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('accounts.create'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/Accounts/Form')
@@ -65,7 +66,7 @@ test('user can access account pages', function () {
     
     $account = $accountGroup->first()->accounts()->first();
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('accounts.edit', ['account' => $account->id]))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/Accounts/Form')
@@ -110,7 +111,7 @@ test('user can perform store, update and destroy', function () {
         'currency' => CurrencyAlpha3::from('MYR')->value,
     ];
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->post(route('accounts.store'), $data);
     $response->assertRedirectToRoute('accounts.index');
     $this->assertDatabaseHas('account_pivot', collect($data)->merge([
@@ -138,7 +139,7 @@ test('user can perform store, update and destroy', function () {
         'currency' => CurrencyAlpha3::from('MYR')->value,
     ];
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->put(route('accounts.update', ['account' => $account->id]), $data);
     $response->assertRedirectToRoute('accounts.index');
     $this->assertDatabaseHas('account_pivot', collect($data)->merge([
@@ -150,7 +151,7 @@ test('user can perform store, update and destroy', function () {
     ])->toArray());
     
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->delete(route('accounts.destroy', ['account' => $account->id]));
     $response->assertRedirectToRoute('accounts.index');
     $this->assertDatabaseMissing('account_pivot', [

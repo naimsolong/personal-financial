@@ -38,20 +38,20 @@ it('can initiate and change the current workspace', function () {
     $workspace->users()->attach($user->id);
 
     $response = $this->actingAs($user)->get('/');
-    $response->assertSessionMissing('current_workspace');
+    $response->assertSessionMissing(WorkspaceService::KEY);
 
     $service = new WorkspaceService();
     $service->initiate();
     
     $response = $this->actingAs($user)->get('/');
-    $response->assertSessionHas('current_workspace', $workspace->id);
+    $response->assertSessionHas(WorkspaceService::KEY, $workspace->id);
 
     $workspace = Workspace::factory()->create();
     $workspace->users()->attach($user->id);
     $service->change($workspace->id);
     
     $response = $this->actingAs($user)->get('/');
-    $response->assertSessionHas('current_workspace', $workspace->id);
+    $response->assertSessionHas(WorkspaceService::KEY, $workspace->id);
 });
 
 it('can attach and detach from the current workspace', function () {

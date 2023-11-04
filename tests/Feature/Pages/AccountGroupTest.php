@@ -4,6 +4,7 @@ use App\Enums\AccountsType;
 use App\Models\AccountGroup;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Services\WorkspaceService;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('user can access account group pages', function () {
@@ -16,7 +17,7 @@ test('user can access account group pages', function () {
     $workspace->accountGroups()->sync($accountGroup->pluck('id'));
     
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('account.group.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/AccountGroup/Index')
@@ -29,7 +30,7 @@ test('user can access account group pages', function () {
     $response->assertStatus(200);
     
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('account.group.create'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/AccountGroup/Form')
@@ -44,7 +45,7 @@ test('user can access account group pages', function () {
     
     $accountGroup = AccountGroup::factory()->create();
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('account.group.edit', ['group' => $accountGroup->id]))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/AccountGroup/Form')
@@ -65,7 +66,7 @@ test('user can perform store, update and destroy', function () {
         'type' => AccountsType::ASSETS->value
     ];
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->post(route('account.group.store'), $data);
     $response->assertRedirectToRoute('account.group.index');
     $this->assertDatabaseHas('account_groups', $data);
@@ -76,13 +77,13 @@ test('user can perform store, update and destroy', function () {
         'type' => AccountsType::LIABILITIES->value
     ];
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->put(route('account.group.update', ['group' => $accountGroup->id]), $data);
     $response->assertRedirectToRoute('account.group.index');
     $this->assertDatabaseHas('account_groups', collect($data)->merge(['id' => $accountGroup->id])->toArray());
     
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->delete(route('account.group.destroy', ['group' => $accountGroup->id]));
     $response->assertRedirectToRoute('account.group.index');
     $this->assertSoftDeleted($accountGroup);

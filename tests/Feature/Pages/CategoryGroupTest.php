@@ -4,6 +4,7 @@ use App\Enums\TransactionsType;
 use App\Models\CategoryGroup;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Services\WorkspaceService;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('user can access category group pages', function () {
@@ -16,7 +17,7 @@ test('user can access category group pages', function () {
     $workspace->categoryGroups()->sync($categoryGroup->pluck('id'));
 
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('category.group.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/CategoryGroup/Index')
@@ -29,7 +30,7 @@ test('user can access category group pages', function () {
     $response->assertStatus(200);
     
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('category.group.create'))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/CategoryGroup/Form')
@@ -44,7 +45,7 @@ test('user can access category group pages', function () {
     
     $categoryGroup = CategoryGroup::factory()->create();
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('category.group.edit', ['group' => $categoryGroup->id]))
         ->assertInertia(fn (Assert $page) => $page
             ->component('Dashboard/CategoryGroup/Form')
@@ -65,7 +66,7 @@ test('user can perform store, update and destroy', function () {
     ];
     
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->post(route('category.group.store'), $data);
     $response->assertRedirectToRoute('category.group.index');
     $this->assertDatabaseHas('category_groups', $data);
@@ -77,13 +78,13 @@ test('user can perform store, update and destroy', function () {
         'type' => TransactionsType::INCOME->value
     ];
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->put(route('category.group.update', ['group' => $categoryGroup->id]), $data);
     $response->assertRedirectToRoute('category.group.index');
     $this->assertDatabaseHas('category_groups', collect($data)->merge(['id' => $categoryGroup->id])->toArray());
     
     $response = $this->actingAs($user)
-        ->withSession(['current_workspace' => $workspace->id])
+        ->withSession([WorkspaceService::KEY => $workspace->id])
         ->delete(route('category.group.destroy', ['group' => $categoryGroup->id]));
     $response->assertRedirectToRoute('category.group.index');
     $this->assertSoftDeleted($categoryGroup);
