@@ -53,6 +53,9 @@ const deleteWorkspace = () => {
         onSuccess: () => {
             form.reset()
         },
+        onError: () => {
+            confirmingWorkspaceDeletion.value = false;
+        },
     }
 
     if(props.edit_mode)
@@ -65,6 +68,12 @@ const deleteWorkspace = () => {
 <template>
     <Dashboard title="Workspace">
         <Header :title="(props.edit_mode ? 'Edit' : 'New') + ' - Workspace'"/>
+        
+        <!-- TODO: Change this toast alert -->
+        <ol>
+            <li class="mt-2" v-for="errorrr in form.errors"> {{ errorrr }}</li>
+        </ol>
+        
 
         <form @submit.prevent="submitForm">
             <div class="mb-3">

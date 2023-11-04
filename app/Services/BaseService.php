@@ -35,6 +35,11 @@ class BaseService implements BasicOperation
         return $model;
     }
 
+    public function haveModel(): bool
+    {
+        return !is_null($this->_model);
+    }
+
     protected function verifyModel(mixed $model): void
     {
         if(is_null($model)) {

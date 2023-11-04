@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\AccountGroup;
+use App\Models\Workspace;
 use Illuminate\Support\Collection;
 
 class AccountGroupService extends BaseService
@@ -16,15 +17,26 @@ class AccountGroupService extends BaseService
 
     public function store(Collection $data): bool
     {
-        $is_created = parent::store($data);
+        $this->setModel(
+            $this->getModel()->firstOrCreate(
+                $data->toArray()
+            )
+        );
 
-        $workspace_id = session()->get('current_workspace');
+        $is_created = $this->haveModel();
 
-        $model = $this->getModel();
-
-        $model->workspace()->attach($workspace_id);
+        app(WorkspaceService::class)->current()->attachAccountGroup($this->getModel()->id);
 
         return $is_created;
+    }
+
+    public function destroy(mixed $model): bool
+    {
+        $this->setModel($model);
+
+        app(WorkspaceService::class)->current()->detachAccountGroup($this->getModel()->id);
+
+        return true;
     }
 
     // TODO: What happen to transactions and categories if update or destroy

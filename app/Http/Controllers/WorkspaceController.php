@@ -8,6 +8,7 @@ use App\Services\WorkspaceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class WorkspaceController extends Controller
@@ -42,7 +43,11 @@ class WorkspaceController extends Controller
      */
     public function store(WorkspaceFormRequest $request)
     {
-        app(WorkspaceService::class)->store(collect($request->only('name')));
+        $workspaceService = app(WorkspaceService::class);
+        
+        $workspaceService->store(collect($request->only('name')));
+
+        $workspaceService->change($workspaceService->getModel()->id);
 
         return Redirect::route('workspaces.index');
     }
@@ -73,7 +78,36 @@ class WorkspaceController extends Controller
      */
     public function destroy(Workspace $workspace)
     {
-        app(WorkspaceService::class)->destroy($workspace);
+        $workspaceService = app(WorkspaceService::class)->setModel($workspace);
+        
+        $errors = [];
+
+        if($workspaceService->haveCategoryGroup())
+            $errors[] = 'Categories';
+
+        if($workspaceService->haveAccountGroup())
+            $errors[] = 'Accounts';
+
+        if($workspaceService->haveTransaction())
+            $errors[] = 'Transactions';
+
+        if(count($errors) > 0) {
+            if(count($errors) > 1) {
+                $last = array_pop($errors);
+
+                $populate = implode(', ', $errors);
+
+                $populate .= ' and ' . $last;
+            } else {
+                $populate = $errors[0];
+            }
+
+            throw ValidationException::withMessages(['custom' => 'Unable to delete workspace because it has ' . $populate . ' in it.']);
+        }
+
+        $workspaceService->destroy($workspace);
+
+        $workspaceService->initiate();
 
         return Redirect::route('workspaces.index');
     }
