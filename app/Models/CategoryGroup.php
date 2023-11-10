@@ -6,6 +6,7 @@ use App\Models\Interfaces\WorkspaceRelation;
 use App\Models\Traits\SystemFlagFilter;
 use App\Models\Traits\TransactionsTypeFilter;
 use App\Models\Traits\WorkspaceFilter;
+use App\Services\WorkspaceService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -42,6 +43,7 @@ class CategoryGroup extends Model implements WorkspaceRelation
         return $this->belongsToMany(Category::class, 'category_pivot')
             ->using(CategoryPivot::class)
             ->as('details')
+            ->wherePivot('workspace_id', session()->get(WorkspaceService::KEY))
             ->withTimestamps();
     }
 }

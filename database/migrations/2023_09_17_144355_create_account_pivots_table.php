@@ -14,8 +14,9 @@ return new class extends Migration
     {
         Schema::create('account_pivot', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('account_group_id')->constrained();
-            $table->foreignId('account_id')->constrained();
+            $table->foreignId('workspace_id')->constrained('workspaces');
+            $table->foreignId('account_group_id')->constrained('account_groups');
+            $table->foreignId('account_id')->constrained('accounts');
             $table->date('opening_date');
             $table->integer('starting_balance')->default(0);
             $table->integer('latest_balance')->default(0);

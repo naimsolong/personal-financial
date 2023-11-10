@@ -19,6 +19,13 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+        
+        Schema::create('workspace_accounts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('workspace_id')->constrained();
+            $table->foreignId('account_group_id')->constrained();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -26,6 +33,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('workspace_accounts');
         Schema::dropIfExists('account_groups');
     }
 };

@@ -24,20 +24,6 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
         });
-        
-        Schema::create('workspace_accounts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('workspace_id')->constrained();
-            $table->foreignId('account_group_id')->constrained();
-            $table->timestamps();
-        });
-        
-        Schema::create('workspace_categories', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('workspace_id')->constrained();
-            $table->foreignId('category_group_id')->constrained();
-            $table->timestamps();
-        });
     }
 
     /**
@@ -45,8 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('workspace_categories');
-        Schema::dropIfExists('workspace_accounts');
         Schema::dropIfExists('workspace_users');
         Schema::dropIfExists('workspaces');
     }

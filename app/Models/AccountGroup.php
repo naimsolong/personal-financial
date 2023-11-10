@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Interfaces\WorkspaceRelation;
 use App\Models\Traits\WorkspaceFilter;
+use App\Services\WorkspaceService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -40,6 +41,7 @@ class AccountGroup extends Model implements WorkspaceRelation
             ->using(AccountPivot::class)
             ->as('details')
             ->withPivot('opening_date', 'starting_balance', 'latest_balance', 'currency', 'notes')
+            ->wherePivot('workspace_id', session()->get(WorkspaceService::KEY))
             ->withTimestamps();
     }
 }

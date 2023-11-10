@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Locals;
 
 use App\Enums\AccountsType;
 use App\Enums\TransactionsType;
@@ -19,7 +19,7 @@ class TransactionSeeder extends Seeder
      */
     public function run(): void
     {
-        $workspace = Workspace::where('name', 'Personal')->first();
+        $workspace = Workspace::first();
 
         // For INCOME and EXPENSE
         for($i = 0; $i < 30; $i++)

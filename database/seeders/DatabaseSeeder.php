@@ -4,16 +4,17 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use Database\Seeders\Locals AS LocalSeeders;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
     protected const LOCAL_SEEDER = [
-        UserSeeder::class,
-        CategorySeeder::class,
-        AccountSeeder::class,
-        WorkspaceSeeder::class,
-        TransactionSeeder::class,
+        LocalSeeders\WorkspaceSeeder::class,
+        LocalSeeders\UserSeeder::class,
+        LocalSeeders\CategorySeeder::class,
+        LocalSeeders\AccountSeeder::class,
+        LocalSeeders\TransactionSeeder::class,
     ];
     
     protected const TESTING_SEEDER = [];

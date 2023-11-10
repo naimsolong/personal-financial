@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Locals;
 
 use App\Models\Label;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
