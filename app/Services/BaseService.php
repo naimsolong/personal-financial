@@ -15,6 +15,8 @@ class BaseService implements BasicOperation
 
     public function setModel(mixed $model)
     {
+        $this->verifyModel($model);
+
         $this->_model = $model;
 
         return $this;

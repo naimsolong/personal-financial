@@ -32,7 +32,9 @@ class CategoryGroup extends Model implements WorkspaceRelation
      */
     public function workspace(): BelongsToMany
     {
-        return $this->belongsToMany(Workspace::class, 'workspace_categories')->withTimestamps();
+        return $this->belongsToMany(Workspace::class, 'workspace_categories')
+            ->using(WorkspaceCategoriesPivot::class)
+            ->withTimestamps();
     }
     
     /**

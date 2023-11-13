@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class CategoryPivot extends Pivot
+class WorkspaceCategoriesPivot extends Pivot
 {
     /**
      * Indicates if the IDs are auto-incrementing.
@@ -14,6 +14,13 @@ class CategoryPivot extends Pivot
     public $incrementing = true;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'workspace_categories';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -21,6 +28,5 @@ class CategoryPivot extends Pivot
     protected $fillable = [
         'workspace_id',
         'category_group_id',
-        'category_id',
     ];
 }

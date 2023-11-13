@@ -41,7 +41,9 @@ class Workspace extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'workspace_users')->withTimestamps();
+        return $this->belongsToMany(User::class, 'workspace_users')
+            ->using(WorkspaceUsersPivot::class)
+            ->withTimestamps();
     }
 
     /**
@@ -49,7 +51,9 @@ class Workspace extends Model
      */
     public function accountGroups(): BelongsToMany
     {
-        return $this->belongsToMany(AccountGroup::class, 'workspace_accounts')->withTimestamps();
+        return $this->belongsToMany(AccountGroup::class, 'workspace_accounts')
+            ->using(WorkspaceAccountsPivot::class)
+            ->withTimestamps();
     }
 
     /**
@@ -57,7 +61,9 @@ class Workspace extends Model
      */
     public function categoryGroups(): BelongsToMany
     {
-        return $this->belongsToMany(CategoryGroup::class, 'workspace_categories')->withTimestamps();
+        return $this->belongsToMany(CategoryGroup::class, 'workspace_categories')
+            ->using(WorkspaceCategoriesPivot::class)
+            ->withTimestamps();
     }
 
     /**

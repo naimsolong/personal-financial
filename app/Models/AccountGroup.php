@@ -29,7 +29,9 @@ class AccountGroup extends Model implements WorkspaceRelation
      */
     public function workspace(): BelongsToMany
     {
-        return $this->belongsToMany(Workspace::class, 'workspace_accounts')->withTimestamps();
+        return $this->belongsToMany(Workspace::class, 'workspace_accounts')
+            ->using(WorkspaceAccountsPivot::class)
+            ->withTimestamps();
     }
 
     /**
