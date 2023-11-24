@@ -7,6 +7,7 @@ use App\Enums\TransactionsType;
 use App\Exceptions\ServiceException;
 use App\Models\Account;
 use App\Models\AccountGroup;
+use App\Models\AccountPivot;
 use App\Models\Category;
 use App\Models\Transaction;
 use Illuminate\Support\Collection;
@@ -16,20 +17,19 @@ class AccountService extends BaseService
     public function __construct()
     {
         parent::__construct(
-            _class: Account::class
+            _model: Account::class
         );
     }
 
     public function store(Collection $data): bool
     {
-        $accountGroup = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->find($data->get('account_group'));
-
-        $model = $this->getModel()->firstOrCreate(
-            ['name' => $data->get('name')],
-            ['type' => $data->get('type')],
-        );
+        $model = $this->getModel()->firstOrCreate([
+            'name' => $data->get('name'),
+            'type' => $data->get('type')
+        ]);
         
-        $accountGroup->accounts()->attach($model->id, [
+        $model->group()->attach($data->get('account_group'), [
+            'workspace_id' => session()->get(WorkspaceService::KEY),
             'opening_date' => $data->get('opening_date'),
             'starting_balance' => $data->get('starting_balance'),
             'latest_balance' => $data->get('starting_balance'),
@@ -38,8 +38,6 @@ class AccountService extends BaseService
         ]);
 
         $this->setModel($model);
-
-        app(TransactionService::class)->storeOpeningBalance($model->id, $data);
 
         return !is_null($this->getModel());
     }
@@ -50,9 +48,32 @@ class AccountService extends BaseService
 
         $accountGroup = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->find($data->get('account_group'));
 
-        $is_updated = $model->update($data->only('name', 'type')->toArray());
+        $this->setModel(
+            $this->getModel()->firstOrCreate(
+                $data->only('name', 'type')->toArray()
+            )
+        );
+        
+        $updatedModel = $this->getModel();
 
-        $model->group()->sync([
+        if($updatedModel->id != $model->id) {
+            AccountPivot::where(function($query) use ($accountGroup, $model) {
+                $query->where('account_group_id', $accountGroup->id)
+                    ->where('account_id', $model->id)
+                    ->where('workspace_id', session()->get(WorkspaceService::KEY));
+            })->update([
+                'account_id' => $updatedModel->id
+            ]);
+            
+            Transaction::where(function($query) use ($model) {
+                $query->where('category_id', $model->id)
+                    ->where('workspace_id', session()->get(WorkspaceService::KEY));
+            })->update([
+                'category_id' => $updatedModel->id
+            ]);
+        }
+
+        $updatedModel->group()->sync([
             $accountGroup->id => [
                 'opening_date' => $data->get('opening_date'),
                 'starting_balance' => $data->get('starting_balance'),
@@ -64,9 +85,7 @@ class AccountService extends BaseService
 
         // TODO: Make adjustment on latest_balance
 
-        $this->setModel($model);
-
-        return $is_updated;
+        return true;
     }
 
     public function destroy(mixed $model): bool
@@ -87,7 +106,7 @@ class AccountService extends BaseService
         $this->verifyModel($model);
 
         if($amount == 0)
-            throw new ServiceException('Amount cannot be zero');
+            return true;
 
         $previous_balance = $model->details->latest_balance;
 

@@ -6,11 +6,12 @@ use App\Exceptions\ServiceException;
 use App\Services\Interfaces\BasicOperation;
 use Illuminate\Support\Collection;
 
+
+// TODO: Optimize this BaseService class
 class BaseService implements BasicOperation
 {
     public function __construct(
-        protected mixed $_model = null,
-        protected string $_class = ''
+        protected mixed $_model = null
     ) { }
 
     public function setModel(mixed $model)
@@ -24,10 +25,10 @@ class BaseService implements BasicOperation
     {
         $model = null;
         
-        if(!is_null($this->_model)) {
+        if(is_string($this->_model)) {
+            $model = app($this->_model);
+        } elseif(!is_null($this->_model)) {
             $model = $this->_model;
-        } elseif($this->_class != '') {
-            $model = app($this->_class);
         }
 
         $this->verifyModel($model);
@@ -37,12 +38,12 @@ class BaseService implements BasicOperation
 
     public function haveModel(): bool
     {
-        return !is_null($this->_model);
+        return !is_null($this->_model) &&  !is_string($this->_model);
     }
 
     protected function verifyModel(mixed $model): void
     {
-        if(is_null($model)) {
+        if(is_string($model) || is_null($model)) {
             throw new ServiceException('Model Not Found');
         }
     }

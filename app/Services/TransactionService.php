@@ -18,7 +18,7 @@ class TransactionService extends BaseService
     public function __construct()
     {
         parent::__construct(
-            _class: Transaction::class
+            _model: Transaction::class
         );
     }
 

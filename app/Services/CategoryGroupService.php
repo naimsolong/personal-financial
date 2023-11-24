@@ -13,7 +13,7 @@ class CategoryGroupService extends BaseService
     public function __construct()
     {
         parent::__construct(
-            _class: CategoryGroup::class
+            _model: CategoryGroup::class
         );
     }
 
@@ -27,45 +27,57 @@ class CategoryGroupService extends BaseService
         
         $is_created = $this->haveModel();
 
-        app(WorkspaceService::class)->current()->attachCategoryGroup($this->getModel()->id);
+        WorkspaceCategoriesPivot::create([
+            'category_group_id' => $this->getModel()->id,
+            'workspace_id' => session()->get(WorkspaceService::KEY)
+        ]);
 
         return $is_created;
     }
 
     public function update(mixed $model, Collection $data): bool
     {
-        $original_id = $model->id;
-        
+        $this->verifyModel($model);
+
         $this->setModel(
             $this->getModel()->firstOrCreate(
                 $data->toArray()
             )
         );
         
-        $is_updated = $this->haveModel();
+        $updatedModel = $this->getModel();
         
-        if($is_updated) {
-            WorkspaceCategoriesPivot::where(function($query) use ($original_id) {
-                $query->where('category_group_id', $original_id)
+        if($updatedModel->id != $model->id) {
+            WorkspaceCategoriesPivot::where(function($query) use ($model) {
+                $query->where('category_group_id', $model->id)
                     ->where('workspace_id', session()->get(WorkspaceService::KEY));
             })->update([
-                'category_group_id' => $this->getModel()->id
+                'category_group_id' => $updatedModel->id
             ]);
 
-            CategoryPivot::where(function($query) use ($original_id) {
-                $query->where('category_group_id', $original_id)
+            CategoryPivot::where(function($query) use ($model) {
+                $query->where('category_group_id', $model->id)
                     ->where('workspace_id', session()->get(WorkspaceService::KEY));
             })->update([
-                'category_group_id' => $this->getModel()->id
+                'category_group_id' => $updatedModel->id
             ]);
         }
 
-        return $is_updated;
+        // TODO: What happen to transactions and categories
+
+        return true;
     }
 
     public function destroy(mixed $model): bool
     {
-        app(WorkspaceService::class)->current()->detachCategoryGroup($this->getModel()->id);
+        $this->verifyModel($model);
+
+        WorkspaceCategoriesPivot::where([
+            'category_group_id' => $model->id,
+            'workspace_id' => session()->get(WorkspaceService::KEY)
+        ])->delete();
+
+        // TODO: What happen to transactions and categories
 
         return true;
     }
