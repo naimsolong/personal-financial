@@ -3,8 +3,12 @@
 namespace App\Services;
 
 use App\Exceptions\ServiceException;
+use App\Models\AccountGroup;
+use App\Models\CategoryGroup;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Models\Workspace;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class WorkspaceService extends BaseService
@@ -14,7 +18,7 @@ class WorkspaceService extends BaseService
     public function __construct()
     {
         parent::__construct(
-            _class: Workspace::class
+            _model: Workspace::class
         );
     }
 
@@ -25,7 +29,7 @@ class WorkspaceService extends BaseService
     {
         $return = parent::store($data);
 
-        $this->attachUser(auth()->user()->id);
+        $this->attach(auth()->user());
 
         return $return;
     }
@@ -35,7 +39,7 @@ class WorkspaceService extends BaseService
      */
     public function destroy(mixed $model): bool
     {
-        $this->setModel($model)->detachUser(auth()->user()->id);
+        $this->setModel($model)->detach(auth()->user());
 
         return parent::destroy($model);
     }
@@ -60,6 +64,9 @@ class WorkspaceService extends BaseService
         return $this;
     }
 
+    /**
+     * set current workspace
+     */
     public function current(): static
     {
         $workspace_id = session()->get(self::KEY);
@@ -76,7 +83,7 @@ class WorkspaceService extends BaseService
     }
     
     /**
-     * change workspace function to update current_workspace in session
+     * update current_workspace in session
      */
     public function change(int $workspace_id): static
     {
@@ -89,87 +96,65 @@ class WorkspaceService extends BaseService
         return $this;
     }
 
-    public function haveUser(?int $user_id = null): bool
+    /**
+     * check the relation with current workspace
+     */
+    public function have(User|CategoryGroup|AccountGroup|Transaction|string $relation): bool
     {
         $workspace = $this->getModel();
 
-        return $workspace->users()->when(!is_null($user_id), function($query) use ($user_id){
-            $query->where('user_id', $user_id);
+        if(is_string($relation)) {
+            $relation = app($relation);
+        }
+        
+        [$workspace, $column] = match(get_class($relation)) {
+            'App\Models\User' => [$workspace->users(), 'user_id'],
+            'App\Models\CategoryGroup' => [$workspace->categoryGroups(), 'category_group_id'],
+            'App\Models\AccountGroup' => [$workspace->accountGroups(), 'account_group_id'],
+            'App\Models\Transaction' => [$workspace->transactions(), 'transaction_id'],
+            default => throw new ServiceException('Relation not found')
+        };
+        
+        return $workspace->when(isset($relation->id), function($query) use ($relation, $column){
+            $query->where($column, $relation->id);
         })->exists();
-    }
-
-    public function haveCategoryGroup(?int $category_group_id = null): bool
-    {
-        $workspace = $this->getModel();
-
-        return $workspace->categoryGroups()->when(!is_null($category_group_id), function($query) use ($category_group_id){
-            $query->where('category_group_id', $category_group_id);
-        })->exists();
-    }
-
-    public function haveAccountGroup(?int $account_group_id = null): bool
-    {
-        $workspace = $this->getModel();
-
-        return $workspace->accountGroups()->when(!is_null($account_group_id), function($query) use ($account_group_id){
-            $query->where('account_group_id', $account_group_id);
-        })->exists();
-    }
-
-    public function haveTransaction(?int $transaction_id = null): bool
-    {
-        $workspace = $this->getModel();
-
-        return Transaction::when(!is_null($transaction_id), function($query) use ($transaction_id){
-            $query->where('id', $transaction_id);
-        })->where('workspace_id', $workspace->id)->exists();
     }
     
     /**
-     * attach user with current workspace
+     * attach the relation with current workspace
      */
-    public function attachUser(int $user_id): void
+    public function attach(User|CategoryGroup|AccountGroup|Builder $relation): static
     {
         $workspace = $this->getModel();
+        
+        $workspace = match(true) {
+            $relation instanceof User => $workspace->users(),
+            $relation instanceof CategoryGroup => $workspace->categoryGroups(),
+            $relation instanceof AccountGroup => $workspace->accountGroups(),
+            default => throw new ServiceException('Relation not found')
+        };
+        
+        $workspace->attach($relation->id);
 
-        $workspace->users()->attach($user_id);
+        return $this;
     }
     
     /**
      * detach user from current workspace
      */
-    public function detachUser(int $user_id): void
+    public function detach(User|CategoryGroup|AccountGroup|Builder $relation): static
     {
         $workspace = $this->getModel();
+        
+        $workspace = match(true) {
+            $relation instanceof User => $workspace->users(),
+            $relation instanceof CategoryGroup => $workspace->categoryGroups(),
+            $relation instanceof AccountGroup => $workspace->accountGroups(),
+            default => throw new ServiceException('Relation not found')
+        };
+        
+        $workspace->detach($relation->id);
 
-        $workspace->users()->detach($user_id);
-    }
-
-    public function attachCategoryGroup(mixed $category_group): void
-    {
-        $workspace = $this->getModel();
-
-        $workspace->categoryGroups()->attach($category_group);
-    }
-
-    public function detachCategoryGroup(mixed $category_group): void
-    {
-        $workspace = $this->getModel();
-
-        $workspace->categoryGroups()->detach($category_group);
-    }
-
-    public function attachAccountGroup(mixed $account_group): void
-    {
-        $workspace = $this->getModel();
-
-        $workspace->accountGroups()->attach($account_group);
-    }
-
-    public function detachAccountGroup(mixed $account_group): void
-    {
-        $workspace = $this->getModel();
-
-        $workspace->accountGroups()->detach($account_group);
+        return $this;
     }
 }

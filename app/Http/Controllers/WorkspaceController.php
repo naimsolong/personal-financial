@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WorkspaceFormRequest;
+use App\Models\AccountGroup;
+use App\Models\CategoryGroup;
+use App\Models\Transaction;
 use App\Models\Workspace;
 use App\Services\WorkspaceService;
 use Illuminate\Http\Request;
@@ -82,13 +85,13 @@ class WorkspaceController extends Controller
         
         $errors = [];
 
-        if($workspaceService->haveCategoryGroup())
+        if($workspaceService->have(CategoryGroup::class))
             $errors[] = 'Categories';
 
-        if($workspaceService->haveAccountGroup())
+        if($workspaceService->have(AccountGroup::class))
             $errors[] = 'Accounts';
 
-        if($workspaceService->haveTransaction())
+        if($workspaceService->have(Transaction::class))
             $errors[] = 'Transactions';
 
         if(count($errors) > 0) {
