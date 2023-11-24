@@ -12,11 +12,16 @@ const props = defineProps({
 });
 
 const state  = reactive({
-    expense_flag: true
+    expense_flag: true,
+    show_add_button: true
 })
 
 const data = computed(() => {
-    return state.expense_flag == true ? props.categories.expense : props.categories.income
+    let category_data = state.expense_flag == true ? props.categories.expense : props.categories.income
+
+    state.show_add_button = Object.keys(category_data).length
+
+    return category_data
 })
 
 const category_type = computed(() => {
@@ -26,6 +31,7 @@ const category_type = computed(() => {
 const switch_toggle = () => {
     state.expense_flag = !state.expense_flag
 }
+
 </script>
 
 <template>
@@ -34,13 +40,13 @@ const switch_toggle = () => {
 
         <div class="flow-root mb-3">  
             <div class="float-left">
-                <label class="relative inline-flex items-center align-middle cursor-pointer pr-3 border-r-4">
+                <label class="relative inline-flex items-center align-middle cursor-pointer mr-3">
                     <input type="checkbox" value="" class="sr-only peer" @click="switch_toggle">
                     <div class="w-11 h-6 bg-red-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gray-300 dark:peer-focus:ring-gray-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                     <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">{{ category_type }}</span>
                 </label>
                 
-                <Link class="ml-3" :href="route('categories.create', {'type': state.expense_flag ? 'E' : 'I'})">
+                <Link v-if="state.show_add_button" class="border-l-4 pl-3" :href="route('categories.create', {'type': state.expense_flag ? 'E' : 'I'})">
                     <PrimaryButton>
                         Add New
                     </PrimaryButton>
