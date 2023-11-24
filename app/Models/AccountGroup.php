@@ -43,7 +43,9 @@ class AccountGroup extends Model implements WorkspaceRelation
             ->using(AccountPivot::class)
             ->as('details')
             ->withPivot('opening_date', 'starting_balance', 'latest_balance', 'currency', 'notes')
-            ->wherePivot('workspace_id', session()->get(WorkspaceService::KEY))
+            ->when(!is_null(session()->get(WorkspaceService::KEY)), function ($query) {
+                $query->where('workspace_id', session()->get(WorkspaceService::KEY));
+            })
             ->withTimestamps();
     }
 }

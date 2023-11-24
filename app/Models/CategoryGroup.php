@@ -45,7 +45,9 @@ class CategoryGroup extends Model implements WorkspaceRelation
         return $this->belongsToMany(Category::class, 'category_pivot')
             ->using(CategoryPivot::class)
             ->as('details')
-            ->wherePivot('workspace_id', session()->get(WorkspaceService::KEY))
+            ->when(!is_null(session()->get(WorkspaceService::KEY)), function ($query) {
+                $query->where('workspace_id', session()->get(WorkspaceService::KEY));
+            })
             ->withTimestamps();
     }
 }

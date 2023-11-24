@@ -71,7 +71,7 @@ class Workspace extends Model
      */
     public function transactions(): HasMany
     {
-        return $this->hasMany(Transaction::class, 'workspace_transactions');
+        return $this->hasMany(Transaction::class);
     }
 
     public function scopeCurrentUser()
