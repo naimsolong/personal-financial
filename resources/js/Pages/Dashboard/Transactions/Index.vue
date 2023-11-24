@@ -43,6 +43,14 @@ const getData = () => {
 }
 
 onMounted(() => {
+    // set the dropdown menu element
+    const $targetEl = document.getElementById('addNewHover');
+
+    // set the element that trigger the dropdown menu on click
+    const $triggerEl = document.getElementById('addNewHoverButton');
+        
+    new Dropdown($targetEl, $triggerEl);
+
     window.addEventListener('scroll', debounce((e) => {
         let pixelsFromBottom = document.documentElement.offsetHeight - document.documentElement.scrollTop - window.innerHeight
         
