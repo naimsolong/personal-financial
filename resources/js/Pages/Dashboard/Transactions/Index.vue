@@ -11,37 +11,14 @@ import Header from '@/Components/Dashboards/Header.vue'
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
-    data: Object,
+    next_page: Number,
+    transactions: Object,
 });
 
 const transactions = reactive({
-    next_page: props.data.next_page,
-    data: props.data.transaction
+    next_page: props.next_page,
+    data: props.transactions
 });
-
-onMounted(() => {
-    // set the dropdown menu element
-    const $targetEl = document.getElementById('addNewHover');
-
-    // set the element that trigger the dropdown menu on click
-    const $triggerEl = document.getElementById('addNewHoverButton');
-        
-    const dropdown = new Dropdown($targetEl, $triggerEl);
-
-    window.addEventListener('scroll', debounce((e) => {
-        let pixelsFromBottom = document.documentElement.offsetHeight - document.documentElement.scrollTop - window.innerHeight
-        
-        if(pixelsFromBottom < 400 && transactions.next_page != null) {
-            axios.post(route('transactions.partial'), {'next_page': transactions.next_page}).then(response => {
-                for (const index of Object.keys(response.data.transaction)) {
-                    transactions.data[index] = response.data.transaction[index];
-                }
-
-                transactions.next_page = response.data.next_page
-            })
-        }
-    }, 100))
-})
 
 const totalSummary = (transaction) => {
     let total = 0;
@@ -54,6 +31,26 @@ const totalSummary = (transaction) => {
 
     return transaction[0].currency + ' ' + total
 }
+
+const getData = () => {
+    axios.post(route('transactions.partial'), {'page': transactions.next_page}).then(response => {
+        for (const index of Object.keys(response.data.transactions)) {
+            transactions.data[index] = response.data.transactions[index];
+        }
+
+        transactions.next_page = response.data.next_page
+    })
+}
+
+onMounted(() => {
+    window.addEventListener('scroll', debounce((e) => {
+        let pixelsFromBottom = document.documentElement.offsetHeight - document.documentElement.scrollTop - window.innerHeight
+        
+        if(pixelsFromBottom < 400 && transactions.next_page != null) {
+            getData()
+        }
+    }, 100))
+})
 </script>
 
 <template>
