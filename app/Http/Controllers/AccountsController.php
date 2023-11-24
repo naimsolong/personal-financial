@@ -7,6 +7,7 @@ use App\Http\Requests\AccountFormRequest;
 use App\Models\Account;
 use App\Models\AccountGroup;
 use App\Services\AccountService;
+use App\Services\TransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -63,7 +64,9 @@ class AccountsController extends Controller
      */
     public function store(AccountFormRequest $request)
     {
-        app(AccountService::class)->store(collect($request->only(
+        $accountService = app(AccountService::class);
+        
+        $accountService->store(collect($request->only(
             'account_group',
             'name',
             'type',
@@ -73,6 +76,10 @@ class AccountsController extends Controller
             'currency',
             'notes',
         )));
+
+        $account = $accountService->getModel();
+        
+        app(TransactionService::class)->storeOpeningBalance($account->id, $request->collect());
 
         return Redirect::route('accounts.index');
     }
