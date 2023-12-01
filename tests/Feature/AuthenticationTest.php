@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Models\Workspace;
 use App\Providers\RouteServiceProvider;
 
 test('login screen can be rendered', function () {
@@ -10,7 +11,9 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
+    $workspace = Workspace::factory()->create();
     $user = User::factory()->create();
+    $workspace->users()->attach($user->id);
 
     $response = $this->post('/login', [
         'email' => $user->email,
@@ -22,7 +25,9 @@ test('users can authenticate using the login screen', function () {
 });
 
 test('users cannot authenticate with invalid password', function () {
+    $workspace = Workspace::factory()->create();
     $user = User::factory()->create();
+    $workspace->users()->attach($user->id);
 
     $this->post('/login', [
         'email' => $user->email,

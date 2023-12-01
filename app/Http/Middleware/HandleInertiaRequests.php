@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\WorkspaceService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -40,6 +41,10 @@ class HandleInertiaRequests extends Middleware
             'auth.user' => fn () => $request->user()
                 ? $request->user()->only('id', 'name', 'email')
                 : null,
+            'auth.current_workspace' => fn () => session()->get(WorkspaceService::KEY),
+            'initial.value.workspaces' => fn () => $request->user()
+                ? $request->user()?->workspaces()->selectRaw('workspaces.id AS value, workspaces.name AS text')->get()->toArray()
+                : [],
         ]);
     }
 }

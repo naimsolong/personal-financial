@@ -3,57 +3,81 @@
 namespace App\Services;
 
 use App\Exceptions\ServiceException;
+use App\Models\Category;
 use App\Models\CategoryGroup;
+use App\Models\CategoryPivot;
+use App\Models\Transaction;
 use Illuminate\Support\Collection;
 
 class CategoryService extends BaseService
 {
-    public function store(mixed $model = null, Collection $data): bool
+    public function __construct()
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        parent::__construct(
+            _model: Category::class
+        );
+    }
 
-        $categoryGroup = CategoryGroup::select('id', 'name', 'type')->find($data->get('category_group'));
+    public function store(Collection $data): bool
+    {
+        $model = $this->getModel()->firstOrCreate([
+            'name' => $data->get('name'),
+            'type' => $data->get('type')
+        ]);
+        
+        $model->group()->attach($data->get('category_group'), [
+            'workspace_id' => session()->get(WorkspaceService::KEY),
+        ]);
 
-        $model = $model->firstOrCreate(
-            ['name' => $data->get('name')],
-            ['type' => $data->get('type')],
+        $this->setModel($model);
+
+        return $this->haveModel();
+    }
+
+    public function update(mixed $model, Collection $data): bool
+    {
+        $this->verifyModel($model);
+        
+        $categoryGroup = CategoryGroup::currentWorkspace()->select('id', 'name', 'type')->findOrFail($data->get('category_group'));
+
+        $this->setModel(
+            $this->getModel()->firstOrCreate(
+                $data->only('name', 'type')->toArray()
+            )
         );
         
-        $categoryGroup->categories()->attach($model->id);
+        $updatedModel = $this->getModel();
+        
+        if($updatedModel->id != $model->id) {
+            $model->group()->first()->details->update([
+                'category_group_id' => $categoryGroup->id,
+                'category_id' => $updatedModel->id
+            ]);
+            
+            Transaction::where(function($query) use ($model) {
+                $query->where('category_id', $model->id)
+                    ->where('workspace_id', session()->get(WorkspaceService::KEY));
+            })->update([
+                'category_id' => $updatedModel->id
+            ]);
+        }
 
-        $this->setModel($model);
-
-        return !is_null($this->getModel());
+        return true;
     }
 
-    public function update(mixed $model = null, Collection $data): bool
+    public function destroy(mixed $model): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
-        $model->update($data->only('name', 'type')->toArray());
+        // TODO: Change transactions category_id to another id
 
-        $model->group()->sync($data->get('category_group'));
-
-        $this->setModel($model);
-
-        // TODO: What happen to transactions
-
-        return !is_null($this->getModel());
-    }
-
-    public function destroy(mixed $model = null): bool
-    {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        if($model->transactions()->exists())
+            throw new ServiceException('This Category have transactions');
 
         $model->group()->detach();
         
         $this->setModel(null);
 
-        // TODO: What happen to transactions
-
-        return is_null($this->getModel());
+        return true;
     }
 }

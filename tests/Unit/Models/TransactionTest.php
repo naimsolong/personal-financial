@@ -3,9 +3,11 @@
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
+use App\Models\Workspace;
 
 test('model class has correct properties', function () {
     expect(app(Transaction::class)->getFillable())->toBeArray()->toBe([
+        'workspace_id',
         'due_at',
         'type',
         'category_id',
@@ -23,6 +25,7 @@ test('model class has correct properties', function () {
 test('model able to perform CRUD', function () {
     Category::factory(rand(5,10))->create();
     Account::factory(rand(5,10))->create();
+    Workspace::factory()->create();
     $transaction = Transaction::factory()->create();
     $this->assertModelExists($transaction);
 
@@ -30,7 +33,7 @@ test('model able to perform CRUD', function () {
     $transaction->update([
         'amount' => $amount,
     ]);
-    $this->assertDatabaseHas('Transactions', [
+    $this->assertDatabaseHas('transactions', [
         'id' => $transaction->id,
         'amount' => $amount,
     ]);

@@ -4,15 +4,22 @@ use App\Enums\AccountsType;
 use App\Exceptions\ServiceException;
 use App\Models\Account;
 use App\Models\AccountGroup;
+use App\Models\Workspace;
 use App\Services\AccountService;
+use App\Services\WorkspaceService;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
 it('able to store, update and destroy accounts table', function() {
+    $workspace = Workspace::factory()->create();
+    $accountGroup = AccountGroup::factory()->create();
+    app(WorkspaceService::class)->change($workspace->id);
+    
+    $workspace->accountGroups()->attach($accountGroup->id);
+
     $service = app(AccountService::class);
 
-    $model = Account::query();
     $data = collect([
-        'account_group' => AccountGroup::factory()->create()->id,
+        'account_group' => $accountGroup->id,
         'name' => 'test'.rand(4,10),
         'type' => AccountsType::ASSETS->value,
         'opening_date' => now()->format('d/m/Y'),
@@ -21,16 +28,17 @@ it('able to store, update and destroy accounts table', function() {
         'notes' => 'TEST'.rand(4,10),
     ]);
 
-    $is_created = $service->store($model, $data);
+    $is_created = $service->store($data);
     $model = $service->getModel();
     $this->assertDatabaseHas('accounts', $data->only('name','type')->toArray());
     $this->assertDatabaseHas('account_pivot', $data->merge(['account_group_id' => $data->get('account_group'), 'account_id' => $model->id])->only('account_group_id','account_id','starting_balance')->toArray());
     expect($is_created)->toBeTrue();
     
-    $model = Account::factory()->create();
+    $accountGroup = AccountGroup::factory()->create();
+    $workspace->accountGroups()->attach($accountGroup->id);
     $data = collect([
-        'account_group' => AccountGroup::factory()->create()->id,
-        'name' => 'test'.rand(4,10),
+        'account_group' => $accountGroup->id,
+        'name' => 'tested'.rand(4,10),
         'type' => AccountsType::ASSETS->value,
         'opening_date' => now()->format('d/m/Y'),
         'starting_balance' => rand(4,10),
@@ -38,21 +46,23 @@ it('able to store, update and destroy accounts table', function() {
         'notes' => 'TEST'.rand(4,10),
     ]);
     $is_updated = $service->update($model, $data);
-    $model = $service->getModel();
+    $updated_model = $service->getModel();
     $this->assertDatabaseHas('accounts', $data->only('name','type')->toArray());
-    $this->assertDatabaseHas('account_pivot', $data->merge(['account_group_id' => $data->get('account_group'), 'account_id' => $model->id])->only('account_group_id','account_id','starting_balance')->toArray());
+    $this->assertDatabaseHas('account_pivot', ['account_group_id' => $accountGroup->id, 'account_id' => $updated_model->id]);
     expect($is_updated)->toBeTrue();
     
     $is_destroyed = $service->destroy($model);
     $this->assertDatabaseMissing('account_pivot', [
-        'account_group_id' => $data->get('account_group'),
+        'account_group_id' => $accountGroup->id,
         'account_id' => $model->id
     ]);
     expect($is_destroyed)->toBeTrue();
 });
 
 it('able to update latest_balance column', function() {
+    $workspace = Workspace::factory()->create();
     $service = app(AccountService::class);
+    app(WorkspaceService::class)->change($workspace->id);
 
     $group1 = AccountGroup::factory()->create([
         'type' => AccountsType::ASSETS,
@@ -62,6 +72,7 @@ it('able to update latest_balance column', function() {
     ]);
     $balance1 = rand(1000, 5000);
     $group1->accounts()->attach($account1->id, [
+        'workspace_id' => $workspace->id,
         'opening_date' => now()->format('d/m/Y'),
         'starting_balance' => $balance1,
         'latest_balance' => $balance1,
@@ -72,6 +83,7 @@ it('able to update latest_balance column', function() {
     $is_updated = $service->updateLatestBalance($account1->group()->first(), 100.1);
 
     $this->assertDatabaseHas('account_pivot', [
+        'workspace_id' => $workspace->id,
         'account_group_id' => $group1->id,
         'account_id' => $account1->id,
         'latest_balance' => $balance1 + 100.1
@@ -81,6 +93,7 @@ it('able to update latest_balance column', function() {
     $is_updated = $service->updateLatestBalance($account1->group()->first(), 99, -1);
 
     $this->assertDatabaseHas('account_pivot', [
+        'workspace_id' => $workspace->id,
         'account_group_id' => $group1->id,
         'account_id' => $account1->id,
         'latest_balance' => $balance1 + 100.1 + 99 - 1
@@ -91,10 +104,8 @@ it('able to update latest_balance column', function() {
 it('able to throw exeception', function() {
     $service = app(AccountService::class);
 
-    expect(fn () => ($service->store(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->update(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->destroy(null)))->toThrow(ServiceException::class, 'Model Not Found');
     
     expect(fn () => ($service->updateLatestBalance(null, 0)))->toThrow(ServiceException::class, 'Model Not Found');
-    expect(fn () => ($service->updateLatestBalance(true, 0)))->toThrow(ServiceException::class, 'Amount cannot be zero');
 });

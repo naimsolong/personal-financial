@@ -6,11 +6,18 @@ use App\Exceptions\ServiceException;
 use App\Services\Interfaces\BasicOperation;
 use Illuminate\Support\Collection;
 
+
+// TODO: Optimize this BaseService class
 class BaseService implements BasicOperation
 {
+    protected string $_class = '';
+
     public function __construct(
         protected mixed $_model = null
-    ) { }
+    ) {
+        if(!is_null($this->_model))
+            $this->_class = $this->_model;
+    }
 
     public function setModel(mixed $model)
     {
@@ -21,23 +28,45 @@ class BaseService implements BasicOperation
 
     public function getModel()
     {
-        return $this->_model;
+        $model = null;
+        
+        if(is_string($this->_model)) {
+            $model = app($this->_model);
+        } elseif(!is_null($this->_model)) {
+            $model = $this->_model;
+        } elseif($this->_class != '') {
+            $model = app($this->_class);
+        }
+
+        $this->verifyModel($model);
+
+        return $model;
     }
 
-    public function store(mixed $model = null, Collection $data): bool
+    public function haveModel(): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        return !is_null($this->_model) &&  !is_string($this->_model);
+    }
 
-        $this->setModel($model->create($data->toArray()));
+    protected function verifyModel(mixed $model): void
+    {
+        if(is_string($model) || is_null($model)) {
+            throw new ServiceException('Model Not Found');
+        }
+    }
+
+    public function store(Collection $data): bool
+    {
+        $this->setModel(
+            $this->getModel()->create($data->toArray())
+        );
         
         return !is_null($this->getModel());
     }
     
-    public function update(mixed $model = null, Collection $data): bool
+    public function update(mixed $model, Collection $data): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         $is_updated = $model->update($data->toArray());
 
@@ -47,10 +76,9 @@ class BaseService implements BasicOperation
         return $is_updated;
     }
     
-    public function destroy(mixed $model = null): bool
+    public function destroy(mixed $model): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         $is_destroyed = $model->delete();
 

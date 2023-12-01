@@ -19,6 +19,7 @@ class CategoryPivot extends Pivot
      * @var array
      */
     protected $fillable = [
+        'workspace_id',
         'category_group_id',
         'category_id',
     ];

@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('category_pivot', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_group_id')->constrained();
-            $table->foreignId('category_id')->constrained();
+            $table->foreignId('workspace_id')->constrained('workspaces');
+            $table->foreignId('category_group_id')->constrained('category_groups');
+            $table->foreignId('category_id')->constrained('categories');
             $table->timestamps();
         });
     }

@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Enums\TransactionsType;
+use App\Models\Interfaces\WorkspaceRelation;
 use App\Models\Traits\TransactionsTypeFilter;
+use App\Models\Traits\WorkspaceFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,9 +13,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Transaction extends Model
+class Transaction extends Model implements WorkspaceRelation
 {
-    use TransactionsTypeFilter, HasFactory;
+    use WorkspaceFilter, TransactionsTypeFilter, HasFactory;
     
     /**
      * The attributes that are mass assignable.
@@ -21,6 +23,7 @@ class Transaction extends Model
      * @var array
      */
     protected $fillable = [
+        'workspace_id',
         'due_at',
         'type',
         'category_id',
@@ -51,6 +54,14 @@ class Transaction extends Model
     protected $appends = [
         'due_day', 'due_date', 'due_time', 'type_name'
     ];
+
+    /**
+     * This transaction that belong to the workspace.
+     */
+    public function workspace(): BelongsTo
+    {
+        return $this->belongsTo(Workspace::class);
+    }
 
     /**
      * Get this transaction's category.

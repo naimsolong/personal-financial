@@ -21,6 +21,7 @@ class AccountPivot extends Pivot
      * @var array
      */
     protected $fillable = [
+        'workspace_id',
         'account_group_id',
         'account_id',
         'opening_date',

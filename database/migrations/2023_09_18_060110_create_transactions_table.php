@@ -16,6 +16,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('workspace_id')->constrained();
             $table->timestamp('due_at');
             $table->enum('type', TransactionsType::getAllValues());
             $table->foreignId('category_id')->nullable()->constrained();

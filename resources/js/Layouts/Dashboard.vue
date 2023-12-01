@@ -2,14 +2,28 @@
 import { computed, ref } from 'vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import NavLink from '@/Components/Dashboards/NavLink.vue';
+import SelectInput from '@/Components/SelectInput.vue';
 
 const page = usePage()
 
 const user = computed(() => page.props.auth.user)
 
+const selected_workspace = computed(() => page.props.auth.current_workspace)
+
+const workspaces = computed(() => page.props.initial.value.workspaces)
+
 defineProps({
     title: String,
 });
+
+const changeWorkspace = (event) => {
+    router.post(route('workspaces.change'), {
+        workspace_id: event.target.value
+    }, {
+        preserveScroll: true,
+        onSuccess: () => location.reload(),
+    });
+}
 
 const logout = () => {
     router.post(route('logout'));
@@ -29,10 +43,10 @@ const logout = () => {
                             <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
                         </svg>
                     </button>
-                    <a href="https://flowbite.com" class="flex ml-2 md:mr-24">
-                        <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="FlowBite Logo" />
-                        <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Flowbite</span>
-                    </a>
+                    <div class="flex ml-2 md:mr-24">
+                        <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="Financial Logo" />
+                        <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Financial</span>
+                    </div>
                 </div>
                 <div class="flex items-center">
                     <div class="flex items-center ml-3">
@@ -52,6 +66,9 @@ const logout = () => {
                                 </p>
                             </div>
                             <ul class="py-1" role="none">
+                                <li>
+                                    <a :href="route('workspaces.index')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Workspace</a>
+                                </li>
                                 <li>
                                     <a :href="route('profile.show')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Profile</a>
                                 </li>
@@ -76,6 +93,16 @@ const logout = () => {
     <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
         <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
             <ul class="space-y-2 font-medium">
+                <li>
+                    <SelectInput
+                        id="workspaces"
+                        :select-options="workspaces"
+                        v-model="selected_workspace"
+                        class="block w-full"
+                        autocomplete="false"
+                        @change="changeWorkspace"
+                    />
+                </li>
                 <li>
                     <NavLink title="Dashboard" :href="route('dashboard')" :active="route().current('dashboard')">
                         <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
@@ -123,14 +150,14 @@ const logout = () => {
                         </svg>
                     </NavLink>
                 </li>
-                <li>
+                <!-- <li>
                     <NavLink title="Schedules" :href="route('schedules')" :active="route().current('schedules')">
                         <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 19 20">
                             <path d="M8 14.5a6.474 6.474 0 0 1 8-6.318V8a1 1 0 0 0-1-1h-2.5V4.5a4.5 4.5 0 1 0-9 0V7H2a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9.052A6.494 6.494 0 0 1 8 14.5Zm-2.5-10a2.5 2.5 0 1 1 5 0V7h-5V4.5Z"/>
                             <path d="M14.5 10a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Zm2.06 6.561a1 1 0 0 1-1.414 0l-1.353-1.354a1 1 0 0 1-.293-.707v-1.858a1 1 0 0 1 2 0v1.444l1.06 1.06a1.001 1.001 0 0 1 0 1.415Z"/>
                         </svg>
                     </NavLink>
-                </li>
+                </li> -->
                 <li>
                     <NavLink title="Categories" :href="route('categories.index')" :active="route().current('categoriess.index')">
                         <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
@@ -146,7 +173,7 @@ const logout = () => {
                         </svg>
                     </NavLink>
                 </li>
-                <li>
+                <!-- <li>
                     <NavLink title="Filters" :href="route('filters')" :active="route().current('filters')">
                         <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                             <path d="M18.85 1.1A1.99 1.99 0 0 0 17.063 0H2.937a2 2 0 0 0-1.566 3.242L6.99 9.868 7 14a1 1 0 0 0 .4.8l4 3A1 1 0 0 0 13 17l.01-7.134 5.66-6.676a1.99 1.99 0 0 0 .18-2.09Z"/>
@@ -159,7 +186,7 @@ const logout = () => {
                             <path d="M18.7 4.531 14.866.84A2.985 2.985 0 0 0 12.784 0H1.969A1.987 1.987 0 0 0 0 2v10a1.987 1.987 0 0 0 1.969 2h10.736a3.004 3.004 0 0 0 2.221-.983l3.912-4.309a3.023 3.023 0 0 0-.138-4.177Z"/>
                         </svg>
                     </NavLink>
-                </li>
+                </li> -->
                 <li>
                     <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                         <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -198,7 +225,7 @@ const logout = () => {
                     </button>
                 </div>
                 <p class="mb-3 text-sm text-blue-800 dark:text-blue-400">
-                    Preview the new Flowbite dashboard navigation! You can turn the new navigation off for a limited time in your profile.
+                    Preview the new Financial dashboard navigation! You can turn the new navigation off for a limited time in your profile.
                 </p>
             </div>
         </div>

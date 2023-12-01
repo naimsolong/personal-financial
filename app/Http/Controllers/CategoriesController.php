@@ -19,7 +19,7 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        $categories = CategoryGroup::forUser()->select('id', 'name', 'type')->with('categories', function($query) {
+        $categories = CategoryGroup::forUser()->currentWorkspace()->select('id', 'name', 'type')->with('categories', function($query) {
             $query->select('categories.id', 'name', 'type')->forUser()->orderBy('name');
         })->orderBy('category_groups.name')->orderBy('name')->get();
         
@@ -36,7 +36,7 @@ class CategoriesController extends Controller
      */
     public function create(Request $request)
     {
-        $categoryGroup = CategoryGroup::forUser()->selectRaw('id AS value, name AS text, type')->get();
+        $categoryGroup = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id AS value, name AS text, type')->get();
         
         return Inertia::render('Dashboard/Categories/Form', [
             'category_group' => [
@@ -58,7 +58,7 @@ class CategoriesController extends Controller
      */
     public function store(CategoryFormRequest $request)
     {
-        app(CategoryService::class)->store(Category::query(), collect($request->only(
+        app(CategoryService::class)->store(collect($request->only(
             'category_group',
             'name',
             'type',
@@ -72,7 +72,7 @@ class CategoriesController extends Controller
      */
     public function edit(Category $category)
     {
-        $categoryGroup = CategoryGroup::forUser()->selectRaw('id AS value, name AS text, type')->get();
+        $categoryGroup = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id AS value, name AS text, type')->get();
 
         return Inertia::render('Dashboard/Categories/Form', [
             'edit_mode' => true,

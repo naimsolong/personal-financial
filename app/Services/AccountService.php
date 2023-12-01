@@ -5,26 +5,31 @@ namespace App\Services;
 use App\Enums\AccountsType;
 use App\Enums\TransactionsType;
 use App\Exceptions\ServiceException;
+use App\Models\Account;
 use App\Models\AccountGroup;
+use App\Models\AccountPivot;
 use App\Models\Category;
 use App\Models\Transaction;
 use Illuminate\Support\Collection;
 
 class AccountService extends BaseService
 {
-    public function store(mixed $model = null, Collection $data): bool
+    public function __construct()
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
-
-        $accountGroup = AccountGroup::select('id', 'name', 'type')->find($data->get('account_group'));
-
-        $model = $model->firstOrCreate(
-            ['name' => $data->get('name')],
-            ['type' => $data->get('type')],
+        parent::__construct(
+            _model: Account::class
         );
+    }
+
+    public function store(Collection $data): bool
+    {
+        $model = $this->getModel()->firstOrCreate([
+            'name' => $data->get('name'),
+            'type' => $data->get('type')
+        ]);
         
-        $accountGroup->accounts()->attach($model->id, [
+        $model->group()->attach($data->get('account_group'), [
+            'workspace_id' => session()->get(WorkspaceService::KEY),
             'opening_date' => $data->get('opening_date'),
             'starting_balance' => $data->get('starting_balance'),
             'latest_balance' => $data->get('starting_balance'),
@@ -34,74 +39,69 @@ class AccountService extends BaseService
 
         $this->setModel($model);
 
-        $category_id = Category::forSystem()->when($data->get('type') == AccountsType::ASSETS->value, function($query) {
-            return $query->isPositiveOpeningBalance();
-        }, function($query) {
-            return $query->isNegativeOpeningBalance();
-        })->select('id')->first()->id;
-
-        app(TransactionService::class)->store(Transaction::query(), collect([
-            'due_date' => $data->get('opening_date'),
-            'due_time' => now()->format('H:i'),
-            'type' => ($data->get('type') == AccountsType::ASSETS->value) ? TransactionsType::INCOME->value : TransactionsType::EXPENSE->value,
-            'category' => $category_id,
-            'account_from' => $model->id,
-            'amount' => $data->get('starting_balance'),
-            'currency' => $data->get('currency'),
-            'currency_rate' => 1,
-            'notes' => $data->get('notes'),
-        ]));
-
         return !is_null($this->getModel());
     }
 
-    public function update(mixed $model = null, Collection $data): bool
+    public function update(mixed $model, Collection $data): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
-        $accountGroup = AccountGroup::select('id', 'name', 'type')->find($data->get('account_group'));
+        $accountGroup = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->findOrFail($data->get('account_group'));
 
-        $model->update($data->only('name', 'type')->toArray());
+        $this->setModel(
+            $this->getModel()->firstOrCreate(
+                $data->only('name', 'type')->toArray()
+            )
+        );
+        
+        $updatedModel = $this->getModel();
 
-        $model->group()->sync([
-            $accountGroup->id => [
-                'opening_date' => $data->get('opening_date'),
-                'starting_balance' => $data->get('starting_balance'),
-                'latest_balance' => $data->get('starting_balance'),
-                'currency' => $data->get('currency'),
+        if($updatedModel->id != $model->id) {
+            $model->group()->first()->details->update([
+                'account_group_id' => $accountGroup->id,
+                'account_id' => $updatedModel->id,
+                // 'opening_date' => $data->get('opening_date'),
+                // 'starting_balance' => $data->get('starting_balance'),
+                // 'latest_balance' => $data->get('starting_balance'),
+                // 'currency' => $data->get('currency'),
                 'notes' => $data->get('notes'),
-            ]
-        ]);
+            ]);
+            
+            Transaction::where(function($query) use ($model) {
+                $query->where('account_id', $model->id)
+                    ->where('workspace_id', session()->get(WorkspaceService::KEY));
+            })->update([
+                'account_id' => $updatedModel->id
+            ]);
+        }
 
         // TODO: Make adjustment on latest_balance
 
-        $this->setModel($model);
-
-        return !is_null($this->getModel());
+        return true;
     }
 
-    public function destroy(mixed $model = null): bool
+    public function destroy(mixed $model): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
+
+        // TODO: Change transactions account_id to another id
+
+        if($model->transactions()->exists())
+            throw new ServiceException('This Account have transactions');
 
         $model->group()->detach();
         
         $this->setModel(null);
 
-        // TODO: What happen to transactions
-
-        return is_null($this->getModel());
+        return true;
     }
 
-    public function updateLatestBalance(mixed $model = null, float $amount, float $previous_amount = 0): bool
+    public function updateLatestBalance(mixed $model, float $amount, float $previous_amount = 0): bool
     {
-        if(is_null($model))
-            throw new ServiceException('Model Not Found');
+        $this->verifyModel($model);
 
         if($amount == 0)
-            throw new ServiceException('Amount cannot be zero');
+            return true;
 
         $previous_balance = $model->details->latest_balance;
 

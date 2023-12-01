@@ -7,6 +7,7 @@ use App\Http\Requests\AccountFormRequest;
 use App\Models\Account;
 use App\Models\AccountGroup;
 use App\Services\AccountService;
+use App\Services\TransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -20,7 +21,7 @@ class AccountsController extends Controller
      */
     public function index()
     {
-        $accounts = AccountGroup::select('id', 'name', 'type')->with('accounts', function($query) {
+        $accounts = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->with('accounts', function($query) {
             $query->select('accounts.id', 'name', 'type')->orderBy('name');
         })->orderBy('account_groups.name')->get();
 
@@ -37,7 +38,7 @@ class AccountsController extends Controller
      */
     public function create(Request $request)
     {
-        $accountGroup = AccountGroup::selectRaw('id AS value, name AS text, type')->get();
+        $accountGroup = AccountGroup::currentWorkspace()->selectRaw('id AS value, name AS text, type')->get();
         
         return Inertia::render('Dashboard/Accounts/Form', [
             'account_group' => [
@@ -63,7 +64,9 @@ class AccountsController extends Controller
      */
     public function store(AccountFormRequest $request)
     {
-        app(AccountService::class)->store(Account::query(), collect($request->only(
+        $accountService = app(AccountService::class);
+        
+        $accountService->store(collect($request->only(
             'account_group',
             'name',
             'type',
@@ -73,6 +76,10 @@ class AccountsController extends Controller
             'currency',
             'notes',
         )));
+
+        $account = $accountService->getModel();
+        
+        app(TransactionService::class)->storeOpeningBalance($account->id, $request->collect());
 
         return Redirect::route('accounts.index');
     }
@@ -84,7 +91,7 @@ class AccountsController extends Controller
     {
         $group = $account->group()->first();
 
-        $accountGroup = AccountGroup::selectRaw('id AS value, name AS text, type')->get();
+        $accountGroup = AccountGroup::currentWorkspace()->selectRaw('id AS value, name AS text, type')->get();
 
         return Inertia::render('Dashboard/Accounts/Form', [
             'edit_mode' => true,

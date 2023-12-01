@@ -18,7 +18,7 @@ class TransactionsController extends Controller
 {
     public function index(Request $request)
     {
-        $data = Transaction::select('id', 'due_at', 'type', 'category_id', 'account_id', 'amount', 'currency', 'currency_amount', 'currency_rate', 'transfer_pair_id', 'status', 'notes')
+        $paginator = Transaction::currentWorkspace()->selectRaw('id, due_at, type, category_id, account_id, amount, currency, currency_amount, currency_rate, transfer_pair_id, status, notes')
             ->with([
                 'category' => function($query) {
                     $query->select('id', 'name');
@@ -29,23 +29,17 @@ class TransactionsController extends Controller
             ])
             ->latest('due_at')
             ->latest('updated_at')
-            ->whereRaw('WEEK(due_at) = '. now()->subWeek($request->get('next_page', 0))->format('W'))
-            ->when($request->get('next_page', 0) == 0, function($query) {
-                $query->orWhere('due_at', '>', now());
-            })
-            ->get();
-        
+            ->simplePaginate();
+
         $return = [
-            'transaction' => $data->groupBy('due_date'),
-            'next_page' => $request->get('next_page', 0) + 1
+            'transactions' => collect($paginator->items())->groupBy('due_date'),
+            'next_page' => $paginator->currentPage() + 1
         ];
         
         if($request->isMethod('post'))
             return $return;
 
-        return Inertia::render('Dashboard/Transactions/Index', [
-            'data' => $return,
-        ]);
+        return Inertia::render('Dashboard/Transactions/Index', $return);
     }
 
     /**
@@ -53,13 +47,13 @@ class TransactionsController extends Controller
      */
     public function create(Request $request)
     {
-        $accounts = AccountGroup::selectRaw('id, name AS label, type')
+        $accounts = AccountGroup::currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
                 'accounts' => function($query) {
                     $query->selectRaw('accounts.id AS value, accounts.name AS text');
                 }
             ])->orderBy('type')->get();
-        $categories = CategoryGroup::forUser()->selectRaw('id, name AS label, type')
+        $categories = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
                 'categories' => function($query) {
                     $query->selectRaw('categories.id AS value, categories.name AS text');
@@ -95,7 +89,7 @@ class TransactionsController extends Controller
      */
     public function store(TransactionFormRequest $request)
     {
-        app(TransactionService::class)->store(Transaction::query(), $request->collect());
+        app(TransactionService::class)->store($request->collect());
         
         return Redirect::route('transactions.index');
     }
@@ -105,13 +99,13 @@ class TransactionsController extends Controller
      */
     public function edit(Transaction $transaction)
     {
-        $accounts = AccountGroup::selectRaw('id, name AS label, type')
+        $accounts = AccountGroup::currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
                 'accounts' => function($query) {
                     $query->selectRaw('accounts.id AS value, accounts.name AS text');
                 }
             ])->orderBy('type')->get();
-        $categories = CategoryGroup::forUser()->selectRaw('id, name AS label, type')
+        $categories = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
                 'categories' => function($query) {
                     $query->selectRaw('categories.id AS value, categories.name AS text');

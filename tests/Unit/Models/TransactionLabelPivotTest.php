@@ -5,10 +5,12 @@ use App\Models\Category;
 use App\Models\Label;
 use App\Models\Transaction;
 use App\Models\TransactionLabelPivot;
+use App\Models\Workspace;
 
 test('pivot table able to attach, detach and sync', function () {
     Category::factory(rand(5,10))->create();
     Account::factory(rand(5,10))->create();
+    Workspace::factory()->create();
     
     $labels = Label::factory(rand(5,10))->create();
     $transaction = Transaction::factory()->create();

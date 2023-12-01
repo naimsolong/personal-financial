@@ -5,15 +5,23 @@ namespace App\Services\Traits;
 use App\Enums\TransactionsStatus;
 use App\Models\Account;
 use App\Services\AccountService;
+use App\Services\WorkspaceService;
+use Exception;
 use Illuminate\Support\Collection;
 
 trait TransactionOperation
 {
-    protected function storeExpense(mixed $model = null, Collection $data): bool
+    protected function storeExpense(mixed $model, Collection $data): bool
     {
         $amount = $this->modifyNegativeAmount($data->get('amount'));
         
+        $workspace_id = session()->get(WorkspaceService::KEY);
+
+        if(is_null($workspace_id))
+            throw new Exception('Current Workspace does not exist');
+
         $model = $model->create([
+            'workspace_id' => $workspace_id,
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'category_id' => $data->get('category'),
@@ -32,11 +40,17 @@ trait TransactionOperation
         return !is_null($this->getModel());
     }
 
-    protected function storeIncome(mixed $model = null, Collection $data): bool
+    protected function storeIncome(mixed $model, Collection $data): bool
     {
         $amount = $this->modifyPositiveAmount($data->get('amount'));
 
+        $workspace_id = session()->get(WorkspaceService::KEY);
+
+        if(is_null($workspace_id))
+            throw new Exception('Current Workspace does not exist');
+
         $model = $model->create([
+            'workspace_id' => $workspace_id,
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'category_id' => $data->get('category'),
@@ -55,12 +69,18 @@ trait TransactionOperation
         return !is_null($this->getModel());
     }
 
-    protected function storeTransfer(mixed $model = null, Collection $data): bool
+    protected function storeTransfer(mixed $model, Collection $data): bool
     {
         $amount_from = $this->modifyNegativeAmount($data->get('amount'));
         $amount_to = $this->modifyPositiveAmount($data->get('amount'));
 
-        $model_from = $model->create([
+        $workspace_id = session()->get(WorkspaceService::KEY);
+
+        if(is_null($workspace_id))
+            throw new Exception('Current Workspace does not exist');
+
+        $is_created_from = $model_from = $model->create([
+            'workspace_id' => $workspace_id,
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'account_id' => $data->get('account_from'),
@@ -70,7 +90,8 @@ trait TransactionOperation
             'status' => $data->get('status', TransactionsStatus::NONE->value),
             'notes' => $data->get('notes'),
         ]);
-        $model_to = $model->create([
+        $is_created_to = $model_to = $model->create([
+            'workspace_id' => $workspace_id,
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
             'account_id' => $data->get('account_to'),
@@ -97,10 +118,10 @@ trait TransactionOperation
         
         $this->updateAccountBalance($data->get('account_to'), $amount_to);
 
-        return !is_null($this->getModel());
+        return $is_created_from && $is_created_to;
     }
 
-    protected function updateExpense(mixed $model = null, Collection $data): bool
+    protected function updateExpense(mixed $model, Collection $data): bool
     {
         $previous_amount = $this->reverseAmount($model->amount);
 
@@ -125,7 +146,7 @@ trait TransactionOperation
         return $is_update;
     }
 
-    protected function updateIncome(mixed $model = null, Collection $data): bool
+    protected function updateIncome(mixed $model, Collection $data): bool
     {
         $previous_amount = $this->reverseAmount($model->amount);
 
@@ -150,7 +171,7 @@ trait TransactionOperation
         return $is_update;
     }
 
-    protected function updateTransfer(mixed $model = null, Collection $data): bool
+    protected function updateTransfer(mixed $model, Collection $data): bool
     {
         $amount_from = $this->modifyNegativeAmount($data->get('amount'));
         $amount_to = $this->modifyPositiveAmount($data->get('amount'));
@@ -198,7 +219,7 @@ trait TransactionOperation
     }
     
 
-    protected function destroyExpense(mixed $model = null): bool
+    protected function destroyExpense(mixed $model): bool
     {
         $account_id = $model->account_id;
 
@@ -213,7 +234,7 @@ trait TransactionOperation
         return $is_destroy;
     }
 
-    protected function destroyIncome(mixed $model = null): bool
+    protected function destroyIncome(mixed $model): bool
     {
         $account_id = $model->account_id;
 
@@ -228,7 +249,7 @@ trait TransactionOperation
         return $is_destroy;
     }
 
-    protected function destroyTransfer(mixed $model = null): bool
+    protected function destroyTransfer(mixed $model): bool
     {
         if($model->amount < 0) {
             $account_id_from = $model->account_id;
