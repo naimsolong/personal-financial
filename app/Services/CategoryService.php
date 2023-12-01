@@ -72,11 +72,14 @@ class CategoryService extends BaseService
     {
         $this->verifyModel($model);
 
+        // TODO: Change transactions category_id to another id
+
+        if($model->transactions()->exists())
+            throw new ServiceException('This Category have transactions');
+
         $model->group()->detach();
         
         $this->setModel(null);
-
-        // TODO: What happen to transactions
 
         return true;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ServiceException;
 use App\Models\AccountGroup;
 use App\Models\AccountPivot;
 use App\Models\Workspace;
@@ -63,21 +64,22 @@ class AccountGroupService extends BaseService
             ]);
         }
 
-        // TODO: What happen to transactions and accounts
-
         return true;
     }
 
     public function destroy(mixed $model): bool
     {
-        $this->setModel($model);
+        $this->verifyModel($model);
+
+        if($model->accounts()->exists())
+            throw new ServiceException('This Account Group have accounts');
 
         WorkspaceAccountsPivot::where([
             'account_group_id' => $model->id,
             'workspace_id' => session()->get(WorkspaceService::KEY)
         ])->delete();
 
-        // TODO: What happen to transactions and accounts
+        $this->setModel(null);
 
         return true;
     }

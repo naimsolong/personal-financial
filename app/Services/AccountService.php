@@ -46,7 +46,7 @@ class AccountService extends BaseService
     {
         $this->verifyModel($model);
 
-        $accountGroup = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->find($data->get('account_group'));
+        $accountGroup = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->findOrFail($data->get('account_group'));
 
         $this->setModel(
             $this->getModel()->firstOrCreate(
@@ -66,19 +66,19 @@ class AccountService extends BaseService
             ]);
             
             Transaction::where(function($query) use ($model) {
-                $query->where('category_id', $model->id)
+                $query->where('account_id', $model->id)
                     ->where('workspace_id', session()->get(WorkspaceService::KEY));
             })->update([
-                'category_id' => $updatedModel->id
+                'account_id' => $updatedModel->id
             ]);
         }
 
         $updatedModel->group()->sync([
             $accountGroup->id => [
-                'opening_date' => $data->get('opening_date'),
-                'starting_balance' => $data->get('starting_balance'),
-                'latest_balance' => $data->get('starting_balance'),
-                'currency' => $data->get('currency'),
+                // 'opening_date' => $data->get('opening_date'),
+                // 'starting_balance' => $data->get('starting_balance'),
+                // 'latest_balance' => $data->get('starting_balance'),
+                // 'currency' => $data->get('currency'),
                 'notes' => $data->get('notes'),
             ]
         ]);
@@ -92,11 +92,14 @@ class AccountService extends BaseService
     {
         $this->verifyModel($model);
 
+        // TODO: Change transactions account_id to another id
+
+        if($model->transactions()->exists())
+            throw new ServiceException('This Account have transactions');
+
         $model->group()->detach();
         
         $this->setModel(null);
-
-        // TODO: What happen to transactions
 
         return true;
     }

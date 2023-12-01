@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ServiceException;
 use App\Models\CategoryGroup;
 use App\Models\CategoryPivot;
 use App\Models\Workspace;
@@ -63,8 +64,6 @@ class CategoryGroupService extends BaseService
             ]);
         }
 
-        // TODO: What happen to transactions and categories
-
         return true;
     }
 
@@ -72,12 +71,13 @@ class CategoryGroupService extends BaseService
     {
         $this->verifyModel($model);
 
+        if($model->categories()->exists())
+            throw new ServiceException('This Category Group have categories');
+
         WorkspaceCategoriesPivot::where([
             'category_group_id' => $model->id,
             'workspace_id' => session()->get(WorkspaceService::KEY)
         ])->delete();
-
-        // TODO: What happen to transactions and categories
 
         return true;
     }
