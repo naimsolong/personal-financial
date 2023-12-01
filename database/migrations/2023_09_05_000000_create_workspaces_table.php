@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug');
             $table->timestamps();
         });
-        
+
         Schema::create('workspace_users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('workspace_id')->constrained();

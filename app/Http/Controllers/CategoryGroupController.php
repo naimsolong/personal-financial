@@ -18,7 +18,7 @@ class CategoryGroupController extends Controller
     public function index()
     {
         $categories = CategoryGroup::forUser()->currentWorkspace()->select('id', 'name', 'type')->get();
-        
+
         return Inertia::render('Dashboard/CategoryGroup/Index', [
             'categories' => [
                 'expense' => $categories->where('type', TransactionsType::EXPENSE->value)->toArray(),
@@ -37,7 +37,7 @@ class CategoryGroupController extends Controller
             'data' => [
                 'id' => '',
                 'name' => '',
-                'type' => $request->query('type', '')
+                'type' => $request->query('type', ''),
             ],
         ]);
     }
@@ -60,7 +60,7 @@ class CategoryGroupController extends Controller
         return Inertia::render('Dashboard/CategoryGroup/Form', [
             'edit_mode' => true,
             'types' => collect(TransactionsType::dropdown())->whereIn('value', ['E', 'I'])->toArray(),
-            'data' => $group->only('id','name','type'),
+            'data' => $group->only('id', 'name', 'type'),
         ]);
     }
 

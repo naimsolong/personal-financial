@@ -18,7 +18,7 @@ class AccountGroupController extends Controller
     public function index()
     {
         $accounts = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->get();
-        
+
         return Inertia::render('Dashboard/AccountGroup/Index', [
             'accounts' => [
                 'assets' => $accounts->where('type', AccountsType::ASSETS->value)->toArray(),
@@ -37,7 +37,7 @@ class AccountGroupController extends Controller
             'data' => [
                 'id' => '',
                 'name' => '',
-                'type' => $request->query('type', '')
+                'type' => $request->query('type', ''),
             ],
         ]);
     }
@@ -60,7 +60,7 @@ class AccountGroupController extends Controller
         return Inertia::render('Dashboard/AccountGroup/Form', [
             'edit_mode' => true,
             'types' => AccountsType::dropdown(),
-            'data' => $group->only('id','name','type'),
+            'data' => $group->only('id', 'name', 'type'),
         ]);
     }
 

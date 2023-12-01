@@ -6,8 +6,6 @@ use App\Enums\TransactionsType;
 use App\Models\Category;
 use App\Models\CategoryGroup;
 use App\Models\Workspace;
-use App\Services\WorkspaceService;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
@@ -55,8 +53,6 @@ class CategorySeeder extends Seeder
         ], TransactionsType::EXPENSE);
         $group->categories()->syncWithPivotValues($categories_id, ['workspace_id' => $workspace->id]);
         array_push($groups_id, $group->id);
-        
-
 
         $group = $this->createCategoryGroup('Active', TransactionsType::INCOME);
         $categories_id = $this->createCategories([
@@ -86,7 +82,7 @@ class CategorySeeder extends Seeder
 
     protected function createCategories(array $categories, TransactionsType $type): array
     {
-        return array_map(function($category) use ($type) {
+        return array_map(function ($category) use ($type) {
             return Category::firstOrCreate([
                 'name' => $category,
                 'type' => $type,

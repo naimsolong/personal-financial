@@ -2,9 +2,9 @@
 
 namespace App\Enums\Traits;
 
-use ArchTech\Enums\{
-    InvokableCases, Names, Values
-};
+use ArchTech\Enums\InvokableCases;
+use ArchTech\Enums\Names;
+use ArchTech\Enums\Values;
 
 trait Dropdown
 {

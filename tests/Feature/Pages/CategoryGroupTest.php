@@ -13,7 +13,7 @@ test('user can access category group pages', function () {
     $workspace->users()->attach($user->id);
     app(WorkspaceService::class)->change($workspace->id);
     $categoryGroup = CategoryGroup::factory(3)->create([
-        'type' => TransactionsType::EXPENSE->value
+        'type' => TransactionsType::EXPENSE->value,
     ]);
     $workspace->categoryGroups()->sync($categoryGroup->pluck('id'));
 
@@ -29,7 +29,7 @@ test('user can access category group pages', function () {
             )
         );
     $response->assertSuccessful();
-    
+
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('category.group.create'))
@@ -43,7 +43,7 @@ test('user can access category group pages', function () {
             ])
         );
     $response->assertSuccessful();
-    
+
     $categoryGroup = CategoryGroup::factory()->create();
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
@@ -52,7 +52,7 @@ test('user can access category group pages', function () {
             ->component('Dashboard/CategoryGroup/Form')
             ->where('edit_mode', true)
             ->where('types', collect(TransactionsType::dropdown())->whereIn('value', ['E', 'I'])->toArray())
-            ->where('data', $categoryGroup->only('id','name','type'))
+            ->where('data', $categoryGroup->only('id', 'name', 'type'))
         );
     $response->assertSuccessful();
 });
@@ -63,28 +63,28 @@ test('user can perform store, update and destroy', function () {
     $workspace->users()->attach($user->id);
     app(WorkspaceService::class)->change($workspace->id);
     $data = [
-        'name' => 'test'.rand(4,10),
-        'type' => TransactionsType::EXPENSE->value
+        'name' => 'test'.rand(4, 10),
+        'type' => TransactionsType::EXPENSE->value,
     ];
-    
+
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
         ->post(route('category.group.store'), $data);
     $response->assertRedirectToRoute('category.group.index');
     $this->assertDatabaseHas('category_groups', $data);
-    
+
     $categoryGroup = CategoryGroup::factory()->create();
 
     $data = [
-        'name' => 'tested'.rand(4,10),
-        'type' => TransactionsType::INCOME->value
+        'name' => 'tested'.rand(4, 10),
+        'type' => TransactionsType::INCOME->value,
     ];
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
         ->put(route('category.group.update', ['group' => $categoryGroup->id]), $data);
     $response->assertRedirectToRoute('category.group.index');
     $this->assertDatabaseHas('category_groups', $data);
-    
+
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
         ->delete(route('category.group.destroy', ['group' => $categoryGroup->id]));

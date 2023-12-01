@@ -21,20 +21,20 @@ it('reverses the amount correctly', function () {
     expect($service->reverseAmount(0))->toBe(0);
 });
 
-it('modify amount correctly', function() {
+it('modify amount correctly', function () {
     $service = app(TransactionService::class);
 
     expect($service->modifyNegativeAmount(0))->toBe(0);
     expect($service->modifyPositiveAmount(0))->toBe(0);
-    
+
     expect($service->modifyNegativeAmount(1))->toBeLessThan(0);
     expect($service->modifyPositiveAmount(1))->toBeGreaterThan(0);
-    
+
     expect($service->modifyNegativeAmount(-1))->toBeLessThan(0);
     expect($service->modifyPositiveAmount(-1))->toBeGreaterThan(0);
 });
 
-it('able to store, update and destroy for expense transaction', function() {
+it('able to store, update and destroy for expense transaction', function () {
     $workspace = Workspace::factory()->create();
     app(WorkspaceService::class)->change($workspace->id);
 
@@ -48,7 +48,7 @@ it('able to store, update and destroy for expense transaction', function() {
             'group'
         )
         ->create();
-    $balance = rand(100,500);
+    $balance = rand(100, 500);
     $account = Account::factory(5)
         ->hasAttached(AccountGroup::factory(), [
             'workspace_id' => $workspace->id,
@@ -56,7 +56,7 @@ it('able to store, update and destroy for expense transaction', function() {
             'starting_balance' => $balance,
             'latest_balance' => $balance,
             'currency' => CurrencyAlpha3::from('MYR')->value,
-            'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
+            'notes' => rand(0, 1) == 1 ? 'whut'.rand(3000, 9000) : null,
         ], 'group')
         ->create();
 
@@ -68,7 +68,7 @@ it('able to store, update and destroy for expense transaction', function() {
         'type' => TransactionsType::EXPENSE->value,
         'category' => $store_category->id,
         'account_from' => $store_account->id,
-        'amount' => rand(10,100),
+        'amount' => rand(10, 100),
         'currency' => CurrencyAlpha3::from('MYR')->value,
         'currency_rate' => 1,
         'status' => TransactionsStatus::NONE->value,
@@ -91,9 +91,9 @@ it('able to store, update and destroy for expense transaction', function() {
         'account_id' => $store_account->id,
         'latest_balance' => $new_balance,
     ]);
-    
+
     $update_data = $store_data->merge([
-        'amount' => rand(10,100),
+        'amount' => rand(10, 100),
     ]);
     $is_updated = $service->update($model, $update_data);
     $model = $service->getModel();
@@ -111,7 +111,7 @@ it('able to store, update and destroy for expense transaction', function() {
         'account_id' => $store_account->id,
         'latest_balance' => $new_balance,
     ]);
-    
+
     $is_destroyed = $service->destroy($model);
     $this->assertDatabaseMissing('transactions', [
         'id' => $model->id,
@@ -124,10 +124,10 @@ it('able to store, update and destroy for expense transaction', function() {
     ]);
 });
 
-it('able to store, update and destroy for income transaction', function() {
+it('able to store, update and destroy for income transaction', function () {
     $workspace = Workspace::factory()->create();
     app(WorkspaceService::class)->change($workspace->id);
-    
+
     $service = app(TransactionService::class);
 
     $model = Transaction::query();
@@ -138,7 +138,7 @@ it('able to store, update and destroy for income transaction', function() {
             'group'
         )
         ->create();
-    $balance = rand(100,500);
+    $balance = rand(100, 500);
     $account = Account::factory(5)
         ->hasAttached(AccountGroup::factory(), [
             'workspace_id' => $workspace->id,
@@ -146,7 +146,7 @@ it('able to store, update and destroy for income transaction', function() {
             'starting_balance' => $balance,
             'latest_balance' => $balance,
             'currency' => CurrencyAlpha3::from('MYR')->value,
-            'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
+            'notes' => rand(0, 1) == 1 ? 'whut'.rand(3000, 9000) : null,
         ], 'group')
         ->create();
 
@@ -158,7 +158,7 @@ it('able to store, update and destroy for income transaction', function() {
         'type' => TransactionsType::INCOME->value,
         'category' => $store_category->id,
         'account_from' => $store_account->id,
-        'amount' => rand(10,100),
+        'amount' => rand(10, 100),
         'currency' => CurrencyAlpha3::from('MYR')->value,
         'currency_rate' => 1,
         'status' => TransactionsStatus::NONE->value,
@@ -181,9 +181,9 @@ it('able to store, update and destroy for income transaction', function() {
         'account_id' => $store_account->id,
         'latest_balance' => $new_balance,
     ]);
-    
+
     $update_data = $store_data->merge([
-        'amount' => rand(10,100),
+        'amount' => rand(10, 100),
     ]);
     $is_updated = $service->update($model, $update_data);
     $model = $service->getModel();
@@ -201,7 +201,7 @@ it('able to store, update and destroy for income transaction', function() {
         'account_id' => $store_account->id,
         'latest_balance' => $new_balance,
     ]);
-    
+
     $is_destroyed = $service->destroy($model);
     $this->assertDatabaseMissing('transactions', [
         'id' => $model->id,
@@ -214,14 +214,14 @@ it('able to store, update and destroy for income transaction', function() {
     ]);
 });
 
-it('able to store, update and destroy for transfer transaction', function() {
+it('able to store, update and destroy for transfer transaction', function () {
     $workspace = Workspace::factory()->create();
     app(WorkspaceService::class)->change($workspace->id);
-    
+
     $service = app(TransactionService::class);
 
     $model = Transaction::query();
-    $balance = rand(100,500);
+    $balance = rand(100, 500);
     $account = Account::factory(5)
         ->hasAttached(AccountGroup::factory(), [
             'workspace_id' => $workspace->id,
@@ -229,7 +229,7 @@ it('able to store, update and destroy for transfer transaction', function() {
             'starting_balance' => $balance,
             'latest_balance' => $balance,
             'currency' => CurrencyAlpha3::from('MYR')->value,
-            'notes' => rand(0,1) == 1 ? 'whut'.rand(3000,9000) : null,
+            'notes' => rand(0, 1) == 1 ? 'whut'.rand(3000, 9000) : null,
         ], 'group')
         ->create();
 
@@ -241,7 +241,7 @@ it('able to store, update and destroy for transfer transaction', function() {
         'type' => TransactionsType::TRANSFER->value,
         'account_from' => $store_account_from->id,
         'account_to' => $store_account_to->id,
-        'amount' => rand(10,100),
+        'amount' => rand(10, 100),
         'currency' => CurrencyAlpha3::from('MYR')->value,
         'currency_rate' => 1,
         'status' => TransactionsStatus::NONE->value,
@@ -254,14 +254,14 @@ it('able to store, update and destroy for transfer transaction', function() {
         'id' => $model->id,
         'type' => $store_data->get('type'),
         'account_id' => $store_data->get('account_from'),
-        'transfer_pair_id' =>  $model->transfer_pair->id,
+        'transfer_pair_id' => $model->transfer_pair->id,
         'amount' => $store_data->get('amount') * -1,
     ]);
     $this->assertDatabaseHas('transactions', [
         'id' => $model->transfer_pair->id,
         'type' => $store_data->get('type'),
         'account_id' => $store_data->get('account_to'),
-        'transfer_pair_id' =>  $model->id,
+        'transfer_pair_id' => $model->id,
         'amount' => $store_data->get('amount'),
     ]);
     expect($is_created)->toBeTrue();
@@ -277,9 +277,9 @@ it('able to store, update and destroy for transfer transaction', function() {
         'account_id' => $store_account_to->id,
         'latest_balance' => $new_balance_account_to,
     ]);
-    
+
     $update_data = $store_data->merge([
-        'amount' => rand(10,100),
+        'amount' => rand(10, 100),
     ]);
     $is_updated = $service->update($model, $update_data);
     $model = $service->getModel();
@@ -287,14 +287,14 @@ it('able to store, update and destroy for transfer transaction', function() {
         'id' => $model->id,
         'type' => $update_data->get('type'),
         'account_id' => $update_data->get('account_from'),
-        'transfer_pair_id' =>  $model->transfer_pair->id,
+        'transfer_pair_id' => $model->transfer_pair->id,
         'amount' => $update_data->get('amount') * -1,
     ]);
     $this->assertDatabaseHas('transactions', [
         'id' => $model->transfer_pair->id,
         'type' => $update_data->get('type'),
         'account_id' => $update_data->get('account_to'),
-        'transfer_pair_id' =>  $model->id,
+        'transfer_pair_id' => $model->id,
         'amount' => $update_data->get('amount'),
     ]);
     expect($is_updated)->toBeTrue();
@@ -310,7 +310,7 @@ it('able to store, update and destroy for transfer transaction', function() {
         'account_id' => $store_account_to->id,
         'latest_balance' => $new_balance_account_to,
     ]);
-    
+
     $is_destroyed = $service->destroy($model);
     $this->assertDatabaseMissing('transactions', [
         'id' => $model->id,
@@ -331,18 +331,18 @@ it('able to store, update and destroy for transfer transaction', function() {
     ]);
 });
 
-it('able to throw exeception', function() {
+it('able to throw exeception', function () {
     $service = app(TransactionService::class);
 
     expect(fn () => ($service->update(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');
     expect(fn () => ($service->destroy(null)))->toThrow(ServiceException::class, 'Model Not Found');
-    
+
     $model = new stdClass();
     $model->type = 'L';
     $data = collect([
         'due_date' => now()->format('d/m/Y'),
         'due_time' => now()->format('H:i'),
-        'type' => 'UNKNOWN_TYPE'
+        'type' => 'UNKNOWN_TYPE',
     ]);
     expect(fn () => ($service->update($model, $data)))->toThrow(ServiceException::class, 'Undefined Transaction Type');
     expect(fn () => ($service->destroy($model)))->toThrow(ServiceException::class, 'Undefined Transaction Type');

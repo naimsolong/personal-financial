@@ -43,7 +43,7 @@ class TransactionService extends BaseService
 
         $model = $this->getModel();
 
-        return match($data->get('type')) {
+        return match ($data->get('type')) {
             TransactionsType::EXPENSE->value => $this->storeExpense($model, $data),
             TransactionsType::INCOME->value => $this->storeIncome($model, $data),
             TransactionsType::TRANSFER->value => $this->storeTransfer($model, $data),
@@ -53,9 +53,9 @@ class TransactionService extends BaseService
 
     public function storeOpeningBalance(int $account_id, Collection $data): bool
     {
-        $category_id = Category::forSystem()->when($data->get('type') == AccountsType::ASSETS->value, function($query) {
+        $category_id = Category::forSystem()->when($data->get('type') == AccountsType::ASSETS->value, function ($query) {
             return $query->isPositiveOpeningBalance();
-        }, function($query) {
+        }, function ($query) {
             return $query->isNegativeOpeningBalance();
         })->select('id')->first()->id;
 
@@ -71,26 +71,26 @@ class TransactionService extends BaseService
             'notes' => $data->get('notes'),
         ]));
     }
-    
+
     public function update(mixed $model, Collection $data): bool
     {
         $this->verifyModel($model);
 
         $data = $data->merge(['due_at' => Carbon::createFromFormat('d/m/Y H:i', $data->get('due_date').' '.$data->get('due_time', '00:00 AM'))->format('Y-m-d H:i:s')]);
 
-        return match($data->get('type')) {
+        return match ($data->get('type')) {
             TransactionsType::EXPENSE->value => $this->updateExpense($model, $data),
             TransactionsType::INCOME->value => $this->updateIncome($model, $data),
             TransactionsType::TRANSFER->value => $this->updateTransfer($model, $data),
             default => throw new ServiceException('Undefined Transaction Type'),
         };
     }
-    
+
     public function destroy(mixed $model): bool
     {
         $this->verifyModel($model);
 
-        return match($model->type) {
+        return match ($model->type) {
             TransactionsType::EXPENSE->value => $this->destroyExpense($model),
             TransactionsType::INCOME->value => $this->destroyIncome($model),
             TransactionsType::TRANSFER->value => $this->destroyTransfer($model),

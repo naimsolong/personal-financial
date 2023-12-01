@@ -36,7 +36,7 @@ class WorkspaceController extends Controller
         return Inertia::render('Dashboard/Workspaces/Form', [
             'data' => [
                 'id' => '',
-                'name' => ''
+                'name' => '',
             ],
         ]);
     }
@@ -47,7 +47,7 @@ class WorkspaceController extends Controller
     public function store(WorkspaceFormRequest $request)
     {
         $workspaceService = app(WorkspaceService::class);
-        
+
         $workspaceService->store(collect($request->only('name')));
 
         $workspaceService->change($workspaceService->getModel()->id);
@@ -62,7 +62,7 @@ class WorkspaceController extends Controller
     {
         return Inertia::render('Dashboard/Workspaces/Form', [
             'edit_mode' => true,
-            'data' => $workspace->only('id','name'),
+            'data' => $workspace->only('id', 'name'),
         ]);
     }
 
@@ -82,30 +82,33 @@ class WorkspaceController extends Controller
     public function destroy(Workspace $workspace)
     {
         $workspaceService = app(WorkspaceService::class)->setModel($workspace);
-        
+
         $errors = [];
 
-        if($workspaceService->have(CategoryGroup::class))
+        if ($workspaceService->have(CategoryGroup::class)) {
             $errors[] = 'Categories';
+        }
 
-        if($workspaceService->have(AccountGroup::class))
+        if ($workspaceService->have(AccountGroup::class)) {
             $errors[] = 'Accounts';
+        }
 
-        if($workspaceService->have(Transaction::class))
+        if ($workspaceService->have(Transaction::class)) {
             $errors[] = 'Transactions';
+        }
 
-        if(count($errors) > 0) {
-            if(count($errors) > 1) {
+        if (count($errors) > 0) {
+            if (count($errors) > 1) {
                 $last = array_pop($errors);
 
                 $populate = implode(', ', $errors);
 
-                $populate .= ' and ' . $last;
+                $populate .= ' and '.$last;
             } else {
                 $populate = $errors[0];
             }
 
-            throw ValidationException::withMessages(['custom' => 'Unable to delete workspace because it has ' . $populate . ' in it.']);
+            throw ValidationException::withMessages(['custom' => 'Unable to delete workspace because it has '.$populate.' in it.']);
         }
 
         $workspaceService->destroy($workspace);

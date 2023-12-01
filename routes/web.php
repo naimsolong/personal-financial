@@ -46,12 +46,12 @@ Route::middleware([
         return Inertia::render('Dashboard/Index');
     })->name('dashboard');
 
-    Route::group(['prefix' => 'workspaces'], function() {
+    Route::group(['prefix' => 'workspaces'], function () {
         Route::post('/change', [WorkspaceController::class, 'change'])->name('workspaces.change');
     });
 
     Route::resource('workspaces', WorkspaceController::class)->except([
-        'show'
+        'show',
     ])->names([
         'index' => 'workspaces.index',
         'create' => 'workspaces.create',
@@ -61,12 +61,12 @@ Route::middleware([
         'destroy' => 'workspaces.destroy',
     ]);
 
-    Route::group(['prefix' => 'transactions'], function() {
+    Route::group(['prefix' => 'transactions'], function () {
         Route::post('/partial', [TransactionsController::class, 'index'])->name('transactions.partial');
     });
 
     Route::resource('transactions', TransactionsController::class)->except([
-        'show'
+        'show',
     ])->names([
         'index' => 'transactions.index',
         'create' => 'transactions.create',
@@ -76,12 +76,12 @@ Route::middleware([
         'destroy' => 'transactions.destroy',
     ]);
 
-    Route::group(['prefix' => 'schedules'], function() {
+    Route::group(['prefix' => 'schedules'], function () {
         Route::get('/', [SchedulesController::class, 'index'])->name('schedules');
     });
 
     Route::resource('category/group', CategoryGroupController::class)->except([
-        'show'
+        'show',
     ])->names([
         'index' => 'category.group.index',
         'create' => 'category.group.create',
@@ -92,7 +92,7 @@ Route::middleware([
     ]);
 
     Route::resource('categories', CategoriesController::class)->except([
-        'show'
+        'show',
     ])->names([
         'index' => 'categories.index',
         'create' => 'categories.create',
@@ -103,7 +103,7 @@ Route::middleware([
     ]);
 
     Route::resource('account/group', AccountGroupController::class)->except([
-        'show'
+        'show',
     ])->names([
         'index' => 'account.group.index',
         'create' => 'account.group.create',
@@ -114,7 +114,7 @@ Route::middleware([
     ]);
 
     Route::resource('accounts', AccountsController::class)->except([
-        'show'
+        'show',
     ])->names([
         'index' => 'accounts.index',
         'create' => 'accounts.create',
@@ -124,11 +124,11 @@ Route::middleware([
         'destroy' => 'accounts.destroy',
     ]);
 
-    Route::group(['prefix' => 'filters'], function() {
+    Route::group(['prefix' => 'filters'], function () {
         Route::get('/', [FiltersController::class, 'index'])->name('filters');
     });
 
-    Route::group(['prefix' => 'labels'], function() {
+    Route::group(['prefix' => 'labels'], function () {
         Route::get('/', [LabelsController::class, 'index'])->name('labels');
     });
 });

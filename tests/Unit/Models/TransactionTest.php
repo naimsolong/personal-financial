@@ -23,8 +23,8 @@ test('model class has correct properties', function () {
 });
 
 test('model able to perform CRUD', function () {
-    Category::factory(rand(5,10))->create();
-    Account::factory(rand(5,10))->create();
+    Category::factory(rand(5, 10))->create();
+    Account::factory(rand(5, 10))->create();
     Workspace::factory()->create();
     $transaction = Transaction::factory()->create();
     $this->assertModelExists($transaction);

@@ -6,7 +6,6 @@ use App\Enums\SystemCategoryCode;
 use App\Enums\TransactionsType;
 use App\Models\Category;
 use App\Models\CategoryGroup;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class InitSeeder extends Seeder
@@ -16,8 +15,7 @@ class InitSeeder extends Seeder
      */
     public function run(): void
     {
-        if(!CategoryGroup::where('name', 'LIKE', '[System %')->exists())
-        {
+        if (! CategoryGroup::where('name', 'LIKE', '[System %')->exists()) {
             CategoryGroup::firstOrCreate([
                 'name' => '[System (-)]',
                 'type' => TransactionsType::EXPENSE,
@@ -29,9 +27,8 @@ class InitSeeder extends Seeder
                 'only_system_flag' => true,
             ]);
         }
-        
-        if(!Category::where('name', 'LIKE', '[OPENING BALANCE %')->exists())
-        {
+
+        if (! Category::where('name', 'LIKE', '[OPENING BALANCE %')->exists()) {
             Category::firstOrCreate([
                 'name' => '[OPENING BALANCE (-)]',
                 'type' => TransactionsType::EXPENSE,
@@ -45,9 +42,8 @@ class InitSeeder extends Seeder
                 'only_system_flag' => true,
             ]);
         }
-        
-        if(!Category::where('name', 'LIKE', '[ADJUSTMENT %')->exists())
-        {
+
+        if (! Category::where('name', 'LIKE', '[ADJUSTMENT %')->exists()) {
             Category::firstOrCreate([
                 'name' => '[ADJUSTMENT (-)]',
                 'type' => TransactionsType::EXPENSE,

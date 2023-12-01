@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Account extends Model
 {
     use HasFactory, SoftDeletes;
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -33,7 +33,7 @@ class Account extends Model
             ->using(AccountPivot::class)
             ->as('details')
             ->withPivot('opening_date', 'starting_balance', 'latest_balance', 'currency', 'notes')
-            ->when(!is_null(session()->get(WorkspaceService::KEY)), function ($query) {
+            ->when(! is_null(session()->get(WorkspaceService::KEY)), function ($query) {
                 $query->where('workspace_id', session()->get(WorkspaceService::KEY));
             })
             ->withTimestamps();

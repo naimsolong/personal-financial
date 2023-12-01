@@ -5,11 +5,11 @@ namespace App\Actions\Workspace;
 use App\Services\WorkspaceService;
 use Illuminate\Http\Request;
 
-class InitiateWorkspace {
+class InitiateWorkspace
+{
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  callable  $next
      * @return mixed
      */

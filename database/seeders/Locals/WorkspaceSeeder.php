@@ -3,7 +3,6 @@
 namespace Database\Seeders\Locals;
 
 use App\Models\Workspace;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class WorkspaceSeeder extends Seeder
@@ -14,10 +13,10 @@ class WorkspaceSeeder extends Seeder
     public function run(): void
     {
         Workspace::create([
-            'name' => 'Personal'
+            'name' => 'Personal',
         ]);
         Workspace::create([
-            'name' => 'Side Job'
+            'name' => 'Side Job',
         ]);
     }
 }

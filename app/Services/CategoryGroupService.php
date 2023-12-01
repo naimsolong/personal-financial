@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Exceptions\ServiceException;
 use App\Models\CategoryGroup;
 use App\Models\CategoryPivot;
-use App\Models\Workspace;
 use App\Models\WorkspaceCategoriesPivot;
 use Illuminate\Support\Collection;
 
@@ -25,12 +24,12 @@ class CategoryGroupService extends BaseService
                 $data->toArray()
             )
         );
-        
+
         $is_created = $this->haveModel();
 
         WorkspaceCategoriesPivot::create([
             'category_group_id' => $this->getModel()->id,
-            'workspace_id' => session()->get(WorkspaceService::KEY)
+            'workspace_id' => session()->get(WorkspaceService::KEY),
         ]);
 
         return $is_created;
@@ -45,22 +44,22 @@ class CategoryGroupService extends BaseService
                 $data->toArray()
             )
         );
-        
+
         $updatedModel = $this->getModel();
-        
-        if($updatedModel->id != $model->id) {
-            WorkspaceCategoriesPivot::where(function($query) use ($model) {
+
+        if ($updatedModel->id != $model->id) {
+            WorkspaceCategoriesPivot::where(function ($query) use ($model) {
                 $query->where('category_group_id', $model->id)
                     ->where('workspace_id', session()->get(WorkspaceService::KEY));
             })->update([
-                'category_group_id' => $updatedModel->id
+                'category_group_id' => $updatedModel->id,
             ]);
 
-            CategoryPivot::where(function($query) use ($model) {
+            CategoryPivot::where(function ($query) use ($model) {
                 $query->where('category_group_id', $model->id)
                     ->where('workspace_id', session()->get(WorkspaceService::KEY));
             })->update([
-                'category_group_id' => $updatedModel->id
+                'category_group_id' => $updatedModel->id,
             ]);
         }
 
@@ -71,12 +70,13 @@ class CategoryGroupService extends BaseService
     {
         $this->verifyModel($model);
 
-        if($model->categories()->exists())
+        if ($model->categories()->exists()) {
             throw new ServiceException('This Category Group have categories');
+        }
 
         WorkspaceCategoriesPivot::where([
             'category_group_id' => $model->id,
-            'workspace_id' => session()->get(WorkspaceService::KEY)
+            'workspace_id' => session()->get(WorkspaceService::KEY),
         ])->delete();
 
         return true;

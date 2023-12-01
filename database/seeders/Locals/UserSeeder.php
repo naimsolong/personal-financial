@@ -4,7 +4,6 @@ namespace Database\Seeders\Locals;
 
 use App\Models\User;
 use App\Models\Workspace;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -18,10 +17,10 @@ class UserSeeder extends Seeder
 
         $user = User::firstOrCreate(
             User::factory([
-                'email' => 'test@email.com'
+                'email' => 'test@email.com',
             ])->raw()
         );
-        
+
         $user->workspaces()->sync($workspaces_id);
     }
 }

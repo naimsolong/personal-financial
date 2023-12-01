@@ -14,8 +14,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
-    use TransactionsTypeFilter, SystemFlagFilter, CategoryCodeFilter, HasFactory, SoftDeletes;
-    
+    use CategoryCodeFilter, HasFactory, SoftDeletes, SystemFlagFilter, TransactionsTypeFilter;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -37,7 +37,7 @@ class Category extends Model
         return $this->belongsToMany(CategoryGroup::class, 'category_pivot')
             ->using(CategoryPivot::class)
             ->as('details')
-            ->when(!is_null(session()->get(WorkspaceService::KEY)), function ($query) {
+            ->when(! is_null(session()->get(WorkspaceService::KEY)), function ($query) {
                 $query->where('workspace_id', session()->get(WorkspaceService::KEY));
             })
             ->withTimestamps();

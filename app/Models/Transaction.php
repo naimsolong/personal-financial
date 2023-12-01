@@ -15,8 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Transaction extends Model implements WorkspaceRelation
 {
-    use WorkspaceFilter, TransactionsTypeFilter, HasFactory;
-    
+    use HasFactory, TransactionsTypeFilter, WorkspaceFilter;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -45,14 +45,14 @@ class Transaction extends Model implements WorkspaceRelation
     protected $casts = [
         'due_at' => 'datetime:Y-m-d H:i:s',
     ];
-    
+
     /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
     protected $appends = [
-        'due_day', 'due_date', 'due_time', 'type_name'
+        'due_day', 'due_date', 'due_time', 'type_name',
     ];
 
     /**
@@ -114,6 +114,7 @@ class Transaction extends Model implements WorkspaceRelation
     {
         $query->where('type', TransactionsType::INCOME);
     }
+
     /**
      * Scope a query to only transfer type.
      */
@@ -121,7 +122,7 @@ class Transaction extends Model implements WorkspaceRelation
     {
         $query->where('type', TransactionsType::TRANSFER);
     }
-    
+
     /**
      * Get due_at in term of dat.
      */
@@ -131,7 +132,7 @@ class Transaction extends Model implements WorkspaceRelation
             get: fn () => $this->due_at->format('D'),
         );
     }
-    
+
     /**
      * Get due_at in term of date.
      */
@@ -141,7 +142,7 @@ class Transaction extends Model implements WorkspaceRelation
             get: fn () => $this->due_at->format('d/m/Y'),
         );
     }
-    
+
     /**
      * Get due_at in term of time.
      */
@@ -151,7 +152,7 @@ class Transaction extends Model implements WorkspaceRelation
             get: fn () => $this->due_at->format('H:i'),
         );
     }
-    
+
     /**
      * Get type's name.
      */

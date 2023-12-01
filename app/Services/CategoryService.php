@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Exceptions\ServiceException;
 use App\Models\Category;
 use App\Models\CategoryGroup;
-use App\Models\CategoryPivot;
 use App\Models\Transaction;
 use Illuminate\Support\Collection;
 
@@ -22,9 +21,9 @@ class CategoryService extends BaseService
     {
         $model = $this->getModel()->firstOrCreate([
             'name' => $data->get('name'),
-            'type' => $data->get('type')
+            'type' => $data->get('type'),
         ]);
-        
+
         $model->group()->attach($data->get('category_group'), [
             'workspace_id' => session()->get(WorkspaceService::KEY),
         ]);
@@ -37,7 +36,7 @@ class CategoryService extends BaseService
     public function update(mixed $model, Collection $data): bool
     {
         $this->verifyModel($model);
-        
+
         $categoryGroup = CategoryGroup::currentWorkspace()->select('id', 'name', 'type')->findOrFail($data->get('category_group'));
 
         $this->setModel(
@@ -45,20 +44,20 @@ class CategoryService extends BaseService
                 $data->only('name', 'type')->toArray()
             )
         );
-        
+
         $updatedModel = $this->getModel();
-        
-        if($updatedModel->id != $model->id) {
+
+        if ($updatedModel->id != $model->id) {
             $model->group()->first()->details->update([
                 'category_group_id' => $categoryGroup->id,
-                'category_id' => $updatedModel->id
+                'category_id' => $updatedModel->id,
             ]);
-            
-            Transaction::where(function($query) use ($model) {
+
+            Transaction::where(function ($query) use ($model) {
                 $query->where('category_id', $model->id)
                     ->where('workspace_id', session()->get(WorkspaceService::KEY));
             })->update([
-                'category_id' => $updatedModel->id
+                'category_id' => $updatedModel->id,
             ]);
         }
 
@@ -71,11 +70,12 @@ class CategoryService extends BaseService
 
         // TODO: Change transactions category_id to another id
 
-        if($model->transactions()->exists())
+        if ($model->transactions()->exists()) {
             throw new ServiceException('This Category have transactions');
+        }
 
         $model->group()->detach();
-        
+
         $this->setModel(null);
 
         return true;

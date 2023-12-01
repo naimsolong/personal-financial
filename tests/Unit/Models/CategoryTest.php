@@ -35,44 +35,44 @@ test('model able to perform CRUD', function () {
     $this->assertSoftDeleted($category);
 });
 
-test('scope able to filter out data', function() {
+test('scope able to filter out data', function () {
     Category::whereNotNull('created_at')->delete(); // To reset table
 
     // TransactionsTypeFilter trait
     Category::factory()
-    ->count(2)
-    ->state(new Sequence(
-        [ 'type' => TransactionsType::EXPENSE ],
-        [ 'type' => TransactionsType::INCOME ],
-    ))->create();
+        ->count(2)
+        ->state(new Sequence(
+            ['type' => TransactionsType::EXPENSE],
+            ['type' => TransactionsType::INCOME],
+        ))->create();
 
     expect(Category::expenseOnly()->count())->toBe(1);
     expect(Category::incomeOnly()->count())->toBe(1);
-    
+
     Category::whereNotNull('created_at')->delete(); // To reset table
 
     // SystemFlagFilter trait
     Category::factory()
-    ->count(2)
-    ->state(new Sequence(
-        [ 'only_system_flag' => true ],
-        [ 'only_system_flag' => false ],
-    ))->create();
+        ->count(2)
+        ->state(new Sequence(
+            ['only_system_flag' => true],
+            ['only_system_flag' => false],
+        ))->create();
 
     expect(Category::forUser()->count())->toBe(1);
     expect(Category::forSystem()->count())->toBe(1);
-    
+
     Category::whereNotNull('created_at')->delete(); // To reset table
 
     // CategoryCodeFilter trait
     Category::factory()
-    ->count(4)
-    ->state(new Sequence(
-        [ 'code' => SystemCategoryCode::OPENING_POSITIVE->value ],
-        [ 'code' => SystemCategoryCode::OPENING_NEGATIVE->value ],
-        [ 'code' => SystemCategoryCode::ADJUST_POSITIVE->value ],
-        [ 'code' => SystemCategoryCode::ADJUST_NEGATIVE->value ],
-    ))->create();
+        ->count(4)
+        ->state(new Sequence(
+            ['code' => SystemCategoryCode::OPENING_POSITIVE->value],
+            ['code' => SystemCategoryCode::OPENING_NEGATIVE->value],
+            ['code' => SystemCategoryCode::ADJUST_POSITIVE->value],
+            ['code' => SystemCategoryCode::ADJUST_NEGATIVE->value],
+        ))->create();
 
     expect(Category::isPositiveOpeningBalance()->count())->toBe(1);
     expect(Category::isNegativeOpeningBalance()->count())->toBe(1);
