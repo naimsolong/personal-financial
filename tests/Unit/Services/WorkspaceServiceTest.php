@@ -60,13 +60,13 @@ it('can attach and detach from the current workspace', function () {
     $service = app(WorkspaceService::class);
     $service->setModel($workspace);
     
-    $service->attachUser($user->id);
+    $service->attach($user);
     $this->assertDatabaseHas('workspace_users', [
         'workspace_id' => $workspace->id,
         'user_id' => $user->id,
     ]);
 
-    $service->detachUser($user->id);
+    $service->detach($user);
     $this->assertDatabaseMissing('workspace_users', [
         'workspace_id' => $workspace->id,
         'user_id' => $user->id,

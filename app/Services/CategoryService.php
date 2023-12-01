@@ -38,7 +38,7 @@ class CategoryService extends BaseService
     {
         $this->verifyModel($model);
         
-        $categoryGroup = CategoryGroup::currentWorkspace()->select('id', 'name', 'type')->find($data->get('category_group'));
+        $categoryGroup = CategoryGroup::currentWorkspace()->select('id', 'name', 'type')->findOrFail($data->get('category_group'));
 
         $this->setModel(
             $this->getModel()->firstOrCreate(
@@ -49,11 +49,8 @@ class CategoryService extends BaseService
         $updatedModel = $this->getModel();
         
         if($updatedModel->id != $model->id) {
-            CategoryPivot::where(function($query) use ($categoryGroup, $model) {
-                $query->where('category_group_id', $categoryGroup->id)
-                    ->where('category_id', $model->id)
-                    ->where('workspace_id', session()->get(WorkspaceService::KEY));
-            })->update([
+            $model->group()->first()->details->update([
+                'category_group_id' => $categoryGroup->id,
                 'category_id' => $updatedModel->id
             ]);
             

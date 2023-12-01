@@ -42,11 +42,16 @@ it('able to store, update and destroy for expense transaction', function() {
 
     $model = Transaction::query();
     $category = Category::factory(5)
-        ->has(CategoryGroup::factory(), 'group')
+        ->hasAttached(
+            CategoryGroup::factory(),
+            ['workspace_id' => $workspace->id],
+            'group'
+        )
         ->create();
     $balance = rand(100,500);
     $account = Account::factory(5)
         ->hasAttached(AccountGroup::factory(), [
+            'workspace_id' => $workspace->id,
             'opening_date' => now()->format('d/m/Y'),
             'starting_balance' => $balance,
             'latest_balance' => $balance,
@@ -127,11 +132,16 @@ it('able to store, update and destroy for income transaction', function() {
 
     $model = Transaction::query();
     $category = Category::factory(5)
-        ->has(CategoryGroup::factory(), 'group')
+        ->hasAttached(
+            CategoryGroup::factory(),
+            ['workspace_id' => $workspace->id],
+            'group'
+        )
         ->create();
     $balance = rand(100,500);
     $account = Account::factory(5)
         ->hasAttached(AccountGroup::factory(), [
+            'workspace_id' => $workspace->id,
             'opening_date' => now()->format('d/m/Y'),
             'starting_balance' => $balance,
             'latest_balance' => $balance,
@@ -214,6 +224,7 @@ it('able to store, update and destroy for transfer transaction', function() {
     $balance = rand(100,500);
     $account = Account::factory(5)
         ->hasAttached(AccountGroup::factory(), [
+            'workspace_id' => $workspace->id,
             'opening_date' => now()->format('d/m/Y'),
             'starting_balance' => $balance,
             'latest_balance' => $balance,

@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\AccountGroup;
 use App\Models\AccountPivot;
 use App\Models\Category;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Services\WorkspaceService;
@@ -21,6 +22,7 @@ test('user can access account pages', function () {
         ->hasAttached(
             Account::factory(rand(1,10), ['type' => AccountsType::ASSETS->value]),
             [
+                'workspace_id' => $workspace->id,
                 'opening_date' => now()->format('d/m/Y'),
                 'starting_balance' => rand(10,100),
                 'currency' => CurrencyAlpha3::from('MYR')->value,
@@ -92,6 +94,7 @@ test('user can perform store, update and destroy', function () {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->create();
     $workspace->users()->attach($user->id);
+    app(WorkspaceService::class)->change($workspace->id);
     $accountGroup1 = AccountGroup::factory()
         ->create([
             'type' => AccountsType::ASSETS->value
@@ -103,7 +106,7 @@ test('user can perform store, update and destroy', function () {
     $workspace->accountGroups()->sync([$accountGroup1->id, $accountGroup2->id]);
 
     $data = [
-        'name' => 'test'.rand(4,10),
+        'name' => 'testcreate'.rand(4,10),
         'account_group' => $accountGroup1->id,
         'type' => AccountsType::ASSETS->value,
         'opening_date' => now()->format('d/m/Y'),
@@ -120,18 +123,18 @@ test('user can perform store, update and destroy', function () {
         'name', 'account_group', 'type'
     ])->toArray());
 
-    $account = AccountPivot::where('account_group_id', $data['account_group'])->where('starting_balance', $data['starting_balance'])->select('account_id')->first();
+    $account_pivot = AccountPivot::where('account_group_id', $data['account_group'])->where('starting_balance', $data['starting_balance'])->select('account_id')->first();
     $this->assertDatabaseHas('transactions', [
         'type' => TransactionsType::INCOME->value,
         'category_id' => Category::isPositiveOpeningBalance()->select('id')->first()->id,
-        'account_id' => $account->account_id,
+        'account_id' => $account_pivot->account_id,
         'amount' => $data['starting_balance'],
     ]);
     
-    $account = Account::factory()->create();
-    $this->assertModelExists($account);
+    $created_account = Account::where('name', $data['name'])->first();
+    $this->assertModelExists($created_account);
     $data = [
-        'name' => 'test'.rand(4,10),
+        'name' => 'testupdate'.rand(4,10),
         'account_group' => $accountGroup2->id,
         'type' => AccountsType::LIABILITIES->value,
         'opening_date' => now()->format('d/m/Y'),
@@ -140,22 +143,28 @@ test('user can perform store, update and destroy', function () {
     ];
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
-        ->put(route('accounts.update', ['account' => $account->id]), $data);
+        ->put(route('accounts.update', ['account' => $created_account->id]), $data);
+    $updated_account = Account::where('name', $data['name'])->first();
+    $this->assertModelExists($updated_account);
     $response->assertRedirectToRoute('accounts.index');
-    $this->assertDatabaseHas('account_pivot', collect($data)->merge([
-        'account_id' => $account->id,
+    $this->assertDatabaseHas('account_pivot', [
+        'workspace_id' => $workspace->id,
+        'account_id' => $updated_account->id,
         'account_group_id' => $data['account_group'],
-        'opening_date' => Carbon::createFromFormat('d/m/Y', $data['opening_date'])->format('Y-m-d')
-    ])->except([
-        'name', 'account_group', 'type'
-    ])->toArray());
+    ]);
     
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
-        ->delete(route('accounts.destroy', ['account' => $account->id]));
+        ->delete(route('accounts.destroy', ['account' => $updated_account->id]));
+    $response->assertInternalServerError();
+
+    Transaction::where('account_id', $updated_account->id)->delete();
+    $response = $this->actingAs($user)
+        ->withSession([WorkspaceService::KEY => $workspace->id])
+        ->delete(route('accounts.destroy', ['account' => $updated_account->id]));
     $response->assertRedirectToRoute('accounts.index');
     $this->assertDatabaseMissing('account_pivot', [
-        'account_id' => $account->id,
+        'account_id' => $updated_account->id,
         'account_group_id' => $data['account_group'],
     ]);
 });

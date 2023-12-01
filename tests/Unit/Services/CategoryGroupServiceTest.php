@@ -28,14 +28,15 @@ it('able to store, update and destroy category_groups table', function() {
         'type' => TransactionsType::INCOME->value
     ]);
     $is_updated = $service->update($model, $data);
+    $updated_model = $service->getModel();
     $this->assertDatabaseHas('category_groups', collect($data)->merge([
-        'id' => $model->id
+        'id' => $updated_model->id
     ])->toArray());
     expect($is_updated)->toBeTrue();
     
     $model = CategoryGroup::factory()->create();
     $is_destroyed = $service->destroy($model);
-    $this->assertSoftDeleted($model);
+    $this->assertModelExists($model);
     expect($is_destroyed)->toBeTrue();
 });
 

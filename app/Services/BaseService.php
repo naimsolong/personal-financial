@@ -10,9 +10,14 @@ use Illuminate\Support\Collection;
 // TODO: Optimize this BaseService class
 class BaseService implements BasicOperation
 {
+    protected string $_class = '';
+
     public function __construct(
         protected mixed $_model = null
-    ) { }
+    ) {
+        if(!is_null($this->_model))
+            $this->_class = $this->_model;
+    }
 
     public function setModel(mixed $model)
     {
@@ -29,6 +34,8 @@ class BaseService implements BasicOperation
             $model = app($this->_model);
         } elseif(!is_null($this->_model)) {
             $model = $this->_model;
+        } elseif($this->_class != '') {
+            $model = app($this->_class);
         }
 
         $this->verifyModel($model);

@@ -57,12 +57,14 @@ class AccountService extends BaseService
         $updatedModel = $this->getModel();
 
         if($updatedModel->id != $model->id) {
-            AccountPivot::where(function($query) use ($accountGroup, $model) {
-                $query->where('account_group_id', $accountGroup->id)
-                    ->where('account_id', $model->id)
-                    ->where('workspace_id', session()->get(WorkspaceService::KEY));
-            })->update([
-                'account_id' => $updatedModel->id
+            $model->group()->first()->details->update([
+                'account_group_id' => $accountGroup->id,
+                'account_id' => $updatedModel->id,
+                // 'opening_date' => $data->get('opening_date'),
+                // 'starting_balance' => $data->get('starting_balance'),
+                // 'latest_balance' => $data->get('starting_balance'),
+                // 'currency' => $data->get('currency'),
+                'notes' => $data->get('notes'),
             ]);
             
             Transaction::where(function($query) use ($model) {
@@ -72,16 +74,6 @@ class AccountService extends BaseService
                 'account_id' => $updatedModel->id
             ]);
         }
-
-        $updatedModel->group()->sync([
-            $accountGroup->id => [
-                // 'opening_date' => $data->get('opening_date'),
-                // 'starting_balance' => $data->get('starting_balance'),
-                // 'latest_balance' => $data->get('starting_balance'),
-                // 'currency' => $data->get('currency'),
-                'notes' => $data->get('notes'),
-            ]
-        ]);
 
         // TODO: Make adjustment on latest_balance
 

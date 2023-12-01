@@ -30,7 +30,6 @@ it('able to store, update and destroy categories table', function() {
     expect($is_created)->toBeTrue();
     
     $categoryGroup = CategoryGroup::factory()->create();
-    $model = Category::factory()->create();
     $workspace->categoryGroups()->attach($categoryGroup->id);
     $data = collect([
         'category_group' => $categoryGroup->id,
@@ -38,9 +37,9 @@ it('able to store, update and destroy categories table', function() {
         'type' => TransactionsType::INCOME->value,
     ]);
     $is_updated = $service->update($model, $data);
-    $model = $service->getModel();
+    $updated_model = $service->getModel();
     $this->assertDatabaseHas('categories', $data->only('name','type')->toArray());
-    $this->assertDatabaseHas('category_pivot', collect(['category_group_id' => $data->get('category_group'), 'category_id' => $model->id])->toArray());
+    $this->assertDatabaseHas('category_pivot', ['category_group_id' => $categoryGroup->id, 'category_id' => $updated_model->id]);
     expect($is_updated)->toBeTrue();
     
     $is_destroyed = $service->destroy($model);

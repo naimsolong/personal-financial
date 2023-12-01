@@ -6,7 +6,7 @@ use App\Services\BaseService;
 
 test('default model is null', function () {
     $service = new BaseService(
-        _class: User::class
+        _model: User::class
     );
 
     expect($service->getModel())->not->toBeNull();
@@ -14,7 +14,7 @@ test('default model is null', function () {
 
 it('able to store, update and destroy model', function() {
     $service = new BaseService(
-        _class: User::class
+        _model: User::class
     );
 
     $data = collect([
@@ -47,7 +47,7 @@ it('able to store, update and destroy model', function() {
 
 it('able to throw exeception', function() {
     $service = new BaseService(
-        _class: User::class
+        _model: User::class
     );
 
     expect(fn () => ($service->update(null, collect([]))))->toThrow(ServiceException::class, 'Model Not Found');

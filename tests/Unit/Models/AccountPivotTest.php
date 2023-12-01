@@ -3,14 +3,17 @@
 use App\Models\Account;
 use App\Models\AccountGroup;
 use App\Models\AccountPivot;
+use App\Models\Workspace;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
 test('pivot table able to attach, detach and sync', function () {
+    $workspace = Workspace::factory()->create();
     $accountGroup = AccountGroup::factory()->create();
     $accounts = Account::factory(10)->create();
 
     $random = $accounts->random();
     $accountGroup->accounts()->attach($random->id, [
+        'workspace_id' => $workspace->id,
         'opening_date' => now()->addDays(rand(30,90) + -1)->format('d/m/Y'),
         'starting_balance' => rand(1000, 5000),
         'latest_balance' => rand(5000, 7000),
@@ -28,6 +31,7 @@ test('pivot table able to attach, detach and sync', function () {
     })->exists())->toBeFalse();
 
     $accountGroup->accounts()->syncWithPivotValues($accounts->pluck('id'), [
+        'workspace_id' => $workspace->id,
         'opening_date' => now()->addDays(rand(30,90) + -1)->format('d/m/Y'),
         'starting_balance' => rand(1000, 5000),
         'latest_balance' => rand(5000, 7000),
@@ -40,6 +44,7 @@ test('pivot table able to attach, detach and sync', function () {
     
     $accountGroup->accounts()->sync([
         $random->id => [
+            'workspace_id' => $workspace->id,
             'opening_date' => now()->addDays(rand(30,90) + -1)->format('d/m/Y'),
             'starting_balance' => rand(1000, 5000),
             'latest_balance' => rand(5000, 7000),

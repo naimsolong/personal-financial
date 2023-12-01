@@ -28,14 +28,15 @@ it('able to store, update and destroy account_groups table', function() {
         'type' => AccountsType::LIABILITIES->value
     ]);
     $is_updated = $service->update($model, $data);
+    $updated_model = $service->getModel();
     $this->assertDatabaseHas('account_groups', collect($data)->merge([
-        'id' => $model->id
+        'id' => $updated_model->id
     ])->toArray());
     expect($is_updated)->toBeTrue();
     
     $model = AccountGroup::factory()->create();
     $is_destroyed = $service->destroy($model);
-    $this->assertSoftDeleted($model);
+    $this->assertModelExists($model);
     expect($is_destroyed)->toBeTrue();
 });
 
