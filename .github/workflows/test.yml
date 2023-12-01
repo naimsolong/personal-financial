@@ -36,5 +36,5 @@ jobs:
         php -r "file_exists('.env') || copy('.env.example', '.env');"
         php artisan optimize:clear
         php artisan about
-        php artisan migrate --seed
+        php artisan migrate --database=sqlite --seed
         php artisan test
