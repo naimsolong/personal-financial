@@ -28,4 +28,4 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Fix styling at ${{ github.head_ref }}
+          commit_message: Fix styling
