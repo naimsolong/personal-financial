@@ -2,10 +2,10 @@
 
 namespace App\Enums;
 
+use App\Enums\Interfaces\Detail;
 use App\Enums\Traits\Description;
 use App\Enums\Traits\Dropdown;
 use App\Enums\Traits\ValuesFunction;
-use App\Enums\Interfaces\Detail;
 
 enum AccountsType: string implements Detail
 {
@@ -13,7 +13,7 @@ enum AccountsType: string implements Detail
 
     case ASSETS = 'A';
     case LIABILITIES = 'L';
-    
+
     /**
      * Return details for this enum
      */

@@ -13,10 +13,10 @@ test('user can access account group pages', function () {
     $workspace->users()->attach($user->id);
     app(WorkspaceService::class)->change($workspace->id);
     $accountGroup = AccountGroup::factory(3)->create([
-        'type' => AccountsType::ASSETS->value
+        'type' => AccountsType::ASSETS->value,
     ]);
     $workspace->accountGroups()->sync($accountGroup->pluck('id'));
-    
+
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('account.group.index'))
@@ -29,7 +29,7 @@ test('user can access account group pages', function () {
             )
         );
     $response->assertSuccessful();
-    
+
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('account.group.create'))
@@ -43,7 +43,7 @@ test('user can access account group pages', function () {
             ])
         );
     $response->assertSuccessful();
-    
+
     $accountGroup = AccountGroup::factory()->create();
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
@@ -52,7 +52,7 @@ test('user can access account group pages', function () {
             ->component('Dashboard/AccountGroup/Form')
             ->where('edit_mode', true)
             ->where('types', AccountsType::dropdown())
-            ->where('data', $accountGroup->only('id','name','type'))
+            ->where('data', $accountGroup->only('id', 'name', 'type'))
         );
     $response->assertSuccessful();
 });
@@ -64,26 +64,26 @@ test('user can perform store, update and destroy', function () {
     app(WorkspaceService::class)->change($workspace->id);
 
     $data = [
-        'name' => 'test'.rand(4,10),
-        'type' => AccountsType::ASSETS->value
+        'name' => 'test'.rand(4, 10),
+        'type' => AccountsType::ASSETS->value,
     ];
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
         ->post(route('account.group.store'), $data);
     $response->assertRedirectToRoute('account.group.index');
     $this->assertDatabaseHas('account_groups', $data);
-    
+
     $accountGroup = AccountGroup::factory()->create();
     $data = [
-        'name' => 'tested'.rand(4,10),
-        'type' => AccountsType::LIABILITIES->value
+        'name' => 'tested'.rand(4, 10),
+        'type' => AccountsType::LIABILITIES->value,
     ];
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
         ->put(route('account.group.update', ['group' => $accountGroup->id]), $data);
     $response->assertRedirectToRoute('account.group.index');
     $this->assertDatabaseHas('account_groups', $data);
-    
+
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
         ->delete(route('account.group.destroy', ['group' => $accountGroup->id]));

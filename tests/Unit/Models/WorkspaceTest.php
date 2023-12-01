@@ -37,8 +37,8 @@ test('model able to perform CRUD', function () {
 test('able to attach, detach and sync', function () {
     // Prepare data
     $user = User::factory()->create();
-    $categoryGroup = CategoryGroup::factory(rand(5,10))->create();
-    $accountGroup = AccountGroup::factory(rand(5,10))->create();
+    $categoryGroup = CategoryGroup::factory(rand(5, 10))->create();
+    $accountGroup = AccountGroup::factory(rand(5, 10))->create();
     $workspace = Workspace::factory()->create();
 
     // Test for category groups
@@ -60,12 +60,12 @@ test('able to attach, detach and sync', function () {
     expect(
         DB::table('workspace_categories')->where('workspace_id', $workspace->id)->whereIn('category_group_id', $categoryGroupIds)->count()
     )->toBe($categoryGroupIds->count());
-    
+
     $workspace->categoryGroups()->detach();
     expect(
         DB::table('workspace_categories')->where('workspace_id', $workspace->id)->count()
     )->toBe(0);
-    
+
     // Test for account groups
     $id = $accountGroup->first()->id;
     $workspace->accountGroups()->attach($id);
@@ -85,12 +85,12 @@ test('able to attach, detach and sync', function () {
     expect(
         DB::table('workspace_accounts')->where('workspace_id', $workspace->id)->whereIn('account_group_id', $accountGroupIds)->count()
     )->toBe($accountGroupIds->count());
-    
+
     $workspace->accountGroups()->detach();
     expect(
         DB::table('workspace_accounts')->where('workspace_id', $workspace->id)->count()
     )->toBe(0);
-    
+
     // Test for user
     $id = $user->id;
     $workspace->users()->attach($id);

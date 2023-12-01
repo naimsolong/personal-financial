@@ -15,24 +15,24 @@ test('pivot table able to attach, detach and sync', function () {
         'workspace_id' => $workspace->id,
     ]);
 
-    expect(CategoryPivot::where(function($query) use ($categoryGroup, $random) {
+    expect(CategoryPivot::where(function ($query) use ($categoryGroup, $random) {
         $query->where('category_group_id', $categoryGroup->id)->where('category_id', $random->id);
     })->exists())->toBeTrue();
 
     $categoryGroup->categories()->detach($random->id);
-    expect(CategoryPivot::where(function($query) use ($categoryGroup, $random) {
+    expect(CategoryPivot::where(function ($query) use ($categoryGroup, $random) {
         $query->where('category_group_id', $categoryGroup->id)->where('category_id', $random->id);
     })->exists())->toBeFalse();
 
     $categoryGroup->categories()->syncWithPivotValues($categories->pluck('id'), [
         'workspace_id' => $workspace->id,
     ]);
-    expect(CategoryPivot::where(function($query) use ($categoryGroup, $categories) {
+    expect(CategoryPivot::where(function ($query) use ($categoryGroup, $categories) {
         $query->where('category_group_id', $categoryGroup->id)->whereIn('category_id', $categories->pluck('id'));
     })->exists())->toBeTrue();
-    
+
     $categoryGroup->categories()->sync([$random->id]);
-    expect(CategoryPivot::where(function($query) use ($categoryGroup, $random) {
+    expect(CategoryPivot::where(function ($query) use ($categoryGroup, $random) {
         $query->where('category_group_id', $categoryGroup->id)->whereIn('category_id', [$random->id]);
     })->exists())->toBeTrue();
 });

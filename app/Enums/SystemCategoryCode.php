@@ -2,10 +2,10 @@
 
 namespace App\Enums;
 
+use App\Enums\Interfaces\Detail;
 use App\Enums\Traits\Description;
 use App\Enums\Traits\Dropdown;
 use App\Enums\Traits\ValuesFunction;
-use App\Enums\Interfaces\Detail;
 
 enum SystemCategoryCode: string implements Detail
 {
@@ -15,7 +15,7 @@ enum SystemCategoryCode: string implements Detail
     case OPENING_NEGATIVE = '002';
     case ADJUST_POSITIVE = '003';
     case ADJUST_NEGATIVE = '004';
-    
+
     /**
      * Return details for this enum
      */

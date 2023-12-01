@@ -14,7 +14,7 @@ use Illuminate\Support\Collection;
 class WorkspaceService extends BaseService
 {
     public const KEY = 'current_workspace';
-    
+
     public function __construct()
     {
         parent::__construct(
@@ -33,7 +33,7 @@ class WorkspaceService extends BaseService
 
         return $return;
     }
-    
+
     /**
      * destroy workspace function
      */
@@ -43,15 +43,15 @@ class WorkspaceService extends BaseService
 
         return parent::destroy($model);
     }
-    
+
     /**
      * initiate workspace function to store current_workspace in session
      */
     public function initiate(): static
     {
         $workspace_id = request()->user()?->workspaces()->first()?->id;
-        
-        if(is_null($workspace_id)) {
+
+        if (is_null($workspace_id)) {
             throw new ServiceException('Current Workspace not found');
         }
 
@@ -70,8 +70,8 @@ class WorkspaceService extends BaseService
     public function current(): static
     {
         $workspace_id = session()->get(self::KEY);
-        
-        if(is_null($workspace_id)) {
+
+        if (is_null($workspace_id)) {
             throw new ServiceException('Current Workspace not found');
         }
 
@@ -81,7 +81,7 @@ class WorkspaceService extends BaseService
 
         return $this;
     }
-    
+
     /**
      * update current_workspace in session
      */
@@ -103,56 +103,56 @@ class WorkspaceService extends BaseService
     {
         $workspace = $this->getModel();
 
-        if(is_string($relation)) {
+        if (is_string($relation)) {
             $relation = app($relation);
         }
-        
-        [$workspace, $column] = match(get_class($relation)) {
+
+        [$workspace, $column] = match (get_class($relation)) {
             'App\Models\User' => [$workspace->users(), 'user_id'],
             'App\Models\CategoryGroup' => [$workspace->categoryGroups(), 'category_group_id'],
             'App\Models\AccountGroup' => [$workspace->accountGroups(), 'account_group_id'],
             'App\Models\Transaction' => [$workspace->transactions(), 'transaction_id'],
             default => throw new ServiceException('Relation not found')
         };
-        
-        return $workspace->when(isset($relation->id), function($query) use ($relation, $column){
+
+        return $workspace->when(isset($relation->id), function ($query) use ($relation, $column) {
             $query->where($column, $relation->id);
         })->exists();
     }
-    
+
     /**
      * attach the relation with current workspace
      */
     public function attach(User|CategoryGroup|AccountGroup|Builder $relation): static
     {
         $workspace = $this->getModel();
-        
-        $workspace = match(true) {
+
+        $workspace = match (true) {
             $relation instanceof User => $workspace->users(),
             $relation instanceof CategoryGroup => $workspace->categoryGroups(),
             $relation instanceof AccountGroup => $workspace->accountGroups(),
             default => throw new ServiceException('Relation not found')
         };
-        
+
         $workspace->attach($relation->id);
 
         return $this;
     }
-    
+
     /**
      * detach user from current workspace
      */
     public function detach(User|CategoryGroup|AccountGroup|Builder $relation): static
     {
         $workspace = $this->getModel();
-        
-        $workspace = match(true) {
+
+        $workspace = match (true) {
             $relation instanceof User => $workspace->users(),
             $relation instanceof CategoryGroup => $workspace->categoryGroups(),
             $relation instanceof AccountGroup => $workspace->accountGroups(),
             default => throw new ServiceException('Relation not found')
         };
-        
+
         $workspace->detach($relation->id);
 
         return $this;

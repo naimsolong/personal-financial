@@ -2,7 +2,8 @@
 
 namespace App\Models\Traits;
 
-trait SystemFlagFilter {
+trait SystemFlagFilter
+{
     public function scopeForUser()
     {
         return $this->where('only_system_flag', false);

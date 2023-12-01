@@ -24,36 +24,39 @@ class TransactionFactory extends Factory
      */
     public function definition(): array
     {
-        if(Account::count() == 0)
+        if (Account::count() == 0) {
             throw new Exception('Account have no data for TransactionFactory');
-            
-        if(Category::count() == 0)
-            throw new Exception('Category have no data for TransactionFactory');
+        }
 
-        if(Workspace::count() == 0)
+        if (Category::count() == 0) {
+            throw new Exception('Category have no data for TransactionFactory');
+        }
+
+        if (Workspace::count() == 0) {
             throw new Exception('Workspace have no data for TransactionFactory');
+        }
 
         $type = collect([TransactionsType::EXPENSE->value, TransactionsType::INCOME->value])->random();
 
-        [$amount, $category, $account] = match($type) {
+        [$amount, $category, $account] = match ($type) {
             TransactionsType::INCOME->value => [
-                rand(300,9000),
+                rand(300, 9000),
                 Category::where('type', $type)->forUser()->where('type', TransactionsType::INCOME->value)->inRandomOrder()->first(),
-                Account::where('type', AccountsType::ASSETS)->inRandomOrder()->first()
+                Account::where('type', AccountsType::ASSETS)->inRandomOrder()->first(),
             ],
             TransactionsType::EXPENSE->value => [
-                rand(300,9000) * -1,
+                rand(300, 9000) * -1,
                 Category::where('type', $type)->forUser()->where('type', TransactionsType::EXPENSE->value)->inRandomOrder()->first(),
-                Account::where('type', AccountsType::ASSETS)->inRandomOrder()->first()
+                Account::where('type', AccountsType::ASSETS)->inRandomOrder()->first(),
             ],
             default => [null, null, null], // Transfer type transaction is manually handle in TransactionSeeder
         };
-        
+
         $workspace = Workspace::get();
 
         return [
             'workspace_id' => $workspace->random()->id,
-            'due_at' => now()->addDays(rand(-30,30)),
+            'due_at' => now()->addDays(rand(-30, 30)),
             'type' => $type,
             'category_id' => $category->id,
             'account_id' => $account->id,
@@ -63,7 +66,7 @@ class TransactionFactory extends Factory
             // 'currency_rate',
             // 'transfer_pair_id',
             'status' => TransactionsStatus::NONE,
-            'notes' => 'Whut'.rand(1010,9090),
+            'notes' => 'Whut'.rand(1010, 9090),
         ];
     }
 }

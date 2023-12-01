@@ -20,7 +20,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
-        
+
         Schema::create('workspace_categories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('workspace_id')->constrained();

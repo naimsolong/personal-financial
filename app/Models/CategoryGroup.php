@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CategoryGroup extends Model implements WorkspaceRelation
 {
-    use WorkspaceFilter, TransactionsTypeFilter, SystemFlagFilter, HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, SystemFlagFilter, TransactionsTypeFilter, WorkspaceFilter;
 
     /**
      * The attributes that are mass assignable.
@@ -36,7 +36,7 @@ class CategoryGroup extends Model implements WorkspaceRelation
             ->using(WorkspaceCategoriesPivot::class)
             ->withTimestamps();
     }
-    
+
     /**
      * The group that belong to the categories.
      */
@@ -45,7 +45,7 @@ class CategoryGroup extends Model implements WorkspaceRelation
         return $this->belongsToMany(Category::class, 'category_pivot')
             ->using(CategoryPivot::class)
             ->as('details')
-            ->when(!is_null(session()->get(WorkspaceService::KEY)), function ($query) {
+            ->when(! is_null(session()->get(WorkspaceService::KEY)), function ($query) {
                 $query->where('workspace_id', session()->get(WorkspaceService::KEY));
             })
             ->withTimestamps();

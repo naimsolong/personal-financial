@@ -20,16 +20,16 @@ test('user can access account pages', function () {
     $workspace->users()->attach($user->id);
     $accountGroup = AccountGroup::factory(3)
         ->hasAttached(
-            Account::factory(rand(1,10), ['type' => AccountsType::ASSETS->value]),
+            Account::factory(rand(1, 10), ['type' => AccountsType::ASSETS->value]),
             [
                 'workspace_id' => $workspace->id,
                 'opening_date' => now()->format('d/m/Y'),
-                'starting_balance' => rand(10,100),
+                'starting_balance' => rand(10, 100),
                 'currency' => CurrencyAlpha3::from('MYR')->value,
             ]
         )
         ->create([
-            'type' => AccountsType::ASSETS->value
+            'type' => AccountsType::ASSETS->value,
         ]);
     $workspace->accountGroups()->attach($accountGroup->pluck('id'));
 
@@ -44,7 +44,7 @@ test('user can access account pages', function () {
             )
         );
     $response->assertStatus(200);
-    
+
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
         ->get(route('accounts.create'))
@@ -65,7 +65,7 @@ test('user can access account pages', function () {
             ])
         );
     $response->assertStatus(200);
-    
+
     $account = $accountGroup->first()->accounts()->first();
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
@@ -97,20 +97,20 @@ test('user can perform store, update and destroy', function () {
     app(WorkspaceService::class)->change($workspace->id);
     $accountGroup1 = AccountGroup::factory()
         ->create([
-            'type' => AccountsType::ASSETS->value
+            'type' => AccountsType::ASSETS->value,
         ]);
     $accountGroup2 = AccountGroup::factory()
         ->create([
-            'type' => AccountsType::ASSETS->value
+            'type' => AccountsType::ASSETS->value,
         ]);
     $workspace->accountGroups()->sync([$accountGroup1->id, $accountGroup2->id]);
 
     $data = [
-        'name' => 'testcreate'.rand(4,10),
+        'name' => 'testcreate'.rand(4, 10),
         'account_group' => $accountGroup1->id,
         'type' => AccountsType::ASSETS->value,
         'opening_date' => now()->format('d/m/Y'),
-        'starting_balance' => rand(10,100),
+        'starting_balance' => rand(10, 100),
         'currency' => CurrencyAlpha3::from('MYR')->value,
     ];
     $response = $this->actingAs($user)
@@ -118,9 +118,9 @@ test('user can perform store, update and destroy', function () {
         ->post(route('accounts.store'), $data);
     $response->assertRedirectToRoute('accounts.index');
     $this->assertDatabaseHas('account_pivot', collect($data)->merge([
-        'opening_date' => Carbon::createFromFormat('d/m/Y', $data['opening_date'])->format('Y-m-d')
+        'opening_date' => Carbon::createFromFormat('d/m/Y', $data['opening_date'])->format('Y-m-d'),
     ])->except([
-        'name', 'account_group', 'type'
+        'name', 'account_group', 'type',
     ])->toArray());
 
     $account_pivot = AccountPivot::where('account_group_id', $data['account_group'])->where('starting_balance', $data['starting_balance'])->select('account_id')->first();
@@ -130,15 +130,15 @@ test('user can perform store, update and destroy', function () {
         'account_id' => $account_pivot->account_id,
         'amount' => $data['starting_balance'],
     ]);
-    
+
     $created_account = Account::where('name', $data['name'])->first();
     $this->assertModelExists($created_account);
     $data = [
-        'name' => 'testupdate'.rand(4,10),
+        'name' => 'testupdate'.rand(4, 10),
         'account_group' => $accountGroup2->id,
         'type' => AccountsType::LIABILITIES->value,
         'opening_date' => now()->format('d/m/Y'),
-        'starting_balance' => rand(10,100),
+        'starting_balance' => rand(10, 100),
         'currency' => CurrencyAlpha3::from('MYR')->value,
     ];
     $response = $this->actingAs($user)
@@ -152,7 +152,7 @@ test('user can perform store, update and destroy', function () {
         'account_id' => $updated_account->id,
         'account_group_id' => $data['account_group'],
     ]);
-    
+
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
         ->delete(route('accounts.destroy', ['account' => $updated_account->id]));

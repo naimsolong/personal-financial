@@ -30,29 +30,29 @@ test('model able to perform CRUD', function () {
     $this->assertSoftDeleted($categoryGroup);
 });
 
-test('scope able to filter out data', function() {
+test('scope able to filter out data', function () {
     CategoryGroup::whereNotNull('created_at')->delete(); // To reset table
 
     // TransactionsTypeFilter trait
     CategoryGroup::factory()
-    ->count(2)
-    ->state(new Sequence(
-        [ 'type' => TransactionsType::EXPENSE ],
-        [ 'type' => TransactionsType::INCOME ],
-    ))->create();
+        ->count(2)
+        ->state(new Sequence(
+            ['type' => TransactionsType::EXPENSE],
+            ['type' => TransactionsType::INCOME],
+        ))->create();
 
     expect(CategoryGroup::expenseOnly()->count())->toBe(1);
     expect(CategoryGroup::incomeOnly()->count())->toBe(1);
-    
+
     CategoryGroup::whereNotNull('created_at')->delete(); // To reset table
 
     // SystemFlagFilter trait
     CategoryGroup::factory()
-    ->count(2)
-    ->state(new Sequence(
-        [ 'only_system_flag' => true ],
-        [ 'only_system_flag' => false ],
-    ))->create();
+        ->count(2)
+        ->state(new Sequence(
+            ['only_system_flag' => true],
+            ['only_system_flag' => false],
+        ))->create();
 
     expect(CategoryGroup::forUser()->count())->toBe(1);
     expect(CategoryGroup::forSystem()->count())->toBe(1);

@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use Database\Seeders\Locals AS LocalSeeders;
+use Database\Seeders\Locals as LocalSeeders;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,9 +16,9 @@ class DatabaseSeeder extends Seeder
         LocalSeeders\AccountSeeder::class,
         LocalSeeders\TransactionSeeder::class,
     ];
-    
+
     protected const TESTING_SEEDER = [];
-    
+
     protected const PRODUCTION_SEEDER = [];
 
     /**
@@ -27,8 +27,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(InitSeeder::class);
-        
-        $this->call(match(app()->environment()) {
+
+        $this->call(match (app()->environment()) {
             'local' => self::LOCAL_SEEDER,
             'testing' => self::TESTING_SEEDER,
             'production' => self::PRODUCTION_SEEDER,

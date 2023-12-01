@@ -19,7 +19,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
-        
+
         Schema::create('workspace_accounts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('workspace_id')->constrained();

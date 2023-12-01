@@ -2,13 +2,9 @@
 
 namespace App\Services;
 
-use App\Enums\AccountsType;
-use App\Enums\TransactionsType;
 use App\Exceptions\ServiceException;
 use App\Models\Account;
 use App\Models\AccountGroup;
-use App\Models\AccountPivot;
-use App\Models\Category;
 use App\Models\Transaction;
 use Illuminate\Support\Collection;
 
@@ -25,9 +21,9 @@ class AccountService extends BaseService
     {
         $model = $this->getModel()->firstOrCreate([
             'name' => $data->get('name'),
-            'type' => $data->get('type')
+            'type' => $data->get('type'),
         ]);
-        
+
         $model->group()->attach($data->get('account_group'), [
             'workspace_id' => session()->get(WorkspaceService::KEY),
             'opening_date' => $data->get('opening_date'),
@@ -39,7 +35,7 @@ class AccountService extends BaseService
 
         $this->setModel($model);
 
-        return !is_null($this->getModel());
+        return ! is_null($this->getModel());
     }
 
     public function update(mixed $model, Collection $data): bool
@@ -53,10 +49,10 @@ class AccountService extends BaseService
                 $data->only('name', 'type')->toArray()
             )
         );
-        
+
         $updatedModel = $this->getModel();
 
-        if($updatedModel->id != $model->id) {
+        if ($updatedModel->id != $model->id) {
             $model->group()->first()->details->update([
                 'account_group_id' => $accountGroup->id,
                 'account_id' => $updatedModel->id,
@@ -66,12 +62,12 @@ class AccountService extends BaseService
                 // 'currency' => $data->get('currency'),
                 'notes' => $data->get('notes'),
             ]);
-            
-            Transaction::where(function($query) use ($model) {
+
+            Transaction::where(function ($query) use ($model) {
                 $query->where('account_id', $model->id)
                     ->where('workspace_id', session()->get(WorkspaceService::KEY));
             })->update([
-                'account_id' => $updatedModel->id
+                'account_id' => $updatedModel->id,
             ]);
         }
 
@@ -86,11 +82,12 @@ class AccountService extends BaseService
 
         // TODO: Change transactions account_id to another id
 
-        if($model->transactions()->exists())
+        if ($model->transactions()->exists()) {
             throw new ServiceException('This Account have transactions');
+        }
 
         $model->group()->detach();
-        
+
         $this->setModel(null);
 
         return true;
@@ -100,13 +97,14 @@ class AccountService extends BaseService
     {
         $this->verifyModel($model);
 
-        if($amount == 0)
+        if ($amount == 0) {
             return true;
+        }
 
         $previous_balance = $model->details->latest_balance;
 
         $is_updated = $model->details->update([
-            'latest_balance' => $previous_balance + $amount + $previous_amount
+            'latest_balance' => $previous_balance + $amount + $previous_amount,
         ]);
 
         $model->refresh();

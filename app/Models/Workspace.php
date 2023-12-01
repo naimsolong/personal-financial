@@ -28,11 +28,11 @@ class Workspace extends Model
     protected static function booted(): void
     {
         static::creating(function (Workspace $workspace) {
-            $workspace->slug = Str::of($workspace->name.' '.now()->format('ymd').rand(1111,9999))->slug('-')->__toString(); // TODO: Create traits or anything to centralize this function
+            $workspace->slug = Str::of($workspace->name.' '.now()->format('ymd').rand(1111, 9999))->slug('-')->__toString(); // TODO: Create traits or anything to centralize this function
         });
-        
+
         static::saving(function (Workspace $workspace) {
-            $workspace->slug = Str::of($workspace->name.' '.now()->format('ymd').rand(1111,9999))->slug('-')->__toString(); // TODO: Create traits or anything to centralize this function
+            $workspace->slug = Str::of($workspace->name.' '.now()->format('ymd').rand(1111, 9999))->slug('-')->__toString(); // TODO: Create traits or anything to centralize this function
         });
     }
 
@@ -76,7 +76,7 @@ class Workspace extends Model
 
     public function scopeCurrentUser()
     {
-        return $this->whereHas('users', function($query) {
+        return $this->whereHas('users', function ($query) {
             $query->where('user_id', auth()->id());
         });
     }

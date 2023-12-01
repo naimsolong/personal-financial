@@ -2,10 +2,10 @@
 
 namespace App\Enums;
 
+use App\Enums\Interfaces\Detail;
 use App\Enums\Traits\Description;
 use App\Enums\Traits\Dropdown;
 use App\Enums\Traits\ValuesFunction;
-use App\Enums\Interfaces\Detail;
 
 enum TransactionsStatus: string implements Detail
 {
@@ -15,7 +15,7 @@ enum TransactionsStatus: string implements Detail
     case CLEARED = 'C';
     case RECONCILED = 'R';
     case VOID = 'V';
-    
+
     /**
      * Return details for this enum
      */

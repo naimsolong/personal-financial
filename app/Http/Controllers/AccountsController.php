@@ -9,7 +9,6 @@ use App\Models\AccountGroup;
 use App\Services\AccountService;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
@@ -21,7 +20,7 @@ class AccountsController extends Controller
      */
     public function index()
     {
-        $accounts = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->with('accounts', function($query) {
+        $accounts = AccountGroup::currentWorkspace()->select('id', 'name', 'type')->with('accounts', function ($query) {
             $query->select('accounts.id', 'name', 'type')->orderBy('name');
         })->orderBy('account_groups.name')->get();
 
@@ -29,7 +28,7 @@ class AccountsController extends Controller
             'accounts' => [
                 'assets' => $accounts->where('type', AccountsType::ASSETS->value)->toArray(),
                 'liabilities' => $accounts->where('type', AccountsType::LIABILITIES->value)->toArray(),
-            ]
+            ],
         ]);
     }
 
@@ -39,7 +38,7 @@ class AccountsController extends Controller
     public function create(Request $request)
     {
         $accountGroup = AccountGroup::currentWorkspace()->selectRaw('id AS value, name AS text, type')->get();
-        
+
         return Inertia::render('Dashboard/Accounts/Form', [
             'account_group' => [
                 'assets' => $accountGroup->where('type', AccountsType::ASSETS->value)->toArray(),
@@ -65,7 +64,7 @@ class AccountsController extends Controller
     public function store(AccountFormRequest $request)
     {
         $accountService = app(AccountService::class);
-        
+
         $accountService->store(collect($request->only(
             'account_group',
             'name',
@@ -78,7 +77,7 @@ class AccountsController extends Controller
         )));
 
         $account = $accountService->getModel();
-        
+
         app(TransactionService::class)->storeOpeningBalance($account->id, $request->collect());
 
         return Redirect::route('accounts.index');
@@ -109,7 +108,7 @@ class AccountsController extends Controller
                 'starting_balance' => $group->details->starting_balance,
                 'currency' => $group->details->currency,
                 'notes' => $group->details->notes,
-            ]
+            ],
         ]);
     }
 

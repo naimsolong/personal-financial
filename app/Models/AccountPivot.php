@@ -30,7 +30,7 @@ class AccountPivot extends Pivot
         'currency',
         'notes',
     ];
-    
+
     /**
      * Interact with the account's opening date.
      */

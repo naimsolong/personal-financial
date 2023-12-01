@@ -3,7 +3,6 @@
 namespace Database\Seeders\Locals;
 
 use App\Models\Label;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class LabelSeeder extends Seeder
@@ -13,7 +12,7 @@ class LabelSeeder extends Seeder
      */
     public function run(): void
     {
-        Label::factory(rand(5,15))
+        Label::factory(rand(5, 15))
             ->create();
     }
 }

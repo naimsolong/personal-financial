@@ -5,10 +5,8 @@ namespace Database\Seeders\Locals;
 use App\Enums\AccountsType;
 use App\Enums\TransactionsType;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\Workspace;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
 
@@ -22,18 +20,19 @@ class TransactionSeeder extends Seeder
         $workspace = Workspace::first();
 
         // For INCOME and EXPENSE
-        for($i = 0; $i < 30; $i++)
-            Transaction::factory(rand(1,10))->create([
+        for ($i = 0; $i < 30; $i++) {
+            Transaction::factory(rand(1, 10))->create([
                 'workspace_id' => $workspace->id,
-                'due_at' => now()->subDay($i)
+                'due_at' => now()->subDay($i),
             ]);
+        }
 
         $accounts = Account::where('type', AccountsType::ASSETS)->inRandomOrder()->get();
 
         // For TRANSFER
-        for($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             $due_at = now()->subDay($i);
-            $amount = rand(300,9000);
+            $amount = rand(300, 9000);
 
             $transaction = Transaction::factory(2)
                 ->state(new Sequence(
@@ -43,7 +42,7 @@ class TransactionSeeder extends Seeder
                         'type' => TransactionsType::TRANSFER,
                         'category_id' => null,
                         'account_id' => $accounts->first()->id,
-                        'amount' => $amount
+                        'amount' => $amount,
                     ],
                     [
                         'workspace_id' => $workspace->id,
@@ -51,15 +50,15 @@ class TransactionSeeder extends Seeder
                         'type' => TransactionsType::TRANSFER,
                         'category_id' => null,
                         'account_id' => $accounts->last()->id,
-                        'amount' => $amount * -1
+                        'amount' => $amount * -1,
                     ]
                 ))->create();
 
             $transaction->first()->update([
-                'transfer_pair_id' => $transaction->last()->id
+                'transfer_pair_id' => $transaction->last()->id,
             ]);
             $transaction->last()->update([
-                'transfer_pair_id' => $transaction->first()->id
+                'transfer_pair_id' => $transaction->first()->id,
             ]);
         }
 

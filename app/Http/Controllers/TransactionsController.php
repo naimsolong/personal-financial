@@ -20,12 +20,12 @@ class TransactionsController extends Controller
     {
         $paginator = Transaction::currentWorkspace()->selectRaw('id, due_at, type, category_id, account_id, amount, currency, currency_amount, currency_rate, transfer_pair_id, status, notes')
             ->with([
-                'category' => function($query) {
+                'category' => function ($query) {
                     $query->select('id', 'name');
                 },
-                'account' => function($query) {
+                'account' => function ($query) {
                     $query->select('id', 'name');
-                }
+                },
             ])
             ->latest('due_at')
             ->latest('updated_at')
@@ -33,11 +33,12 @@ class TransactionsController extends Controller
 
         $return = [
             'transactions' => collect($paginator->items())->groupBy('due_date'),
-            'next_page' => $paginator->currentPage() + 1
+            'next_page' => $paginator->currentPage() + 1,
         ];
-        
-        if($request->isMethod('post'))
+
+        if ($request->isMethod('post')) {
             return $return;
+        }
 
         return Inertia::render('Dashboard/Transactions/Index', $return);
     }
@@ -49,17 +50,17 @@ class TransactionsController extends Controller
     {
         $accounts = AccountGroup::currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
-                'accounts' => function($query) {
+                'accounts' => function ($query) {
                     $query->selectRaw('accounts.id AS value, accounts.name AS text');
-                }
+                },
             ])->orderBy('type')->get();
         $categories = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
-                'categories' => function($query) {
+                'categories' => function ($query) {
                     $query->selectRaw('categories.id AS value, categories.name AS text');
-                }
+                },
             ])->orderBy('type')->get();
-            
+
         return Inertia::render('Dashboard/Transactions/Form', [
             'accounts' => $accounts,
             'categories' => [
@@ -90,7 +91,7 @@ class TransactionsController extends Controller
     public function store(TransactionFormRequest $request)
     {
         app(TransactionService::class)->store($request->collect());
-        
+
         return Redirect::route('transactions.index');
     }
 
@@ -101,23 +102,23 @@ class TransactionsController extends Controller
     {
         $accounts = AccountGroup::currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
-                'accounts' => function($query) {
+                'accounts' => function ($query) {
                     $query->selectRaw('accounts.id AS value, accounts.name AS text');
-                }
+                },
             ])->orderBy('type')->get();
         $categories = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id, name AS label, type')
             ->with([
-                'categories' => function($query) {
+                'categories' => function ($query) {
                     $query->selectRaw('categories.id AS value, categories.name AS text');
-                }
+                },
             ])->orderBy('type')->get();
 
         $amount = app(TransactionService::class)->modifyPositiveAmount($transaction->amount);
-            
-        if($transaction->type == 'T') {
+
+        if ($transaction->type == 'T') {
             $pair = $transaction->transfer_pair;
 
-            if($transaction->amount < 0) {
+            if ($transaction->amount < 0) {
                 $account_id_from = $transaction->account_id;
                 $account_id_to = $pair->account_id;
             } else {
@@ -161,7 +162,7 @@ class TransactionsController extends Controller
     public function update(TransactionFormRequest $request, Transaction $transaction)
     {
         app(TransactionService::class)->update($transaction, $request->collect());
-        
+
         return Redirect::route('transactions.index');
     }
 
@@ -171,7 +172,7 @@ class TransactionsController extends Controller
     public function destroy(Transaction $transaction)
     {
         app(TransactionService::class)->destroy($transaction);
-        
+
         return Redirect::route('transactions.index');
     }
 }

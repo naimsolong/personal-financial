@@ -8,7 +8,6 @@ use App\Models\Category;
 use App\Models\CategoryGroup;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -19,15 +18,15 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        $categories = CategoryGroup::forUser()->currentWorkspace()->select('id', 'name', 'type')->with('categories', function($query) {
+        $categories = CategoryGroup::forUser()->currentWorkspace()->select('id', 'name', 'type')->with('categories', function ($query) {
             $query->select('categories.id', 'name', 'type')->forUser()->orderBy('name');
         })->orderBy('category_groups.name')->orderBy('name')->get();
-        
+
         return Inertia::render('Dashboard/Categories/Index', [
             'categories' => [
                 'expense' => $categories->where('type', TransactionsType::EXPENSE->value)->toArray(),
                 'income' => $categories->where('type', TransactionsType::INCOME->value)->toArray(),
-            ]
+            ],
         ]);
     }
 
@@ -37,7 +36,7 @@ class CategoriesController extends Controller
     public function create(Request $request)
     {
         $categoryGroup = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id AS value, name AS text, type')->get();
-        
+
         return Inertia::render('Dashboard/Categories/Form', [
             'category_group' => [
                 'expense' => $categoryGroup->where('type', TransactionsType::EXPENSE->value)->toArray(),
@@ -48,7 +47,7 @@ class CategoriesController extends Controller
                 'id' => '',
                 'name' => '',
                 'category_group' => '',
-                'type' => $request->query('type', '')
+                'type' => $request->query('type', ''),
             ],
         ]);
     }
@@ -81,7 +80,7 @@ class CategoriesController extends Controller
                 'income' => $categoryGroup->where('type', TransactionsType::INCOME->value)->toArray(),
             ],
             'types' => collect(TransactionsType::dropdown())->whereIn('value', ['E', 'I'])->toArray(),
-            'data' => collect($category->only('id','name','type'))->merge(['category_group' => $category->group()->first()->id]),
+            'data' => collect($category->only('id', 'name', 'type'))->merge(['category_group' => $category->group()->first()->id]),
         ]);
     }
 

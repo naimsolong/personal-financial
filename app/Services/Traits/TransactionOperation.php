@@ -14,11 +14,12 @@ trait TransactionOperation
     protected function storeExpense(mixed $model, Collection $data): bool
     {
         $amount = $this->modifyNegativeAmount($data->get('amount'));
-        
+
         $workspace_id = session()->get(WorkspaceService::KEY);
 
-        if(is_null($workspace_id))
+        if (is_null($workspace_id)) {
             throw new Exception('Current Workspace does not exist');
+        }
 
         $model = $model->create([
             'workspace_id' => $workspace_id,
@@ -37,7 +38,7 @@ trait TransactionOperation
 
         $this->updateAccountBalance($data->get('account_from'), $amount);
 
-        return !is_null($this->getModel());
+        return ! is_null($this->getModel());
     }
 
     protected function storeIncome(mixed $model, Collection $data): bool
@@ -46,8 +47,9 @@ trait TransactionOperation
 
         $workspace_id = session()->get(WorkspaceService::KEY);
 
-        if(is_null($workspace_id))
+        if (is_null($workspace_id)) {
             throw new Exception('Current Workspace does not exist');
+        }
 
         $model = $model->create([
             'workspace_id' => $workspace_id,
@@ -66,7 +68,7 @@ trait TransactionOperation
 
         $this->updateAccountBalance($data->get('account_from'), $amount);
 
-        return !is_null($this->getModel());
+        return ! is_null($this->getModel());
     }
 
     protected function storeTransfer(mixed $model, Collection $data): bool
@@ -76,8 +78,9 @@ trait TransactionOperation
 
         $workspace_id = session()->get(WorkspaceService::KEY);
 
-        if(is_null($workspace_id))
+        if (is_null($workspace_id)) {
             throw new Exception('Current Workspace does not exist');
+        }
 
         $is_created_from = $model_from = $model->create([
             'workspace_id' => $workspace_id,
@@ -103,10 +106,10 @@ trait TransactionOperation
         ]);
 
         $model_from->update([
-            'transfer_pair_id' => $model_to->id
+            'transfer_pair_id' => $model_to->id,
         ]);
         $model_to->update([
-            'transfer_pair_id' => $model_from->id
+            'transfer_pair_id' => $model_from->id,
         ]);
 
         $model_from->refresh();
@@ -115,7 +118,7 @@ trait TransactionOperation
         $this->setModel($model_from);
 
         $this->updateAccountBalance($data->get('account_from'), $amount_from);
-        
+
         $this->updateAccountBalance($data->get('account_to'), $amount_to);
 
         return $is_created_from && $is_created_to;
@@ -126,7 +129,7 @@ trait TransactionOperation
         $previous_amount = $this->reverseAmount($model->amount);
 
         $amount = $this->modifyNegativeAmount($data->get('amount'));
-        
+
         $is_update = $model->update([
             'due_at' => $data->get('due_at'),
             'type' => $data->get('type'),
@@ -176,7 +179,7 @@ trait TransactionOperation
         $amount_from = $this->modifyNegativeAmount($data->get('amount'));
         $amount_to = $this->modifyPositiveAmount($data->get('amount'));
 
-        if($model->amount < 0) {
+        if ($model->amount < 0) {
             $previous_amount_from = $this->reverseAmount($model->amount);
             $previous_amount_to = $this->reverseAmount($model->transfer_pair->amount);
 
@@ -185,7 +188,7 @@ trait TransactionOperation
         } else {
             $previous_amount_from = $this->reverseAmount($model->transfer_pair->amount);
             $previous_amount_to = $this->reverseAmount($model->amount);
-            
+
             $model_from = $model->transfer_pair;
             $model_to = $model;
         }
@@ -212,23 +215,22 @@ trait TransactionOperation
         $this->setModel($model_from);
 
         $this->updateAccountBalance($data->get('account_from'), $amount_from, $previous_amount_from);
-        
+
         $this->updateAccountBalance($data->get('account_to'), $amount_to, $previous_amount_to);
 
         return $is_update_from && $is_update_to;
     }
-    
 
     protected function destroyExpense(mixed $model): bool
     {
         $account_id = $model->account_id;
 
         $amount = $this->modifyPositiveAmount($model->amount);
-    
+
         $is_destroy = $model->delete();
 
         $this->setModel(null);
-        
+
         $this->updateAccountBalance($account_id, $amount);
 
         return $is_destroy;
@@ -243,7 +245,7 @@ trait TransactionOperation
         $is_destroy = $model->delete();
 
         $this->setModel(null);
-        
+
         $this->updateAccountBalance($account_id, $amount);
 
         return $is_destroy;
@@ -251,7 +253,7 @@ trait TransactionOperation
 
     protected function destroyTransfer(mixed $model): bool
     {
-        if($model->amount < 0) {
+        if ($model->amount < 0) {
             $account_id_from = $model->account_id;
             $account_id_to = $model->transfer_pair->account_id;
 
@@ -272,7 +274,7 @@ trait TransactionOperation
         $this->setModel(null);
 
         $this->updateAccountBalance($account_id_from, $amount_from);
-        
+
         $this->updateAccountBalance($account_id_to, $amount_to);
 
         return $is_destroy_from && $is_destroy_to;
@@ -282,6 +284,6 @@ trait TransactionOperation
     {
         $account = Account::find($account_id);
 
-        return app(AccountService::class)->updateLatestBalance($account->group()->first(), $amount, $previous_amount);        
+        return app(AccountService::class)->updateLatestBalance($account->group()->first(), $amount, $previous_amount);
     }
 }

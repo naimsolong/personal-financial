@@ -2,10 +2,10 @@
 
 namespace App\Enums;
 
+use App\Enums\Interfaces\Detail;
 use App\Enums\Traits\Description;
 use App\Enums\Traits\Dropdown;
 use App\Enums\Traits\ValuesFunction;
-use App\Enums\Interfaces\Detail;
 
 enum TransactionsType: string implements Detail
 {
@@ -14,7 +14,7 @@ enum TransactionsType: string implements Detail
     case EXPENSE = 'E';
     case INCOME = 'I';
     case TRANSFER = 'T';
-    
+
     /**
      * Return details for this enum
      */
