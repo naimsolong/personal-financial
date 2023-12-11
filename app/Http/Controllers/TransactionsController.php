@@ -9,6 +9,7 @@ use App\Models\AccountGroup;
 use App\Models\CategoryGroup;
 use App\Models\Transaction;
 use App\Services\TransactionService;
+use App\Services\WorkspaceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -106,12 +107,26 @@ class TransactionsController extends Controller
                     $query->selectRaw('accounts.id AS value, accounts.name AS text');
                 },
             ])->orderBy('type')->get();
-        $categories = CategoryGroup::forUser()->currentWorkspace()->selectRaw('id, name AS label, type')
+
+        $category_id = $transaction->category_id;
+        $only_system_flag = $transaction->category->only_system_flag ?? false;
+
+        $categories = CategoryGroup::where('only_system_flag', $only_system_flag)
+            ->selectRaw('id, name AS label, type')
             ->with([
-                'categories' => function ($query) {
-                    $query->selectRaw('categories.id AS value, categories.name AS text');
+                'categories' => function ($query) use ($only_system_flag, $category_id) {
+                    $query->selectRaw('categories.id AS value, categories.name AS text')
+                        ->when(! $only_system_flag,
+                            function ($query) {
+                                $query->where('category_pivot.workspace_id', session()->get(WorkspaceService::KEY));
+                            }, function ($query) use ($category_id) {
+                                $query->where('categories.id', $category_id);
+                            }
+                        );
                 },
-            ])->orderBy('type')->get();
+            ])
+            ->orderBy('type')
+            ->get();
 
         $amount = app(TransactionService::class)->modifyPositiveAmount($transaction->amount);
 
