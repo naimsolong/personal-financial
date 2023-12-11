@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
 {
     protected const LOCAL_SEEDER = [
         LocalSeeders\WorkspaceSeeder::class,
+        InitSeeder::class,
         LocalSeeders\UserSeeder::class,
         LocalSeeders\CategorySeeder::class,
         LocalSeeders\AccountSeeder::class,
@@ -26,11 +27,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(InitSeeder::class);
-
         $this->call(match (app()->environment()) {
-            'local' => self::LOCAL_SEEDER,
-            'testing' => self::TESTING_SEEDER,
+            'local', 'testing' => self::LOCAL_SEEDER,
             'production' => self::PRODUCTION_SEEDER,
         });
     }
