@@ -106,28 +106,28 @@ class TransactionsController extends Controller
                 'accounts' => function ($query) {
                     $query->selectRaw('accounts.id AS value, accounts.name AS text');
                 },
-                ])->orderBy('type')->get();
+            ])->orderBy('type')->get();
 
         $category_id = $transaction->category_id;
         $only_system_flag = $transaction->category->only_system_flag ?? false;
-        
+
         $categories = CategoryGroup::where('only_system_flag', $only_system_flag)
             ->selectRaw('id, name AS label, type')
             ->with([
                 'categories' => function ($query) use ($only_system_flag, $category_id) {
                     $query->selectRaw('categories.id AS value, categories.name AS text')
-                    ->when(! $only_system_flag,
-                        function ($query) {
-                            $query->where('category_pivot.workspace_id', session()->get(WorkspaceService::KEY));
-                        }, function ($query) use ($category_id) {
-                            $query->where('categories.id', $category_id);
-                        }
-                    );
-                }
+                        ->when(! $only_system_flag,
+                            function ($query) {
+                                $query->where('category_pivot.workspace_id', session()->get(WorkspaceService::KEY));
+                            }, function ($query) use ($category_id) {
+                                $query->where('categories.id', $category_id);
+                            }
+                        );
+                },
             ])
             ->orderBy('type')
             ->get();
-            
+
         $amount = app(TransactionService::class)->modifyPositiveAmount($transaction->amount);
 
         if ($transaction->type == 'T') {

@@ -46,10 +46,10 @@ class InitSeeder extends Seeder
             ]);
 
             $expense_category_group->categories()->attach($expense_opening_balance->id, [
-                'workspace_id' => $workspace->id
+                'workspace_id' => $workspace->id,
             ]);
             $income_category_group->categories()->attach($income_opening_balance->id, [
-                'workspace_id' => $workspace->id
+                'workspace_id' => $workspace->id,
             ]);
         }
 
@@ -68,10 +68,10 @@ class InitSeeder extends Seeder
             ]);
 
             $expense_category_group->categories()->attach($expense_adjustment->id, [
-                'workspace_id' => $workspace->id
+                'workspace_id' => $workspace->id,
             ]);
             $income_category_group->categories()->attach($income_adjustment->id, [
-                'workspace_id' => $workspace->id
+                'workspace_id' => $workspace->id,
             ]);
         }
     }
