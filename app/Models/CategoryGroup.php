@@ -28,6 +28,15 @@ class CategoryGroup extends Model implements WorkspaceRelation
     ];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'only_system_flag' => 'boolean',
+    ];
+
+    /**
      * This category group that belong to the workspace.
      */
     public function workspace(): BelongsToMany

@@ -30,6 +30,15 @@ class Category extends Model
     ];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'only_system_flag' => 'boolean',
+    ];
+
+    /**
      * The category that belong to the group.
      */
     public function group(): BelongsToMany
