@@ -8,11 +8,22 @@
 	$php_version = $php_version ?? '8.2';
 @endsetup
 
-@servers(['web' => $user'@'.$server])
+@servers(['web' => $user.'@'.$server])
 
 @story('deploy')
+    check
     check-version
 @endstory
+
+@task('check')
+    echo "{{ $repo }}"
+    echo "{{ $directory }}"
+    echo "{{ $user }}"
+    echo "{{ $server }}"
+    echo "{{ $branch }}"
+    echo "{{ $server_env }}"
+    echo "{{ $php_version }}"
+@endtask
 
 @task('check-version')
     echo "[1] Checking version"
