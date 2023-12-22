@@ -12,15 +12,38 @@ jobs:
     runs-on: ubuntu-22.04
     environment: Production
 
+    # steps:
+    # - name: executing remote ssh commands using password
+    #   uses: appleboy/ssh-action@v1.0.0
+    #   with:
+    #     host: ${{ secrets.SERVER_IP }}
+    #     username: ${{ secrets.SERVER_USER }}
+    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     port: ${{ secrets.SERVER_PORT }}
+    #     script: |
+    #       whoami
+    #       pwd
+    #       ls -la
+
     steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@v1.0.0
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - uses: webfactory/ssh-agent@v0.8.0
       with:
-        host: ${{ secrets.SERVER_IP }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.SERVER_PORT }}
-        script: |
-          whoami
-          pwd
-          ls -la
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.2
+        coverage: none
+
+    - name: Install Composer Dependencies
+      run: |
+        composer --version
+        composer install
+
+    - name: Deploy
+      run: |
+        php vendor/bin/envoy run check --server="${{secrets.SERVER_IP}}" --user="${{secrets.SERVER_USER}}" --server_env="${{secrets.SERVER_ENV}}" --commit="${{github.sha}}" --branch="${{github.ref_name}}"
