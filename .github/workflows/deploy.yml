@@ -10,7 +10,7 @@ jobs:
   deploy:
     name: Deploy after release
     runs-on: ubuntu-22.04
-    environment: production
+    environment: Production
 
     steps:
     - name: Checkout Code
