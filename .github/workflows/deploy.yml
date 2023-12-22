@@ -13,27 +13,14 @@ jobs:
     environment: Production
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.0
       with:
-        php-version: 8.2
-        coverage: none
-
-    - name: Install Composer Dependencies
-      run: |
-        composer --version
-        composer install
-
-    - name: Deploy
-      run: |
-        which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
-        eval $(ssh-agent -s)
-        ssh-add <(echo "${{secrets.SSH_PRIVATE_KEY}}")
-        whoami
-        pwd
-        mkdir -p /dev/fd/63/.ssh
-        [[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > /dev/fd/63/.ssh/config
-        php vendor/bin/envoy run check --server="${{secrets.SERVER_IP}}" --user="${{secrets.SERVER_USER}}" --server_env="${{secrets.SERVER_ENV}}" --commit="${{github.sha}}" --branch="${{github.ref_name}}"
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SERVER_PORT }}
+        script: |
+          whoami
+          pwd
+          ls -la
