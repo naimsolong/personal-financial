@@ -29,9 +29,12 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - uses: webfactory/ssh-agent@v0.8.0
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
       with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        name: github_action # optional
+        if_key_exists: fail # replace / ignore / fail; optional (defaults to fail)
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
