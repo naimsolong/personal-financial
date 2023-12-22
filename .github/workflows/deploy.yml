@@ -34,7 +34,8 @@ jobs:
       with:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         name: github_action # optional
-        if_key_exists: fail # replace / ignore / fail; optional (defaults to fail)
+        known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+        config: ${{ secrets.SSH_CONFIG }} # ssh_config; optional
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
