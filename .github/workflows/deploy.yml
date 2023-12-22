@@ -31,7 +31,7 @@ jobs:
       run: |
         which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
         eval $(ssh-agent -s)
-        ssh-add <(echo "${{secret.SSH_PRIVATE_KEY}}")
+        ssh-add <(echo "${{secrets.SSH_PRIVATE_KEY}}")
         mkdir -p ~/.ssh
         [[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-        php vendor/bin/envoy run check --server=${{secret.SERVER_IP}} --user=${{secret.SERVER_USER}} --commit="${{github.sha}}" --branch=${{github.ref_name}}
+        php vendor/bin/envoy run check --server=${{secrets.SERVER_IP}} --user=${{secrets.SERVER_USER}} --commit="${{github.sha}}" --branch=${{github.ref_name}}

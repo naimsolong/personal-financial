@@ -16,6 +16,7 @@
     echo "{{ $user }}"
     echo "{{ $server }}"
     echo "{{ $branch }}"
+    echo "{{ $commit }}"
     echo "{{ $aws_env_s3 }}"
     echo "{{ $php_version }}"
 @endtask
