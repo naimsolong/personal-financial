@@ -4,11 +4,15 @@
     $user = $user ?? 'unknown';
     $server = $server ?? '127.0.0.1';
     $branch = $branch ?? 'main';
-    $aws_env_s3 = $aws_env_s3 ?? '';
+    $server_env = $server_env ?? '';
 	$php_version = $php_version ?? '8.2';
 @endsetup
 
 @servers(['web' => $user'@'.$server])
+
+@story('deploy')
+    check
+@endstory
 
 @task('check')
     echo "{{ $repo }}"
@@ -16,17 +20,9 @@
     echo "{{ $user }}"
     echo "{{ $server }}"
     echo "{{ $branch }}"
-    echo "{{ $aws_env_s3 }}"
+    echo "{{ $server_env }}"
     echo "{{ $php_version }}"
 @endtask
-
-@story('deploy')
-    check-version
-    update-code
-    install-dependencies
-    compile-assets
-    clear-cache
-@endstory
 
 @task('check-version')
     echo "[1] Checking version"
@@ -49,7 +45,7 @@
 
 @task('sync-env')
     echo "[3] Sync env"
-    aws s3 sync {{ $aws_env_s3 }} {{ $directory }}
+    aws s3 sync {{ $server_env }} {{ $directory }}
     echo "[3] Env have been synced"
 @endtask
 

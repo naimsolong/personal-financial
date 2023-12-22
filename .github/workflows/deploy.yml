@@ -34,4 +34,4 @@ jobs:
         ssh-add <(echo "${{secrets.SSH_PRIVATE_KEY}}")
         mkdir -p ~/.ssh
         [[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-        php vendor/bin/envoy run check --server=${{secrets.SERVER_IP}} --user=${{secrets.SERVER_USER}} --commit="${{github.sha}}" --branch=${{github.ref_name}}
+        php vendor/bin/envoy run check --server=${{secrets.SERVER_IP}} --user=${{secrets.SERVER_USER}} --server_env=${{secrets.SERVER_ENV}} --commit="${{github.sha}}" --branch=${{github.ref_name}}
