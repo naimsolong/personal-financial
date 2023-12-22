@@ -37,13 +37,13 @@ services:
         MYSQL_PASSWORD: "dbpassword"
     volumes:
       # Add volume for all database files
-      - ./_volumes/mysql/database_data/:/var/lib/mysql
+      - personal-financial-volume:/var/lib/mysql
       # Add volume for custom configurations
       - ./_volumes/mysql/conf.d/:/etc/mysql/conf.d
       - ./_volumes/scripts/:/docker-entrypoint-initdb.d
     ports:
       - target: 3306
-        published: 3306
+        published: 3360
         mode: host
 
   php:
@@ -110,3 +110,7 @@ services:
 networks:
   web-dev:
     driver: bridge
+
+volumes:
+    personal-financial-volume:
+        driver: local

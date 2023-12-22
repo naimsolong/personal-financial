@@ -1,0 +1,41 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ "main", "staging" ]
+
+jobs:
+  tests:
+    name: PHP Test = ${{ matrix.php }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-22.04]
+        php: [8.2]
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        extensions: dom, curl, imap, libxml, mysql, mbstring, xml, zip, pcntl, pdo, sqlite3, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, gmp, redis, swoole, memcached, pcov, xdebug
+        coverage: none
+
+    - name: Install Composer Dependencies
+      run: |
+        composer --version
+        composer install
+
+    - name: Execute tests via Pest
+      run: |
+        touch database/database.sqlite
+        php -r "file_exists('.env') || copy('.env.example', '.env');"
+        php artisan key:generate
+        php artisan optimize:clear
+        php artisan about
+        php artisan migrate --database=sqlite --seed
+        php artisan test
