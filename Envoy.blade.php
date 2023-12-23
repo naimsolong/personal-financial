@@ -31,7 +31,6 @@
 
 @task('check-version')
     echo "[1] Checking version"
-    cd {{ $directory }}
     /usr/bin/php{{ $php_version }} -v
     /usr/bin/php{{ $php_version }} /usr/local/bin/composer --version
     node -v
