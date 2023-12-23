@@ -11,8 +11,12 @@
 @servers(['web' => $user.'@'.$server])
 
 @story('deploy')
-    check
     check-version
+    update-code
+    sync-env
+    install-dependencies
+    compile-assets
+    clear-cache
 @endstory
 
 @task('check')

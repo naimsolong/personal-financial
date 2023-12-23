@@ -53,4 +53,4 @@ jobs:
 
     - name: Deploy
       run: |
-        php vendor/bin/envoy run check --server="${{secrets.SERVER_IP}}" --user="${{secrets.SERVER_USER}}" --server_env="${{secrets.SERVER_ENV}}" --commit="${{github.sha}}" --branch="${{github.ref_name}}"
+        php vendor/bin/envoy run deploy --server="${{secrets.SERVER_IP}}" --user="${{secrets.SERVER_USER}}" --server_env="${{secrets.SERVER_ENV}}" --commit="${{github.sha}}" --branch="${{github.ref_name}}"
