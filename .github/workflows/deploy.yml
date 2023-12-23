@@ -35,7 +35,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         name: github_action # optional
         known_hosts: 'random-string' # ${{ secrets.SSH_KNOWN_HOSTS }}
-        # config: ${{ secrets.SSH_CONFIG }} # ssh_config; optional
+        config: ${{ secrets.SSH_CONFIG }} # ssh_config; optional
         
     - name: Adding Known Hosts
       run: ssh-keyscan -H ${{secrets.SERVER_IP}} >> ~/.ssh/known_hosts
