@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
     ];
 
     protected const PRODUCTION_SEEDER = [
-        InitSeeder::class
+        InitSeeder::class,
     ];
 
     /**

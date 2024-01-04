@@ -6,7 +6,6 @@ use App\Enums\SystemCategoryCode;
 use App\Enums\TransactionsType;
 use App\Models\Category;
 use App\Models\CategoryGroup;
-use App\Models\Workspace;
 use Illuminate\Database\Seeder;
 
 class InitSeeder extends Seeder
