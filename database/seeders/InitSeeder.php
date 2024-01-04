@@ -16,8 +16,6 @@ class InitSeeder extends Seeder
      */
     public function run(): void
     {
-        $workspace = Workspace::first();
-
         if (! CategoryGroup::where('name', 'LIKE', '[System %')->exists()) {
             $expense_category_group = CategoryGroup::firstOrCreate([
                 'name' => '[System (-)]',
@@ -44,13 +42,6 @@ class InitSeeder extends Seeder
                 'code' => SystemCategoryCode::OPENING_POSITIVE->value,
                 'only_system_flag' => true,
             ]);
-
-            $expense_category_group->categories()->attach($expense_opening_balance->id, [
-                'workspace_id' => $workspace->id,
-            ]);
-            $income_category_group->categories()->attach($income_opening_balance->id, [
-                'workspace_id' => $workspace->id,
-            ]);
         }
 
         if (! Category::where('name', 'LIKE', '[ADJUSTMENT %')->exists()) {
@@ -65,13 +56,6 @@ class InitSeeder extends Seeder
                 'type' => TransactionsType::INCOME,
                 'code' => SystemCategoryCode::ADJUST_POSITIVE->value,
                 'only_system_flag' => true,
-            ]);
-
-            $expense_category_group->categories()->attach($expense_adjustment->id, [
-                'workspace_id' => $workspace->id,
-            ]);
-            $income_category_group->categories()->attach($income_adjustment->id, [
-                'workspace_id' => $workspace->id,
             ]);
         }
     }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders\Locals;
 
+use App\Enums\SystemCategoryCode;
 use App\Enums\TransactionsType;
 use App\Models\Category;
 use App\Models\CategoryGroup;
@@ -69,6 +70,22 @@ class CategorySeeder extends Seeder
         $group->categories()->syncWithPivotValues($categories_id, ['workspace_id' => $workspace->id]);
         array_push($groups_id, $group->id);
 
+        [ $expense_category_group, $income_category_group, $expense_opening_balance, $income_opening_balance, $expense_adjustment, $income_adjustment ] = $this->getCategoriesSystem();
+        $expense_category_group->categories()->attach($expense_opening_balance->id, [
+            'workspace_id' => $workspace->id,
+        ]);
+        $income_category_group->categories()->attach($income_opening_balance->id, [
+            'workspace_id' => $workspace->id,
+        ]);
+        $expense_category_group->categories()->attach($expense_adjustment->id, [
+            'workspace_id' => $workspace->id,
+        ]);
+        $income_category_group->categories()->attach($income_adjustment->id, [
+            'workspace_id' => $workspace->id,
+        ]);
+        array_push($groups_id, $expense_category_group->id);
+        array_push($groups_id, $income_category_group->id);
+
         $workspace->categoryGroups()->sync($groups_id);
     }
 
@@ -88,5 +105,26 @@ class CategorySeeder extends Seeder
                 'type' => $type,
             ])->id;
         }, $categories);
+    }
+
+    protected function getCategoriesSystem(): array
+    {
+        $expense_category_group = CategoryGroup::where('name', '[System (-)]')->firstOrFail();
+        $income_category_group = CategoryGroup::where('name', '[System (+)]')->firstOrFail();
+        
+        $expense_opening_balance = Category::where('code', SystemCategoryCode::OPENING_NEGATIVE->value)->firstOrFail();
+        $income_opening_balance = Category::where('code', SystemCategoryCode::OPENING_POSITIVE->value)->firstOrFail();
+
+        $expense_adjustment = Category::where('code', SystemCategoryCode::ADJUST_NEGATIVE->value)->firstOrFail();
+        $income_adjustment = Category::where('code', SystemCategoryCode::ADJUST_POSITIVE->value)->firstOrFail();
+
+        return [
+            $expense_category_group,
+            $income_category_group,
+            $expense_opening_balance,
+            $income_opening_balance,
+            $expense_adjustment,
+            $income_adjustment,
+        ];
     }
 }
