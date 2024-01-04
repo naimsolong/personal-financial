@@ -58,6 +58,7 @@
     cd {{ $directory }}
     /usr/bin/php{{ $php_version }} /usr/local/bin/composer install -o --no-dev --no-interaction
     /usr/bin/php{{ $php_version }} artisan migrate --force
+    /usr/bin/php{{ $php_version }} db:seed --force
     npm install
     echo "[4] Dependencies have been installed"
 @endtask
