@@ -17,7 +17,7 @@ class WaitlistService extends BaseService
     {
         $this->setModel(
             $this->getModel()->updateOrCreate(
-                [ 'email' => $email, ]
+                ['email' => $email]
             )
         );
 

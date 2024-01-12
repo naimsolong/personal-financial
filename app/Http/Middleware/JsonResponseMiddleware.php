@@ -36,7 +36,7 @@ class JsonResponseMiddleware
         $response = $next($request);
 
         // If the response is not strictly a JsonResponse, we make it
-        if (!$response instanceof JsonResponse && !$response instanceof StreamedResponse) {
+        if (! $response instanceof JsonResponse && ! $response instanceof StreamedResponse) {
             $response = $this->responseFactory->json(
                 $response->content(),
                 $response->status(),
