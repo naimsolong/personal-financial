@@ -1,16 +1,23 @@
 <script setup>
+import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3';
+import VueTurnstile from 'vue-turnstile';
 import axios from 'axios';
 
+const turnstile = ref(null)
+
 const form = useForm({
+    token: '',
     email: ''
 });
 
 const submitForm = () => {
-    axios.post(route('join-waitlist'), {'email': form.email}).then(response => {
-        form.reset()
+    axios.post(route('join-waitlist'), {'token': form.token, 'email': form.email}).then(response => {
+        form.email = ''
+        turnstile.value.reset()
     })
 }
+
 </script>
 
 <template>
@@ -32,8 +39,9 @@ const submitForm = () => {
                             <button type="submit" class="py-3 px-5 w-full text-sm font-medium text-center text-white rounded-lg border cursor-pointer bg-primary-700 border-primary-600 sm:rounded-none sm:rounded-r-lg hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Join</button>
                         </div>
                     </div>
-                    <div class="cf-turnstile" data-sitekey="<YOUR_SITE_KEY>"></div>
-                    <!-- <div class="mx-auto max-w-screen-sm text-sm text-left text-gray-500 newsletter-form-footer dark:text-gray-300">We care about the protection of your data. <a href="#" class="font-medium text-primary-600 dark:text-primary-500 hover:underline">Read our Privacy Policy</a>.</div> -->
+                    <div v-if="$page.props.production" class="items-center mx-auto mb-3 space-y-4 max-w-screen-sm sm:flex sm:space-y-0">
+                        <VueTurnstile ref="turnstile" site-key="0x4AAAAAAAP4oQiYd48Fv756" v-model="form.token"/>
+                    </div>
                 </form>
             </div>
         </div>

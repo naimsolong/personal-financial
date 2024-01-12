@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use romanzipp\Turnstile\Rules\TurnstileCaptcha;
 
 class WaitlistFormRequest extends FormRequest
 {
@@ -21,8 +22,14 @@ class WaitlistFormRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'email' => 'required|email',
         ];
+
+        if(app()->isProduction()) {
+            $rules['token'] = ['required', 'string', new TurnstileCaptcha()];
+        }
+
+        return $rules;
     }
 }

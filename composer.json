@@ -14,6 +14,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "prinsfrank/standards": "^2.1",
+        "romanzipp/laravel-turnstile": "^1.2",
         "tightenco/ziggy": "^1.0"
     },
     "require-dev": {

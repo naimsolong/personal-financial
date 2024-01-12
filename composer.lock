@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "72ef375ad997bfe5ea7707f75089966c",
+    "content-hash": "ce92c9d750c4a1759ef5eb51517c09ea",
     "packages": [
         {
             "name": "archtechx/enums",
@@ -3800,6 +3800,71 @@
                 }
             ],
             "time": "2023-04-15T23:01:58+00:00"
+        },
+        {
+            "name": "romanzipp/laravel-turnstile",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/romanzipp/Laravel-Turnstile.git",
+                "reference": "a8243c26133a1b06698a3d84c40713d3810b9b17"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/romanzipp/Laravel-Turnstile/zipball/a8243c26133a1b06698a3d84c40713d3810b9b17",
+                "reference": "a8243c26133a1b06698a3d84c40713d3810b9b17",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.0",
+                "illuminate/support": "^5.5|^6.0|^7.0|^8.0|^9.0|^10.0",
+                "php": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "mockery/mockery": "^1.5",
+                "orchestra/testbench": ">=3.8",
+                "phpstan/phpstan": "^0.12.99|^1.0",
+                "phpunit/phpunit": "^8.0|^9.0",
+                "romanzipp/php-cs-fixer-config": "^3.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "romanzipp\\Turnstile\\Providers\\TurnstileServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "romanzipp\\Turnstile\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "romanzipp",
+                    "email": "ich@ich.wtf",
+                    "homepage": "https://ich.wtf"
+                }
+            ],
+            "description": "Cloudflare Turnstile package for Laravel",
+            "support": {
+                "issues": "https://github.com/romanzipp/Laravel-Turnstile/issues",
+                "source": "https://github.com/romanzipp/Laravel-Turnstile/tree/1.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/romanzipp",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-12-05T17:05:01+00:00"
         },
         {
             "name": "symfony/console",
