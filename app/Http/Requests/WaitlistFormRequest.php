@@ -26,7 +26,7 @@ class WaitlistFormRequest extends FormRequest
             'email' => 'required|email',
         ];
 
-        if(app()->isProduction()) {
+        if (app()->isProduction()) {
             $rules['token'] = ['required', 'string', new TurnstileCaptcha()];
         }
 
