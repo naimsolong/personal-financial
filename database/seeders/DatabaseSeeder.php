@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         LocalSeeders\CategorySeeder::class,
         LocalSeeders\AccountSeeder::class,
         LocalSeeders\TransactionSeeder::class,
+        LocalSeeders\WaitlistSeeder::class,
     ];
 
     protected const TESTING_SEEDER = [
