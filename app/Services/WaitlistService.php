@@ -16,7 +16,7 @@ class WaitlistService extends BaseService
     public function join(string $email): bool
     {
         $this->setModel(
-            $this->getModel()->updateOrCreate(
+            $this->getModel()->firstOrCreate(
                 ['email' => $email]
             )
         );
