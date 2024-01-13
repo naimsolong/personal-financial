@@ -35,7 +35,7 @@ it('allow user to join', function () {
     $email = 'test'.rand(4, 10).'@email.com';
     $is_created = $service->join($email);
     $this->assertDatabaseHas('waitlists', [
-        'email' => $email
+        'email' => $email,
     ]);
     expect($is_created)->toBeTrue();
 });

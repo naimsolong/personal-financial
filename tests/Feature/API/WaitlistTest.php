@@ -11,7 +11,7 @@ test('user success register as waitlist', function () {
     $this->assertDatabaseHas('waitlists', [
         'email' => $email,
     ]);
-    
+
     // Run again won't create new record or return validation error
     $response = $this->postJson(route('join-waitlist'), [
         'email' => $email,
@@ -19,10 +19,10 @@ test('user success register as waitlist', function () {
     $response->assertOk()->assertSee('You have been added to the waitlist!');
 });
 
-test('spamming waitlist will hit rate limit', function() {
+test('spamming waitlist will hit rate limit', function () {
     // If user is spamming
     $email = 'test'.rand(10, 99).'@mail.com';
-    for($i = 0; $i < 20; $i++) {
+    for ($i = 0; $i < 20; $i++) {
         $response = $this->postJson(route('join-waitlist'), [
             'email' => $email,
         ]);
@@ -31,7 +31,7 @@ test('spamming waitlist will hit rate limit', function() {
 
     // If bot is spamming
     $email = 'test'.rand(10, 99).'@mail.com';
-    for($i = 0; $i < 100; $i++) {
+    for ($i = 0; $i < 100; $i++) {
         $response = $this->postJson(route('join-waitlist'), [
             'email' => $email,
         ]);
