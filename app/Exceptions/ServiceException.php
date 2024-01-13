@@ -7,7 +7,7 @@ use Throwable;
 
 class ServiceException extends Exception
 {
-    public function __construct($message = '', $code = 0, Throwable $previous = null)
+    public function __construct($message = '', $code = 0, ?Throwable $previous = null)
     {
         $message = '['.pathinfo($this->getFile())['basename']."] $message";
 
