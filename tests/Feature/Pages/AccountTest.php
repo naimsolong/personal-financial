@@ -43,7 +43,7 @@ test('user can access account pages', function () {
                 ->has('liabilities', 0)
             )
         );
-    $response->assertStatus(200);
+    $response->assertOk();
 
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
@@ -64,7 +64,7 @@ test('user can access account pages', function () {
                 'notes' => '',
             ])
         );
-    $response->assertStatus(200);
+    $response->assertOk();
 
     $account = $accountGroup->first()->accounts()->first();
     $response = $this->actingAs($user)
@@ -87,7 +87,7 @@ test('user can access account pages', function () {
                 'notes' => $account->details->notes,
             ])
         );
-    $response->assertStatus(200);
+    $response->assertOk();
 });
 
 test('user can perform store, update and destroy', function () {

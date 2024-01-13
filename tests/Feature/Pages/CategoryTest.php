@@ -34,7 +34,7 @@ test('user can access category pages', function () {
                 ->has('income', 0)
             )
         );
-    $response->assertStatus(200);
+    $response->assertOk();
 
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
@@ -51,7 +51,7 @@ test('user can access category pages', function () {
                 'type' => '',
             ])
         );
-    $response->assertStatus(200);
+    $response->assertOk();
 
     $category = $categoryGroup->first()->categories()->first();
     $response = $this->actingAs($user)
@@ -65,7 +65,7 @@ test('user can access category pages', function () {
             ->where('types', collect(TransactionsType::dropdown())->whereIn('value', ['E', 'I'])->toArray())
             ->where('data', collect($category->only('id', 'name', 'type'))->merge(['category_group' => $categoryGroup->first()->id])->toArray())
         );
-    $response->assertStatus(200);
+    $response->assertOk();
 });
 
 test('user can perform store, update and destroy', function () {

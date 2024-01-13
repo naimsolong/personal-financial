@@ -14,7 +14,7 @@ test('email verification screen can be rendered', function () {
 
     $response = $this->actingAs($user)->get('/email/verify');
 
-    $response->assertStatus(200);
+    $response->assertOk();
 })->skip(function () {
     return ! Features::enabled(Features::emailVerification());
 }, 'Email verification not enabled.');

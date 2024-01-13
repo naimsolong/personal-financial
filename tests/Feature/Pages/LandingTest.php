@@ -14,5 +14,5 @@ test('user can access landing pages', function () {
             ->where('laravelVersion', Application::VERSION)
             ->where('phpVersion', PHP_VERSION)
         );
-    $response->assertStatus(200);
+    $response->assertOk();
 });

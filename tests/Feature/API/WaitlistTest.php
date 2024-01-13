@@ -6,7 +6,7 @@ test('user success register as waitlist', function () {
     $response = $this->postJson(route('join-waitlist'), [
         'email' => $email,
     ]);
-    $response->assertStatus(200)->assertSee('You have been added to the waitlist!');
+    $response->assertOk()->assertSee('You have been added to the waitlist!');
 
     $this->assertDatabaseHas('waitlists', [
         'email' => $email,
@@ -16,7 +16,7 @@ test('user success register as waitlist', function () {
     $response = $this->postJson(route('join-waitlist'), [
         'email' => $email,
     ]);
-    $response->assertStatus(200)->assertSee('You have been added to the waitlist!');
+    $response->assertOk()->assertSee('You have been added to the waitlist!');
 });
 
 test('spamming waitlist will hit rate limit', function() {
@@ -27,7 +27,7 @@ test('spamming waitlist will hit rate limit', function() {
             'email' => $email,
         ]);
     }
-    $response->assertStatus(200)->assertSee('Too many submission sent! Try again later after 10 minutes.');
+    $response->assertOk()->assertSee('Too many submission sent! Try again later after 10 minutes.');
 
     // If bot is spamming
     $email = 'test'.rand(10, 99).'@mail.com';
