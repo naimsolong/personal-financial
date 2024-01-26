@@ -10,7 +10,7 @@ test('confirm password screen can be rendered', function () {
 
     $response = $this->actingAs($user)->get('/user/confirm-password');
 
-    $response->assertStatus(200);
+    $response->assertOk();
 });
 
 test('password can be confirmed', function () {

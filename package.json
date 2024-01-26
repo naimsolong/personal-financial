@@ -25,6 +25,7 @@
         "flowbite-datepicker": "^1.2.2",
         "flowbite-vue": "^0.0.17-next.10",
         "lodash": "^4.17.21",
-        "vue-tailwind-datepicker": "^1.5.1"
+        "vue-tailwind-datepicker": "^1.5.1",
+        "vue-turnstile": "^1.0.6"
     }
 }

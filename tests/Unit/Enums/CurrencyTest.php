@@ -3,10 +3,10 @@
 use PrinsFrank\Standards\BackedEnum;
 use PrinsFrank\Standards\Currency\CurrencyAlpha3;
 
-test('have total 179 currency', function () {
+test('have total 181 currency', function () {
     $currency = BackedEnum::toArray(CurrencyAlpha3::class);
 
-    expect($currency)->toBeArray()->toHaveCount(179);
+    expect($currency)->toBeArray()->toHaveCount(181);
 });
 
 test('able to get correct Euro currency', function () {

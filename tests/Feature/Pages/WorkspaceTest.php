@@ -17,7 +17,7 @@ test('user can access workspace pages', function () {
             ->component('Dashboard/Workspaces/Index')
             ->has('workspaces', 1)
         );
-    $response->assertStatus(200);
+    $response->assertOk();
 
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
@@ -29,7 +29,7 @@ test('user can access workspace pages', function () {
                 'name' => '',
             ])
         );
-    $response->assertStatus(200);
+    $response->assertOk();
 
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
@@ -39,7 +39,7 @@ test('user can access workspace pages', function () {
             ->where('edit_mode', true)
             ->where('data', $workspace->only('id', 'name'))
         );
-    $response->assertStatus(200);
+    $response->assertOk();
 });
 
 test('user can perform store, update and destroy', function () {

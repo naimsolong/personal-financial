@@ -1,0 +1,7 @@
+{
+    email naimsolong@gmail.com
+}
+
+http://pfinancial.local {
+    reverse_proxy pf_php:80
+}

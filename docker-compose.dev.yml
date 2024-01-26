@@ -1,35 +1,24 @@
 version: '3.7'
 services:
 
-  traefik:
-    container_name: pf_traefik
-    image: traefik:v2.4
+  caddy:
+    container_name: pf_caddy
+    image: caddy
     networks:
-      - web-dev
-    ports:
-      # Listen on port 80, default for HTTP, necessary to redirect to HTTPS
-      - target: 80
-        published: 80
-        mode: host
-      # Listen on port 443, default for HTTPS
-      - target: 443
-        published: 443
-        mode: host
-      - target: 8080
-        published: 8080
-        mode: host
+      - pf_network
+    ports: 
+    - 80:80
+    - 443:443
     volumes:
-      # Add Docker as a mounted volume, so that Traefik can read the labels of other services
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./_volumes/traefik/traefik.yml:/traefik.yml:ro
-      - ./_volumes/traefik/traefik-certs.yml:/traefik-certs.yml
-      - ./_volumes/traefik/certificates/:/certificates
+    - ./_volumescaddydata/:/data/
+    - ./_volumes/caddy/config/:/config/
+    - ./_volumes/caddy/Caddyfile:/etc/caddy/Caddyfile
   
   mysql:
     container_name: pf_mysql
     image: mysql:8
     networks:
-      - web-dev
+      - pf_network
     environment:
         MYSQL_ROOT_PASSWORD: "password"
         MYSQL_DATABASE: "personal_financial"
@@ -42,55 +31,45 @@ services:
       - ./_volumes/mysql/conf.d/:/etc/mysql/conf.d
       - ./_volumes/scripts/:/docker-entrypoint-initdb.d
     ports:
-      - target: 3306
-        published: 3360
-        mode: host
+      - 3360:3360
 
   php:
     container_name: pf_php
-    image: serversideup/php:8.2-fpm-nginx
+    image: serversideup/php:8.2-cli
     working_dir: /var/www/html
     networks:
-        - web-dev
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
-    volumes:
-      - .:/var/www/html/:cached
+      - pf_network
     environment:
       AUTORUN_ENABLED: false
-      PUID: 1000
-      PGID: 1000
+      SSL_MODE: 'off'
+    extra_hosts:
+      - host.docker.internal:host-gateway
+      - host.docker.ray:host-gateway
     depends_on:
       - "mysql"
-      - "traefik"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.personal-financial.rule=Host(`pfinancial.dev.test`)"
-      - "traefik.http.routers.personal-financial.entrypoints=websecure"
-      - "traefik.http.routers.personal-financial.tls=true"
-      - "traefik.http.services.personal-financial.loadbalancer.server.port=443"
-      - "traefik.http.services.personal-financial.loadbalancer.server.scheme=https"
+      - "caddy"
+    volumes:
+      - .:/var/www/html
+    command: php artisan serve --host=0.0.0.0 --port=80
 
   node:
     container_name: pf_node
     image: node:lts
     networks:
-      - web-dev
+      - pf_network
     volumes:
-      - .:/var/www/html/:cached
+      - .:/var/www/html
     ports:
-      - target: 5173
-        published: 5173
+      - 5173:5173
     command: npm run dev --host
     working_dir: /var/www/html/
   
   # meilisearch:
   #   networks:
-  #       - web-dev
+  #       - pf_network
   #   container_name: pf_meilisearch
   #   volumes: 
-  #     - ./_volumes/meilisearch/meilisearch_data:/meili_data:cached
+  #     - ./_volumes/meilisearch/meilisearch_data:/meili_dat
   #   depends_on:
   #     - "mysql"
   #     - "php"
@@ -99,16 +78,16 @@ services:
     container_name: pf_redis
     image: redis:6
     networks:
-      - web-dev
+      - pf_network
     volumes:
-     - ./_volumes/redis/data:/data:cached
+     - ./_volumes/redis/data:/dat
     depends_on:
       - "mysql"
       - "php"
     command: "redis-server --appendonly yes --requirepass redispassword"
 
 networks:
-  web-dev:
+  pf_network:
     driver: bridge
 
 volumes:
