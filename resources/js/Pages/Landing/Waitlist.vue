@@ -4,6 +4,7 @@ import { useForm } from '@inertiajs/vue3';
 import VueTurnstile from 'vue-turnstile';
 import axios from 'axios';
 
+const turnstileKey = import.meta.env.VITE_TURNSTILE_SITE_KEY
 const turnstile = ref(null)
 
 const form = useForm({
@@ -40,7 +41,7 @@ const submitForm = () => {
                         </div>
                     </div>
                     <div v-if="$page.props.production" class="items-center mx-auto mb-3 space-y-4 max-w-screen-sm sm:flex sm:space-y-0">
-                        <VueTurnstile ref="turnstile" site-key="0x4AAAAAAAP4oQiYd48Fv756" v-model="form.token"/>
+                        <VueTurnstile ref="turnstile" :site-key="turnstileKey" v-model="form.token"/>
                     </div>
                 </form>
             </div>
