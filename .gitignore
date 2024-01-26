@@ -20,6 +20,6 @@ yarn-error.log
 
 # Ignore the _volumes folder, except certain Traefik configs
 /_volumes/*
-!/_volumes/caddy
+!/_volumes/caddy/Caddyfile
 !/_volumes/traefik
 !/_volumes/scripts
