@@ -49,17 +49,15 @@ class WorkspaceService extends BaseService
      */
     public function initiate(): static
     {
-        $workspace_id = request()->user()?->workspaces()->first()?->id;
+        $workspace = request()->user()?->workspaces()->first();
 
-        if (is_null($workspace_id)) {
+        if (is_null($workspace)) {
             throw new ServiceException('Current Workspace not found');
         }
 
-        session()->put(self::KEY, $workspace_id);
-
-        $model = $this->getModel()->where('id', $workspace_id)->first();
-
-        $this->setModel($model);
+        $this->setModel($workspace);
+        
+        session()->put(self::KEY, $workspace->id);
 
         return $this;
     }
