@@ -33,7 +33,7 @@ Route::middleware([
         include 'web/filters.php'; // filters route
         include 'web/labels.php'; // labels route
     });
-    
+
     Route::middleware([
         'auth.role:admin',
     ])->group(function () {

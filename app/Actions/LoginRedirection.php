@@ -3,7 +3,6 @@
 namespace App\Actions;
 
 use App\Enums\UserRole;
-use App\Providers\RouteServiceProvider;
 use App\Services\Traits\RoleBasedRedirection;
 use Illuminate\Http\Request;
 
@@ -14,7 +13,6 @@ class LoginRedirection
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  callable  $next
      * @return mixed
      */
@@ -22,8 +20,9 @@ class LoginRedirection
     {
         $role = $request->user()->role;
 
-        if($role == UserRole::CUSTOMER)
+        if ($role == UserRole::CUSTOMER) {
             return $next($request);
+        }
 
         return redirect($this->getRoleBasedRedirection($role));
     }

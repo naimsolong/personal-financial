@@ -22,9 +22,10 @@ class RoleBasedAuthenticated
     {
         $user_role = $request->user()->role;
 
-        if($user_role != UserRole::fromName(Str::upper($role)))
+        if ($user_role != UserRole::fromName(Str::upper($role))) {
             return redirect($this->getRoleBasedRedirection($user_role));
-        
+        }
+
         return $next($request);
     }
 }
