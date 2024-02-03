@@ -56,7 +56,7 @@ class WorkspaceService extends BaseService
         }
 
         $this->setModel($workspace);
-        
+
         session()->put(self::KEY, $workspace->id);
 
         return $this;
