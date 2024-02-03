@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Actions\Jetstream\DeleteUser;
+use App\Actions\LoginRedirection;
 use App\Actions\Workspace\InitiateWorkspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -61,6 +62,7 @@ class JetstreamServiceProvider extends ServiceProvider
                 RedirectIfTwoFactorAuthenticatable::class,
                 AttemptToAuthenticate::class,
                 PrepareAuthenticatedSession::class,
+                LoginRedirection::class,
                 InitiateWorkspace::class,
             ]);
         });
