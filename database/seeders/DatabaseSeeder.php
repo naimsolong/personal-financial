@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
 {
     protected const LOCAL_SEEDER = [
         InitSeeder::class,
+        AdminSeeder::class,
         LocalSeeders\WorkspaceSeeder::class,
         LocalSeeders\UserSeeder::class,
         LocalSeeders\CategorySeeder::class,
@@ -21,10 +22,12 @@ class DatabaseSeeder extends Seeder
 
     protected const TESTING_SEEDER = [
         InitSeeder::class,
+        AdminSeeder::class,
     ];
 
     protected const PRODUCTION_SEEDER = [
         InitSeeder::class,
+        AdminSeeder::class,
     ];
 
     /**
