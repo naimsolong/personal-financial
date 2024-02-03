@@ -21,12 +21,22 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    include 'web/dashboards.php'; // dashboards route
-    include 'web/workspaces.php'; // workspaces route
-    include 'web/transactions.php'; // transactions route
-    include 'web/schedules.php'; // schedules route
-    include 'web/categories.php'; // categories route
-    include 'web/accounts.php'; // accounts route
-    include 'web/filters.php'; // filters route
-    include 'web/labels.php'; // labels route
+    Route::middleware([
+        'auth.role:customer',
+    ])->group(function () {
+        include 'web/dashboards.php'; // dashboards route
+        include 'web/workspaces.php'; // workspaces route
+        include 'web/transactions.php'; // transactions route
+        include 'web/schedules.php'; // schedules route
+        include 'web/categories.php'; // categories route
+        include 'web/accounts.php'; // accounts route
+        include 'web/filters.php'; // filters route
+        include 'web/labels.php'; // labels route
+    });
+    
+    Route::middleware([
+        'auth.role:admin',
+    ])->group(function () {
+        include 'web/admins.php'; // admins route
+    });
 });
