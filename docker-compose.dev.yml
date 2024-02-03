@@ -31,7 +31,7 @@ services:
       - ./_volumes/mysql/conf.d/:/etc/mysql/conf.d
       - ./_volumes/scripts/:/docker-entrypoint-initdb.d
     ports:
-      - 3360:3360
+      - 3360:3306
 
   php:
     container_name: pf_php
