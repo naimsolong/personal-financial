@@ -8,5 +8,5 @@ test('admin able to login and redirect to dashboard', function (User $user) {
         'password' => 'password',
     ]);
 
-    $response->assertRedirectToRoute('admin');
+    $response->assertRedirectToRoute('admin.index');
 })->with('admin');

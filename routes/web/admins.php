@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\IndexController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/admin', function () {
-    return Inertia::render('Admin/Index');
-})->name('admin');
+Route::prefix('/admin')->name('admin')->group(function() {
+    Route::get('/', IndexController::class)->name('.index');
+});
