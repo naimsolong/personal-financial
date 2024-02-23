@@ -5,10 +5,8 @@ use App\Models\Workspace;
 use App\Services\WorkspaceService;
 use Inertia\Testing\AssertableInertia as Assert;
 
-test('user can access workspace pages', function () {
-    $user = User::factory()->create();
-    $workspace = Workspace::factory()->create();
-    $workspace->users()->attach($user->id);
+test('user can access workspace pages', function (User $user) {
+    $workspace = $user->workspaces()->first();
 
     $response = $this->actingAs($user)
         ->withSession([WorkspaceService::KEY => $workspace->id])
@@ -40,12 +38,10 @@ test('user can access workspace pages', function () {
             ->where('data', $workspace->only('id', 'name'))
         );
     $response->assertOk();
-});
+})->with('customers');
 
-test('user can perform store, update and destroy', function () {
-    $user = User::factory()->create();
-    $workspace = Workspace::factory()->create();
-    $workspace->users()->attach($user->id);
+test('user can perform store, update and destroy', function (User $user) {
+    $workspace = $user->workspaces()->first();
 
     $data = [
         'name' => 'test'.rand(4, 10),
@@ -71,4 +67,4 @@ test('user can perform store, update and destroy', function () {
         ->delete(route('workspaces.destroy', ['workspace' => $workspace->id]));
     $response->assertRedirectToRoute('workspaces.index');
     $this->assertModelMissing($workspace);
-});
+})->with('customers');
