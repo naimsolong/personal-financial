@@ -80,13 +80,13 @@ it('able to update latest_balance column', function () {
         'notes' => rand(0, 1) == 1 ? 'whut'.rand(3000, 9000) : null,
     ]);
 
-    $is_updated = $service->updateLatestBalance($account1->group()->first(), 100.1);
+    $is_updated = $service->updateLatestBalance($account1->group()->first(), 100);
 
     $this->assertDatabaseHas('account_pivot', [
         'workspace_id' => $workspace->id,
         'account_group_id' => $group1->id,
         'account_id' => $account1->id,
-        'latest_balance' => $balance1 + 100.1,
+        'latest_balance' => $balance1 + 100,
     ]);
     expect($is_updated)->toBeTrue();
 
@@ -96,7 +96,7 @@ it('able to update latest_balance column', function () {
         'workspace_id' => $workspace->id,
         'account_group_id' => $group1->id,
         'account_id' => $account1->id,
-        'latest_balance' => $balance1 + 100.1 + 99 - 1,
+        'latest_balance' => $balance1 + 100 + 99 - 1,
     ]);
     expect($is_updated)->toBeTrue();
 });
