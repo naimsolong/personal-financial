@@ -3,11 +3,11 @@
 use App\Models\Waitlist;
 use App\Services\WaitlistService;
 
-it('able to store, update and destroy waitlist table', function () {
+it('able to store, update and destroy waitlist table', function (string $email) {
     $service = app(WaitlistService::class);
 
     $data = collect([
-        'email' => 'test'.rand(4, 10).'@email.com',
+        'email' => $email,
     ]);
     $is_created = $service->store($data);
     $this->assertDatabaseHas('waitlists', $data->toArray());
@@ -15,7 +15,7 @@ it('able to store, update and destroy waitlist table', function () {
 
     $model = Waitlist::factory()->create();
     $data = collect([
-        'email' => 'test'.rand(4, 10).'@email.com',
+        'email' => '2'.$email,
     ]);
     $is_updated = $service->update($model, $data);
     $this->assertDatabaseHas('waitlists', collect($data)->merge([
@@ -27,15 +27,14 @@ it('able to store, update and destroy waitlist table', function () {
     $is_destroyed = $service->destroy($model);
     $this->assertModelMissing($model);
     expect($is_destroyed)->toBeTrue();
-});
+})->with('waitlist-email');
 
-it('allow user to join', function () {
+it('allow user to join', function (string $email) {
     $service = app(WaitlistService::class);
 
-    $email = 'test'.rand(4, 10).'@email.com';
     $is_created = $service->join($email);
     $this->assertDatabaseHas('waitlists', [
         'email' => $email,
     ]);
     expect($is_created)->toBeTrue();
-});
+})->with('waitlist-email');
