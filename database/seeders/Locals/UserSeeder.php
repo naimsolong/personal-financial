@@ -16,8 +16,8 @@ class UserSeeder extends Seeder
         $workspaces_id = Workspace::pluck('id');
 
         $user = User::firstOrCreate([
-                'email' => 'test@email.com',
-            ],
+            'email' => 'test@email.com',
+        ],
             User::factory([
                 'email' => 'test@email.com',
             ])->raw()
