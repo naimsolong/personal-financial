@@ -37,6 +37,6 @@ Route::middleware([
     Route::middleware([
         'auth.role:admin',
     ])->group(function () {
-        include 'web/admins.php'; // admins route
+        include 'admins/index.php'; // admins route
     });
 });
