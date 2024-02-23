@@ -15,7 +15,7 @@ test('model able to perform CRUD', function () {
     $label->update([
         'name' => 'TEST',
     ]);
-    $this->assertDatabaseHas('Labels', [
+    $this->assertDatabaseHas('labels', [
         'id' => $label->id,
         'name' => $label->name,
     ]);
