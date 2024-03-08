@@ -11,7 +11,7 @@ class WaitlistController extends Controller
     public function index()
     {
         return Inertia::render('Admin/Waitlists/Index', [
-            'waitlists' => fn () => Waitlist::select('email')->paginate()
+            'waitlists' => fn () => Waitlist::select('email')->paginate(),
         ]);
     }
 }
