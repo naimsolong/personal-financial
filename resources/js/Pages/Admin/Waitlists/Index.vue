@@ -72,7 +72,7 @@ const changeButtonBold = function (bool) {
                         <th scope="col" class="px-6 py-3">
                             Status
                         </th>
-                        <th scope="col" class="px-6 py-3">
+                        <th scope="col" class="px-6 py-3 text-right">
                             Action
                         </th>
                     </tr>
@@ -94,7 +94,7 @@ const changeButtonBold = function (bool) {
                                 <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> All Good!
                             </div>
                         </td>
-                        <td class="px-6 py-4 space-x-2">
+                        <td class="px-6 py-4 space-x-2 text-right">
                             <PrimaryButton>Approve</PrimaryButton>
                             <SecondaryButton>Ignore</SecondaryButton>
                         </td>
