@@ -13,7 +13,7 @@ Route::prefix('/admin')->name('admin')->group(function () {
         Route::put('/action/{status}', [WaitlistController::class, 'action'])
             ->whereIn('status', ['approve', 'ignore'])
             ->name('.action');
-            
+
         Route::put('/bulk-action/{status}', [WaitlistController::class, 'bulkAction'])
             ->whereIn('status', ['approve', 'ignore'])
             ->name('.bulk-action');

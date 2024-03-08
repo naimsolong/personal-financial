@@ -17,7 +17,7 @@ it('able to store, update and destroy waitlist table', function (string $email) 
     $model = Waitlist::factory()->create();
     $data = collect([
         'email' => '2'.$email,
-        'status' => WaitlistStatus::APPROVE
+        'status' => WaitlistStatus::APPROVE,
     ]);
     $is_updated = $service->update($model, $data);
     $this->assertDatabaseHas('waitlists', collect($data)->merge([

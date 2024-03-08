@@ -18,12 +18,11 @@ class WaitlistController extends Controller
 
     public function action(Request $request, string $status)
     {
-        
+
     }
 
     public function bulkAction(Request $request, string $status)
     {
 
     }
-
 }

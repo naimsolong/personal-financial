@@ -24,10 +24,11 @@ class WaitlistService extends BaseService
 
         $waitlist = $this->getModel();
 
-        if($waitlist->status == WaitlistStatus::IGNORE)
+        if ($waitlist->status == WaitlistStatus::IGNORE) {
             $waitlist->update([
-                'status' => WaitlistStatus::PENDING
+                'status' => WaitlistStatus::PENDING,
             ]);
+        }
 
         return $this->haveModel();
     }

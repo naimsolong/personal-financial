@@ -19,7 +19,7 @@ class WaitlistFactory extends Factory
     {
         return [
             'email' => $this->faker->unique()->safeEmail(),
-            'status' => collect(WaitlistStatus::getAllValues())->random()
+            'status' => collect(WaitlistStatus::getAllValues())->random(),
         ];
     }
 }
