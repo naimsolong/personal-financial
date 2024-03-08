@@ -5,6 +5,7 @@ use App\Models\Waitlist;
 test('model class has correct properties', function () {
     expect(app(Waitlist::class)->getFillable())->toBeArray()->toBe([
         'email',
+        'status',
     ]);
 });
 
@@ -18,6 +19,7 @@ test('model able to perform CRUD', function () {
     $this->assertDatabaseHas('waitlists', [
         'id' => $waitlist->id,
         'email' => $waitlist->email,
+        'status' => $waitlist->status,
     ]);
 
     $waitlist->delete();

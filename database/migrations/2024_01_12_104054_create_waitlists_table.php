@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\WaitlistStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,6 +15,7 @@ return new class extends Migration
         Schema::create('waitlists', function (Blueprint $table) {
             $table->id();
             $table->string('email')->unique();
+            $table->enum('status', WaitlistStatus::getAllValues())->default(WaitlistStatus::PENDING);
             $table->timestamps();
         });
     }

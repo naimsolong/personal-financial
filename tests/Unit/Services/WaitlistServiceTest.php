@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\WaitlistStatus;
 use App\Models\Waitlist;
 use App\Services\WaitlistService;
 
@@ -16,6 +17,7 @@ it('able to store, update and destroy waitlist table', function (string $email) 
     $model = Waitlist::factory()->create();
     $data = collect([
         'email' => '2'.$email,
+        'status' => WaitlistStatus::APPROVE
     ]);
     $is_updated = $service->update($model, $data);
     $this->assertDatabaseHas('waitlists', collect($data)->merge([
@@ -37,4 +39,44 @@ it('allow user to join', function (string $email) {
         'email' => $email,
     ]);
     expect($is_created)->toBeTrue();
+})->with('waitlist-email');
+
+it('allow user to re-join after ignored', function (string $email) {
+    Waitlist::factory()->create([
+        'email' => $email,
+        'status' => WaitlistStatus::IGNORE,
+    ]);
+    $this->assertDatabaseHas('waitlists', [
+        'email' => $email,
+        'status' => WaitlistStatus::IGNORE,
+    ]);
+
+    $service = app(WaitlistService::class);
+
+    $is_rejoin = $service->join($email);
+    $this->assertDatabaseHas('waitlists', [
+        'email' => $email,
+        'status' => WaitlistStatus::PENDING,
+    ]);
+    expect($is_rejoin)->toBeTrue();
+})->with('waitlist-email');
+
+it('not allow user to re-join after rejected', function (string $email) {
+    Waitlist::factory()->create([
+        'email' => $email,
+        'status' => WaitlistStatus::REJECT,
+    ]);
+    $this->assertDatabaseHas('waitlists', [
+        'email' => $email,
+        'status' => WaitlistStatus::REJECT,
+    ]);
+
+    $service = app(WaitlistService::class);
+
+    $is_rejected = $service->join($email);
+    $this->assertDatabaseHas('waitlists', [
+        'email' => $email,
+        'status' => WaitlistStatus::REJECT,
+    ]);
+    expect($is_rejected)->toBeTrue();
 })->with('waitlist-email');

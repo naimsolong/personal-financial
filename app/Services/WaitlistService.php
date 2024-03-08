@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\WaitlistStatus;
 use App\Models\Waitlist;
 
 class WaitlistService extends BaseService
@@ -20,6 +21,13 @@ class WaitlistService extends BaseService
                 ['email' => $email]
             )
         );
+
+        $waitlist = $this->getModel();
+
+        if($waitlist->status == WaitlistStatus::IGNORE)
+            $waitlist->update([
+                'status' => WaitlistStatus::PENDING
+            ]);
 
         return $this->haveModel();
     }

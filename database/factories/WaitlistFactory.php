@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\WaitlistStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,6 +19,7 @@ class WaitlistFactory extends Factory
     {
         return [
             'email' => $this->faker->unique()->safeEmail(),
+            'status' => collect(WaitlistStatus::getAllValues())->random()
         ];
     }
 }

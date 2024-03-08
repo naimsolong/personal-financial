@@ -16,5 +16,6 @@ class Waitlist extends Model
      */
     protected $fillable = [
         'email',
+        'status',
     ];
 }
