@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\SchedulesController;
+use App\Http\Controllers\Dashboard\SchedulesController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'schedules'], function () {

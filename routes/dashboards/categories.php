@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\CategoriesController;
-use App\Http\Controllers\CategoryGroupController;
+use App\Http\Controllers\Dashboard\CategoriesController;
+use App\Http\Controllers\Dashboard\CategoryGroupController;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('category/group', CategoryGroupController::class)->except([

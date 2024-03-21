@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dashboard;
 
 use App\Enums\TransactionsStatus;
 use App\Enums\TransactionsType;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\TransactionFormRequest;
 use App\Models\AccountGroup;
 use App\Models\CategoryGroup;

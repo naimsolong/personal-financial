@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-include 'web/landing.php'; // landing route
+include 'webs/landing.php'; // landing route
 
 Route::middleware([
     'auth:sanctum',
@@ -24,14 +24,14 @@ Route::middleware([
     Route::middleware([
         'auth.role:customer',
     ])->group(function () {
-        include 'web/dashboards.php'; // dashboards route
-        include 'web/workspaces.php'; // workspaces route
-        include 'web/transactions.php'; // transactions route
-        include 'web/schedules.php'; // schedules route
-        include 'web/categories.php'; // categories route
-        include 'web/accounts.php'; // accounts route
-        include 'web/filters.php'; // filters route
-        include 'web/labels.php'; // labels route
+        include 'dashboards/dashboards.php'; // dashboards route
+        include 'dashboards/workspaces.php'; // workspaces route
+        include 'dashboards/transactions.php'; // transactions route
+        include 'dashboards/schedules.php'; // schedules route
+        include 'dashboards/categories.php'; // categories route
+        include 'dashboards/accounts.php'; // accounts route
+        include 'dashboards/filters.php'; // filters route
+        include 'dashboards/labels.php'; // labels route
     });
 
     Route::middleware([

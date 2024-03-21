@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\LabelsController;
+use App\Http\Controllers\Dashboard\LabelsController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'labels'], function () {

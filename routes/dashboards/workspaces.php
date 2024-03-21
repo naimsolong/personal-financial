@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\WorkspaceController;
+use App\Http\Controllers\Dashboard\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'workspaces'], function () {

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\FiltersController;
+use App\Http\Controllers\Dashboard\FiltersController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'filters'], function () {

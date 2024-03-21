@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\TransactionsController;
+use App\Http\Controllers\Dashboard\TransactionsController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'transactions'], function () {

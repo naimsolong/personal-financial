@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dashboard;
 
 use App\Enums\AccountsType;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\AccountFormRequest;
 use App\Models\Account;
 use App\Models\AccountGroup;

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dashboard;
 
 use App\Enums\TransactionsType;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryFormRequest;
 use App\Models\Category;
 use App\Models\CategoryGroup;

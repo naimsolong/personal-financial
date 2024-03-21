@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\AccountGroupController;
-use App\Http\Controllers\AccountsController;
+use App\Http\Controllers\Dashboard\AccountGroupController;
+use App\Http\Controllers\Dashboard\AccountsController;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('account/group', AccountGroupController::class)->except([
